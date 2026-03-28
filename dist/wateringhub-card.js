@@ -603,15 +603,20 @@ function r5(r6) {
 
 // src/wateringhub-card.ts
 var WateringHubCard = class extends i4 {
+  constructor() {
+    super(...arguments);
+    // Auto-discovered entities
+    this._programEntities = [];
+  }
   // -- HA lifecycle (think: props from parent in React) ----
   setConfig(config) {
-    if (!config.entities || !config.status_entity) {
-      throw new Error("Please define entities and status_entity in card config");
-    }
     this._config = config;
   }
   set hass(hass) {
     this._hass = hass;
+    this._programEntities = Object.keys(hass.states).filter(
+      (id) => id.startsWith("switch.wateringhub_")
+    );
   }
   getCardSize() {
     return 3;
@@ -621,7 +626,7 @@ var WateringHubCard = class extends i4 {
     return this._hass?.states[entityId];
   }
   _getGlobalStatus() {
-    const entity = this._getState(this._config.status_entity);
+    const entity = this._getState("sensor.wateringhub_status");
     return entity?.state ?? "idle";
   }
   _statusColor(status) {
@@ -645,7 +650,7 @@ var WateringHubCard = class extends i4 {
     }
   }
   _formatRelative(entityId) {
-    const entity = this._getState(entityId);
+    const entity = this._hass?.states[entityId];
     if (!entity || entity.state === "None" || entity.state === "unknown" || entity.state === "unavailable") {
       return "\u2014";
     }
@@ -685,15 +690,12 @@ var WateringHubCard = class extends i4 {
     }
     const status = this._getGlobalStatus();
     const isIdle = status === "idle";
+    const title = this._config?.title ?? "WateringHub";
     return b2`
       <ha-card>
         <div class="header">
-          <span class="title">WateringHub</span>
-          <button
-            class="stop-btn"
-            ?disabled=${isIdle}
-            @click=${this._stopAll}
-          >Stop All</button>
+          <span class="title">${title}</span>
+          <button class="stop-btn" ?disabled=${isIdle} @click=${this._stopAll}>Stop All</button>
         </div>
 
         <div class="status-row">
@@ -701,28 +703,28 @@ var WateringHubCard = class extends i4 {
             ${this._statusLabel(status)}
           </span>
           <span class="info-item">
-            Next: ${this._formatRelative(this._config.next_run_entity)}
+            Next: ${this._formatRelative("sensor.wateringhub_next_run")}
           </span>
           <span class="info-item">
-            Last: ${this._formatRelative(this._config.last_run_entity)}
+            Last: ${this._formatRelative("sensor.wateringhub_last_run")}
           </span>
         </div>
 
-        ${this._config.entities.map((entityId) => {
+        ${this._programEntities.length === 0 ? b2`<div class="no-programs">No programs found</div>` : this._programEntities.map((entityId) => {
       const entity = this._getState(entityId);
       if (!entity) return A;
       const isOn = entity.state === "on";
       const name = String(entity.attributes.friendly_name ?? entityId);
       return b2`
-            <div class="program">
-              ${isOn ? b2`<div class="active-dot"></div>` : A}
-              <span class="program-name ${isOn ? "active" : ""}">${name}</span>
-              <ha-switch
-                .checked=${isOn}
-                @change=${() => this._toggleProgram(entityId)}
-              ></ha-switch>
-            </div>
-          `;
+                <div class="program">
+                  ${isOn ? b2`<div class="active-dot"></div>` : A}
+                  <span class="program-name ${isOn ? "active" : ""}">${name}</span>
+                  <ha-switch
+                    .checked=${isOn}
+                    @change=${() => this._toggleProgram(entityId)}
+                  ></ha-switch>
+                </div>
+              `;
     })}
       </ha-card>
     `;
@@ -795,6 +797,14 @@ WateringHubCard.styles = i`
       border-radius: 50%;
       background: var(--primary-color);
       flex-shrink: 0;
+    }
+
+    /* No programs */
+    .no-programs {
+      text-align: center;
+      padding: 24px;
+      color: var(--secondary-text-color);
+      font-size: 14px;
     }
 
     /* Stop button */

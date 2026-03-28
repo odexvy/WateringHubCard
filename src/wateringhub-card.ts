@@ -20,10 +20,7 @@ interface Hass {
 
 interface CardConfig {
   type: string;
-  entities: string[]; // switch.wateringhub_* list
-  status_entity: string; // sensor.wateringhub_status
-  next_run_entity: string; // sensor.wateringhub_next_run
-  last_run_entity: string; // sensor.wateringhub_last_run
+  title?: string;
 }
 
 // ── Card ──────────────────────────────────────────────────
@@ -33,17 +30,21 @@ export class WateringHubCard extends LitElement {
   @state() private _config!: CardConfig;
   @state() private _hass!: Hass;
 
+  // Auto-discovered entities
+  private _programEntities: string[] = [];
+
   // -- HA lifecycle (think: props from parent in React) ----
 
   setConfig(config: CardConfig): void {
-    if (!config.entities || !config.status_entity) {
-      throw new Error('Please define entities and status_entity in card config');
-    }
     this._config = config;
   }
 
   set hass(hass: Hass) {
     this._hass = hass;
+    // Auto-discover wateringhub switch entities
+    this._programEntities = Object.keys(hass.states).filter((id) =>
+      id.startsWith('switch.wateringhub_'),
+    );
   }
 
   getCardSize(): number {
@@ -57,7 +58,7 @@ export class WateringHubCard extends LitElement {
   }
 
   private _getGlobalStatus(): string {
-    const entity = this._getState(this._config.status_entity);
+    const entity = this._getState('sensor.wateringhub_status');
     return entity?.state ?? 'idle';
   }
 
@@ -84,7 +85,7 @@ export class WateringHubCard extends LitElement {
   }
 
   private _formatRelative(entityId: string): string {
-    const entity = this._getState(entityId);
+    const entity = this._hass?.states[entityId];
     if (
       !entity ||
       entity.state === 'None' ||
@@ -201,6 +202,14 @@ export class WateringHubCard extends LitElement {
       flex-shrink: 0;
     }
 
+    /* No programs */
+    .no-programs {
+      text-align: center;
+      padding: 24px;
+      color: var(--secondary-text-color);
+      font-size: 14px;
+    }
+
     /* Stop button */
     .stop-btn {
       background: var(--error-color, #db4437);
@@ -227,11 +236,12 @@ export class WateringHubCard extends LitElement {
 
     const status = this._getGlobalStatus();
     const isIdle = status === 'idle';
+    const title = this._config?.title ?? 'WateringHub';
 
     return html`
       <ha-card>
         <div class="header">
-          <span class="title">WateringHub</span>
+          <span class="title">${title}</span>
           <button class="stop-btn" ?disabled=${isIdle} @click=${this._stopAll}>Stop All</button>
         </div>
 
@@ -240,29 +250,31 @@ export class WateringHubCard extends LitElement {
             ${this._statusLabel(status)}
           </span>
           <span class="info-item">
-            Next: ${this._formatRelative(this._config.next_run_entity)}
+            Next: ${this._formatRelative('sensor.wateringhub_next_run')}
           </span>
           <span class="info-item">
-            Last: ${this._formatRelative(this._config.last_run_entity)}
+            Last: ${this._formatRelative('sensor.wateringhub_last_run')}
           </span>
         </div>
 
-        ${this._config.entities.map((entityId) => {
-          const entity = this._getState(entityId);
-          if (!entity) return nothing;
-          const isOn = entity.state === 'on';
-          const name = String(entity.attributes.friendly_name ?? entityId);
-          return html`
-            <div class="program">
-              ${isOn ? html`<div class="active-dot"></div>` : nothing}
-              <span class="program-name ${isOn ? 'active' : ''}">${name}</span>
-              <ha-switch
-                .checked=${isOn}
-                @change=${() => this._toggleProgram(entityId)}
-              ></ha-switch>
-            </div>
-          `;
-        })}
+        ${this._programEntities.length === 0
+          ? html`<div class="no-programs">No programs found</div>`
+          : this._programEntities.map((entityId) => {
+              const entity = this._getState(entityId);
+              if (!entity) return nothing;
+              const isOn = entity.state === 'on';
+              const name = String(entity.attributes.friendly_name ?? entityId);
+              return html`
+                <div class="program">
+                  ${isOn ? html`<div class="active-dot"></div>` : nothing}
+                  <span class="program-name ${isOn ? 'active' : ''}">${name}</span>
+                  <ha-switch
+                    .checked=${isOn}
+                    @change=${() => this._toggleProgram(entityId)}
+                  ></ha-switch>
+                </div>
+              `;
+            })}
       </ha-card>
     `;
   }
