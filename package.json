@@ -1,0 +1,14 @@
+{
+  "name": "wateringhub-card",
+  "version": "0.0.1",
+  "description": "Custom Home Assistant card for WateringHub",
+  "scripts": {
+    "build": "esbuild src/wateringhub-card.ts --bundle --outfile=dist/wateringhub-card.js --format=esm",
+    "watch": "esbuild src/wateringhub-card.ts --bundle --outfile=dist/wateringhub-card.js --format=esm --watch"
+  },
+  "devDependencies": {
+    "esbuild": "latest",
+    "lit": "latest"
+  },
+  "license": "MIT"
+}
