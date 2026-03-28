@@ -1,4 +1,6 @@
 {
   "name": "WateringHub Card",
-  "render_readme": true
+  "render_readme": true,
+  "filename": "wateringhub-card.js",
+  "content_in_root": false
 }
