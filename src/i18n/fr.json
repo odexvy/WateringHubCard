@@ -1,0 +1,18 @@
+{
+  "status.idle": "En attente",
+  "status.running": "Arrosage en cours",
+  "status.error": "Erreur",
+  "stop_all": "Tout arrêter",
+  "next": "Prochain",
+  "last": "Dernier",
+  "no_programs": "Aucun programme trouvé",
+  "loading": "Chargement...",
+  "time.just_now": "à l'instant",
+  "time.minutes_ago": "il y a {count} min",
+  "time.hours_ago": "il y a {count}h",
+  "time.days_ago": "il y a {count}j",
+  "time.today_at": "aujourd'hui à {time}",
+  "time.tomorrow_at": "demain à {time}",
+  "time.in_days": "dans {count}j",
+  "time.never": "—"
+}

@@ -3,6 +3,7 @@
 
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { getTranslator } from './i18n/index';
 
 // ── HA types ──────────────────────────────────────────────
 
@@ -32,6 +33,7 @@ export class WateringHubCard extends LitElement {
 
   // Auto-discovered entities
   private _programEntities: string[] = [];
+  private _t: ReturnType<typeof getTranslator> = (key: string) => key;
 
   // -- HA lifecycle (think: props from parent in React) ----
 
@@ -41,6 +43,7 @@ export class WateringHubCard extends LitElement {
 
   set hass(hass: Hass) {
     this._hass = hass;
+    this._t = getTranslator(hass.language);
     // Auto-discover wateringhub switch entities
     this._programEntities = Object.keys(hass.states).filter((id) =>
       id.startsWith('switch.wateringhub_'),
@@ -74,14 +77,7 @@ export class WateringHubCard extends LitElement {
   }
 
   private _statusLabel(status: string): string {
-    switch (status) {
-      case 'running':
-        return 'Running';
-      case 'error':
-        return 'Error';
-      default:
-        return 'Idle';
-    }
+    return this._t(`status.${status}`) ?? this._t('status.idle');
   }
 
   private _formatRelative(entityId: string): string {
@@ -92,7 +88,7 @@ export class WateringHubCard extends LitElement {
       entity.state === 'unknown' ||
       entity.state === 'unavailable'
     ) {
-      return '—';
+      return this._t('time.never');
     }
     const date = new Date(entity.state);
     if (isNaN(date.getTime())) return entity.state;
@@ -104,19 +100,26 @@ export class WateringHubCard extends LitElement {
     if (diffMs < 0) {
       const futureDiff = -diffMs;
       const hours = Math.floor(futureDiff / (1000 * 60 * 60));
-      if (hours < 24) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (hours < 24) {
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return this._t('time.today_at', { time: timeStr });
+      }
       const days = Math.floor(hours / 24);
-      return `in ${days}d`;
+      if (days === 1) {
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return this._t('time.tomorrow_at', { time: timeStr });
+      }
+      return this._t('time.in_days', { count: days });
     }
 
     // Past date
     const minutes = Math.floor(diffMs / (1000 * 60));
-    if (minutes < 1) return 'just now';
-    if (minutes < 60) return `${minutes}m ago`;
+    if (minutes < 1) return this._t('time.just_now');
+    if (minutes < 60) return this._t('time.minutes_ago', { count: minutes });
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
+    if (hours < 24) return this._t('time.hours_ago', { count: hours });
     const days = Math.floor(hours / 24);
-    return `${days}d ago`;
+    return this._t('time.days_ago', { count: days });
   }
 
   // -- Actions ---------------------------------------------
@@ -231,7 +234,7 @@ export class WateringHubCard extends LitElement {
 
   render() {
     if (!this._hass || !this._config) {
-      return html`<ha-card>Loading...</ha-card>`;
+      return html`<ha-card>${this._t('loading')}</ha-card>`;
     }
 
     const status = this._getGlobalStatus();
@@ -242,7 +245,7 @@ export class WateringHubCard extends LitElement {
       <ha-card>
         <div class="header">
           <span class="title">${title}</span>
-          <button class="stop-btn" ?disabled=${isIdle} @click=${this._stopAll}>Stop All</button>
+          <button class="stop-btn" ?disabled=${isIdle} @click=${this._stopAll}>${this._t('stop_all')}</button>
         </div>
 
         <div class="status-row">
@@ -250,15 +253,15 @@ export class WateringHubCard extends LitElement {
             ${this._statusLabel(status)}
           </span>
           <span class="info-item">
-            Next: ${this._formatRelative('sensor.wateringhub_next_run')}
+            ${this._t('next')}: ${this._formatRelative('sensor.wateringhub_next_run')}
           </span>
           <span class="info-item">
-            Last: ${this._formatRelative('sensor.wateringhub_last_run')}
+            ${this._t('last')}: ${this._formatRelative('sensor.wateringhub_last_run')}
           </span>
         </div>
 
         ${this._programEntities.length === 0
-          ? html`<div class="no-programs">No programs found</div>`
+          ? html`<div class="no-programs">${this._t('no_programs')}</div>`
           : this._programEntities.map((entityId) => {
               const entity = this._getState(entityId);
               if (!entity) return nothing;

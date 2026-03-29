@@ -1,0 +1,18 @@
+{
+  "status.idle": "Idle",
+  "status.running": "Running",
+  "status.error": "Error",
+  "stop_all": "Stop All",
+  "next": "Next",
+  "last": "Last",
+  "no_programs": "No programs found",
+  "loading": "Loading...",
+  "time.just_now": "just now",
+  "time.minutes_ago": "{count}m ago",
+  "time.hours_ago": "{count}h ago",
+  "time.days_ago": "{count}d ago",
+  "time.today_at": "today at {time}",
+  "time.tomorrow_at": "tomorrow at {time}",
+  "time.in_days": "in {count}d",
+  "time.never": "—"
+}

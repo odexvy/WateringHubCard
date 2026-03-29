@@ -10,6 +10,8 @@
     "sourceMap": false,
     "outDir": "./dist",
     "rootDir": "./src",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "lib": ["ES2021", "DOM", "DOM.Iterable"]
   },
   "include": ["src/**/*.ts"]

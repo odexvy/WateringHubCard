@@ -601,12 +601,67 @@ function r5(r6) {
   return n4({ ...r6, state: true, attribute: false });
 }
 
+// src/i18n/en.json
+var en_default = {
+  "status.idle": "Idle",
+  "status.running": "Running",
+  "status.error": "Error",
+  stop_all: "Stop All",
+  next: "Next",
+  last: "Last",
+  no_programs: "No programs found",
+  loading: "Loading...",
+  "time.just_now": "just now",
+  "time.minutes_ago": "{count}m ago",
+  "time.hours_ago": "{count}h ago",
+  "time.days_ago": "{count}d ago",
+  "time.today_at": "today at {time}",
+  "time.tomorrow_at": "tomorrow at {time}",
+  "time.in_days": "in {count}d",
+  "time.never": "\u2014"
+};
+
+// src/i18n/fr.json
+var fr_default = {
+  "status.idle": "En attente",
+  "status.running": "Arrosage en cours",
+  "status.error": "Erreur",
+  stop_all: "Tout arr\xEAter",
+  next: "Prochain",
+  last: "Dernier",
+  no_programs: "Aucun programme trouv\xE9",
+  loading: "Chargement...",
+  "time.just_now": "\xE0 l'instant",
+  "time.minutes_ago": "il y a {count} min",
+  "time.hours_ago": "il y a {count}h",
+  "time.days_ago": "il y a {count}j",
+  "time.today_at": "aujourd'hui \xE0 {time}",
+  "time.tomorrow_at": "demain \xE0 {time}",
+  "time.in_days": "dans {count}j",
+  "time.never": "\u2014"
+};
+
+// src/i18n/index.ts
+var translations = { en: en_default, fr: fr_default };
+function getTranslator(hassLanguage) {
+  const lang = hassLanguage?.toLowerCase().startsWith("fr") ? "fr" : "en";
+  const dict = translations[lang] ?? translations["en"];
+  return (key, params) => {
+    let value = dict[key] ?? translations["en"][key] ?? key;
+    if (params) {
+      value = value.replace(/\{(\w+)\}/g, (_2, k2) => String(params[k2] ?? _2));
+    }
+    return value;
+  };
+}
+
 // src/wateringhub-card.ts
 var WateringHubCard = class extends i4 {
   constructor() {
     super(...arguments);
     // Auto-discovered entities
     this._programEntities = [];
+    this._t = (key) => key;
   }
   // -- HA lifecycle (think: props from parent in React) ----
   setConfig(config) {
@@ -614,6 +669,7 @@ var WateringHubCard = class extends i4 {
   }
   set hass(hass) {
     this._hass = hass;
+    this._t = getTranslator(hass.language);
     this._programEntities = Object.keys(hass.states).filter(
       (id) => id.startsWith("switch.wateringhub_")
     );
@@ -640,19 +696,12 @@ var WateringHubCard = class extends i4 {
     }
   }
   _statusLabel(status) {
-    switch (status) {
-      case "running":
-        return "Running";
-      case "error":
-        return "Error";
-      default:
-        return "Idle";
-    }
+    return this._t(`status.${status}`) ?? this._t("status.idle");
   }
   _formatRelative(entityId) {
     const entity = this._hass?.states[entityId];
     if (!entity || entity.state === "None" || entity.state === "unknown" || entity.state === "unavailable") {
-      return "\u2014";
+      return this._t("time.never");
     }
     const date = new Date(entity.state);
     if (isNaN(date.getTime())) return entity.state;
@@ -661,17 +710,24 @@ var WateringHubCard = class extends i4 {
     if (diffMs < 0) {
       const futureDiff = -diffMs;
       const hours2 = Math.floor(futureDiff / (1e3 * 60 * 60));
-      if (hours2 < 24) return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      if (hours2 < 24) {
+        const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        return this._t("time.today_at", { time: timeStr });
+      }
       const days2 = Math.floor(hours2 / 24);
-      return `in ${days2}d`;
+      if (days2 === 1) {
+        const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        return this._t("time.tomorrow_at", { time: timeStr });
+      }
+      return this._t("time.in_days", { count: days2 });
     }
     const minutes = Math.floor(diffMs / (1e3 * 60));
-    if (minutes < 1) return "just now";
-    if (minutes < 60) return `${minutes}m ago`;
+    if (minutes < 1) return this._t("time.just_now");
+    if (minutes < 60) return this._t("time.minutes_ago", { count: minutes });
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
+    if (hours < 24) return this._t("time.hours_ago", { count: hours });
     const days = Math.floor(hours / 24);
-    return `${days}d ago`;
+    return this._t("time.days_ago", { count: days });
   }
   // -- Actions ---------------------------------------------
   _toggleProgram(entityId) {
@@ -686,7 +742,7 @@ var WateringHubCard = class extends i4 {
   // -- Render (think: return <View> in RN) -----------------
   render() {
     if (!this._hass || !this._config) {
-      return b2`<ha-card>Loading...</ha-card>`;
+      return b2`<ha-card>${this._t("loading")}</ha-card>`;
     }
     const status = this._getGlobalStatus();
     const isIdle = status === "idle";
@@ -695,7 +751,7 @@ var WateringHubCard = class extends i4 {
       <ha-card>
         <div class="header">
           <span class="title">${title}</span>
-          <button class="stop-btn" ?disabled=${isIdle} @click=${this._stopAll}>Stop All</button>
+          <button class="stop-btn" ?disabled=${isIdle} @click=${this._stopAll}>${this._t("stop_all")}</button>
         </div>
 
         <div class="status-row">
@@ -703,14 +759,14 @@ var WateringHubCard = class extends i4 {
             ${this._statusLabel(status)}
           </span>
           <span class="info-item">
-            Next: ${this._formatRelative("sensor.wateringhub_next_run")}
+            ${this._t("next")}: ${this._formatRelative("sensor.wateringhub_next_run")}
           </span>
           <span class="info-item">
-            Last: ${this._formatRelative("sensor.wateringhub_last_run")}
+            ${this._t("last")}: ${this._formatRelative("sensor.wateringhub_last_run")}
           </span>
         </div>
 
-        ${this._programEntities.length === 0 ? b2`<div class="no-programs">No programs found</div>` : this._programEntities.map((entityId) => {
+        ${this._programEntities.length === 0 ? b2`<div class="no-programs">${this._t("no_programs")}</div>` : this._programEntities.map((entityId) => {
       const entity = this._getState(entityId);
       if (!entity) return A;
       const isOn = entity.state === "on";
