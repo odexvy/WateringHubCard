@@ -166,18 +166,14 @@ export function formatRelative(
 
   // Future date
   if (diffMs < 0) {
-    const futureDiff = -diffMs;
-    const hours = Math.floor(futureDiff / (1000 * 60 * 60));
-    if (hours < 24) {
-      const timeStr = date.toLocaleTimeString(locale ?? [], { hour: '2-digit', minute: '2-digit' });
-      return t('time.today_at', { time: timeStr });
-    }
-    const days = Math.floor(hours / 24);
-    if (days === 1) {
-      const timeStr = date.toLocaleTimeString(locale ?? [], { hour: '2-digit', minute: '2-digit' });
-      return t('time.tomorrow_at', { time: timeStr });
-    }
-    return t('time.in_days', { count: days });
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const targetDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const daysDiff = Math.round((targetDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const timeStr = date.toLocaleTimeString(locale ?? [], { hour: '2-digit', minute: '2-digit' });
+
+    if (daysDiff === 0) return t('time.today_at', { time: timeStr });
+    if (daysDiff === 1) return t('time.tomorrow_at', { time: timeStr });
+    return t('time.in_days', { count: daysDiff });
   }
 
   // Past date

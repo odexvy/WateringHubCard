@@ -196,10 +196,26 @@ describe('formatRelative', () => {
     expect(formatRelative(hass, 'sensor.wateringhub_last_run', mockT)).toBe('time.days_ago');
   });
 
-  it('returns today_at for future within 24h', () => {
-    const date = new Date(Date.now() + 3 * 60 * 60 * 1000);
+  it('returns today_at for future same day', () => {
+    // Create a date later today (set to 23:59 today)
+    const date = new Date();
+    date.setHours(23, 59, 0, 0);
+    if (date.getTime() <= Date.now()) {
+      // If it's already past 23:59, skip gracefully
+      return;
+    }
     const hass = makeHass({ 'sensor.wateringhub_next_run': { state: date.toISOString() } });
     expect(formatRelative(hass, 'sensor.wateringhub_next_run', mockT)).toContain('time.today_at');
+  });
+
+  it('returns tomorrow_at for future next day', () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    date.setHours(12, 0, 0, 0);
+    const hass = makeHass({ 'sensor.wateringhub_next_run': { state: date.toISOString() } });
+    expect(formatRelative(hass, 'sensor.wateringhub_next_run', mockT)).toContain(
+      'time.tomorrow_at',
+    );
   });
 
   it('returns in_days for future beyond tomorrow', () => {
@@ -222,10 +238,12 @@ describe('formatNextRun', () => {
     expect(formatNextRun(hass, mockT)).toBe('time.no_schedule');
   });
 
-  it('returns formatted date for valid state', () => {
-    const date = new Date(Date.now() + 3 * 60 * 60 * 1000);
+  it('returns formatted date for valid future state', () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    date.setHours(12, 0, 0, 0);
     const hass = makeHass({ 'sensor.wateringhub_next_run': { state: date.toISOString() } });
-    expect(formatNextRun(hass, mockT)).toContain('time.today_at');
+    expect(formatNextRun(hass, mockT)).toContain('time.tomorrow_at');
   });
 });
 
