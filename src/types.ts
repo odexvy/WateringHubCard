@@ -25,6 +25,22 @@ export interface ProgramSchedule {
   days?: string[];
 }
 
+// Config card types
+
+export interface AvailableValve {
+  id: string;
+  name: string;
+  entity_id: string;
+}
+
+export interface ZoneConfig {
+  id: string;
+  name: string;
+  valves: string[]; // valve IDs only
+}
+
+// Dashboard card types
+
 export interface ProgramValve {
   valve_id: string;
   valve_name: string;
