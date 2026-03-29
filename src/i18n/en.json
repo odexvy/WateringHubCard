@@ -14,5 +14,8 @@
   "time.today_at": "today at {time}",
   "time.tomorrow_at": "tomorrow at {time}",
   "time.in_days": "in {count}d",
-  "time.never": "—"
+  "time.never": "Never",
+  "time.no_schedule": "No active program",
+  "status.running_program": "Running: {name}",
+  "stop_confirm": "Stop all watering?"
 }

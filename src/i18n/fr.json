@@ -14,5 +14,8 @@
   "time.today_at": "aujourd'hui à {time}",
   "time.tomorrow_at": "demain à {time}",
   "time.in_days": "dans {count}j",
-  "time.never": "—"
+  "time.never": "Jamais",
+  "time.no_schedule": "Aucun programme actif",
+  "status.running_program": "En cours : {name}",
+  "stop_confirm": "Arrêter tout l'arrosage ?"
 }

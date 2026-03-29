@@ -731,11 +731,7 @@ git commit -m "feat: add running view component with progress and flow display"
 
 **Step 1: Create `src/wateringhub-card.ts`**
 
-This is the main orchestrator. Analogies with React:
-- `set hass()` = like a Redux store update triggering re-render
-- `setConfig()` = like receiving initial props from parent
-- `render()` = same as React's `render()`
-- `static styles` = like StyleSheet.create() in React Native
+This is the main orchestrator.
 
 ```typescript
 // SPDX-License-Identifier: MIT
