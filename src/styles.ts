@@ -2,7 +2,7 @@ import { css } from 'lit';
 
 export const cardStyles = css`
   ha-card {
-    padding: 16px;
+    padding: 20px;
   }
 
   /* Header */
@@ -10,10 +10,10 @@ export const cardStyles = css`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
   .title {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 500;
     color: var(--primary-text-color);
   }
@@ -22,15 +22,15 @@ export const cardStyles = css`
   .status-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 16px;
+    margin-bottom: 20px;
     flex-wrap: wrap;
   }
   .badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 12px;
     font-size: 13px;
     font-weight: 500;
@@ -60,17 +60,104 @@ export const cardStyles = css`
     color: var(--secondary-text-color);
   }
 
+  /* Running view */
+  .running-view {
+    border: 1px solid var(--divider-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .running-zone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-text-color);
+    margin-bottom: 12px;
+  }
+  .running-zone ha-icon {
+    --mdc-icon-size: 18px;
+    color: var(--secondary-text-color);
+  }
+  .running-valve-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--primary-text-color);
+    margin-bottom: 8px;
+  }
+  .running-valve-row ha-icon {
+    --mdc-icon-size: 18px;
+    color: var(--primary-color);
+  }
+  .running-valve-name {
+    flex: 1;
+  }
+  .running-valve-time {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-color);
+    white-space: nowrap;
+  }
+  .running-bar-section {
+    margin-bottom: 16px;
+  }
+  .running-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--divider-color);
+    overflow: hidden;
+  }
+  .running-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--primary-color);
+    transition: width 1s linear;
+  }
+  .running-bar-fill.global {
+    background: var(--warning-color);
+  }
+  .running-global {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .running-global-label {
+    font-size: 12px;
+    color: var(--secondary-text-color);
+  }
+
   /* Programs */
+  .program-wrapper {
+    border-bottom: 1px solid var(--divider-color);
+    padding: 4px 0;
+  }
+  .program-wrapper:last-child {
+    border-bottom: none;
+  }
   .program {
     display: flex;
     align-items: center;
-    padding: 10px 0;
+    padding: 12px 0;
     gap: 12px;
+  }
+  .program-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
   }
   .program-name {
     flex: 1;
     font-size: 15px;
     color: var(--primary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .program-name.active {
     font-weight: 600;
@@ -81,15 +168,6 @@ export const cardStyles = css`
     border-radius: 50%;
     background: var(--primary-color);
     flex-shrink: 0;
-  }
-
-  /* Program header (clickable row) */
-  .program-header {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    gap: 12px;
-    width: 100%;
   }
   .chevron {
     transition: transform 0.2s;
@@ -102,21 +180,15 @@ export const cardStyles = css`
   }
 
   /* Program recap (accordion content) */
-  .program-wrapper {
-    border-bottom: 1px solid var(--divider-color);
-  }
-  .program-wrapper:last-child {
-    border-bottom: none;
-  }
   .program-recap {
     overflow: hidden;
     max-height: 0;
     transition: max-height 0.3s ease;
-    padding-left: 20px;
+    padding-left: 32px;
   }
   .program-recap.open {
     max-height: 500px;
-    padding-bottom: 8px;
+    padding-bottom: 12px;
   }
   .recap-schedule {
     display: flex;
@@ -124,7 +196,7 @@ export const cardStyles = css`
     gap: 8px;
     font-size: 13px;
     color: var(--secondary-text-color);
-    padding: 8px 0 4px;
+    padding: 10px 0 6px;
   }
   .recap-zone {
     display: flex;
@@ -133,7 +205,7 @@ export const cardStyles = css`
     font-size: 13px;
     color: var(--primary-text-color);
     font-weight: 500;
-    padding: 6px 0 2px;
+    padding: 8px 0 4px;
   }
   .recap-valve {
     display: flex;
@@ -141,7 +213,7 @@ export const cardStyles = css`
     gap: 8px;
     font-size: 12px;
     color: var(--secondary-text-color);
-    padding: 2px 0 2px 28px;
+    padding: 4px 0 4px 28px;
   }
   .recap-total {
     display: flex;
@@ -150,7 +222,9 @@ export const cardStyles = css`
     font-size: 13px;
     color: var(--primary-text-color);
     font-weight: 500;
-    padding: 8px 0 4px;
+    padding: 10px 0 4px;
+    border-top: 1px solid var(--divider-color);
+    margin-top: 6px;
   }
   .recap-schedule ha-icon,
   .recap-zone ha-icon,
@@ -163,7 +237,7 @@ export const cardStyles = css`
   /* No programs */
   .no-programs {
     text-align: center;
-    padding: 24px;
+    padding: 32px;
     color: var(--secondary-text-color);
     font-size: 14px;
   }
@@ -174,10 +248,17 @@ export const cardStyles = css`
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 6px 14px;
+    padding: 8px 16px;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .stop-btn:hover {
+    opacity: 0.85;
+  }
+  .stop-btn:active {
+    opacity: 0.7;
   }
   .stop-btn:disabled {
     opacity: 0.4;

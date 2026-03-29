@@ -28,5 +28,10 @@
   "days.thu": "Jeu",
   "days.fri": "Ven",
   "days.sat": "Sam",
-  "days.sun": "Dim"
+  "days.sun": "Dim",
+  "running.zone": "Zone : {name}",
+  "running.valve": "Vanne : {name}",
+  "running.remaining": "{time} restant",
+  "running.progress": "Vanne {done} sur {total}",
+  "running.global_progress": "Progression globale"
 }

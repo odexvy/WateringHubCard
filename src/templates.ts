@@ -7,6 +7,8 @@ import {
   formatNextRun,
   formatSchedule,
   getActiveProgramName,
+  getRunningInfo,
+  formatRemainingTime,
 } from './helpers';
 
 export function renderHeader(
@@ -44,6 +46,43 @@ export function renderStatusRow(
   `;
 }
 
+export function renderRunningView(hass: Hass, t: Translator): TemplateResult {
+  const info = getRunningInfo(hass);
+  if (!info) return html``;
+
+  return html`
+    <div class="running-view">
+      <div class="running-zone">
+        <ha-icon icon="mdi:map-marker"></ha-icon>
+        ${t('running.zone', { name: info.zoneName })}
+      </div>
+
+      <div class="running-valve-row">
+        <ha-icon icon="mdi:water"></ha-icon>
+        <span class="running-valve-name">${info.valveName}</span>
+        <span class="running-valve-time">
+          ${t('running.remaining', { time: formatRemainingTime(info.remaining) })}
+        </span>
+      </div>
+
+      <div class="running-bar-section">
+        <div class="running-bar">
+          <div class="running-bar-fill" style="width: ${info.valvePercent}%"></div>
+        </div>
+      </div>
+
+      <div class="running-global">
+        <span class="running-global-label">
+          ${t('running.progress', { done: info.valvesDone + 1, total: info.valvesTotal })}
+        </span>
+        <div class="running-bar">
+          <div class="running-bar-fill global" style="width: ${info.finePercent}%"></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 export function renderProgramList(
   hass: Hass,
   programEntities: string[],
@@ -71,9 +110,9 @@ export function renderProgramList(
       <div class="program-wrapper">
         <div class="program">
           <div class="program-header" @click=${() => onToggleExpand(entityId)}>
+            <ha-icon class="chevron ${isExpanded ? 'open' : ''}" icon="mdi:chevron-down"></ha-icon>
             ${isOn ? html`<div class="active-dot"></div>` : nothing}
             <span class="program-name ${isOn ? 'active' : ''}">${name}</span>
-            <ha-icon class="chevron ${isExpanded ? 'open' : ''}" icon="mdi:chevron-down"></ha-icon>
           </div>
           <ha-switch .checked=${isOn} @change=${() => onToggleProgram(entityId)}></ha-switch>
         </div>

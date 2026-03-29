@@ -28,5 +28,10 @@
   "days.thu": "Thu",
   "days.fri": "Fri",
   "days.sat": "Sat",
-  "days.sun": "Sun"
+  "days.sun": "Sun",
+  "running.zone": "Zone: {name}",
+  "running.valve": "Valve: {name}",
+  "running.remaining": "{time} remaining",
+  "running.progress": "Valve {done} of {total}",
+  "running.global_progress": "Overall progress"
 }

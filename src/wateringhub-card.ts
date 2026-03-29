@@ -8,7 +8,7 @@ import type { Hass, CardConfig, Translator } from './types';
 import { getTranslator } from './i18n/index';
 import { cardStyles } from './styles';
 import { discoverPrograms, getGlobalStatus } from './helpers';
-import { renderHeader, renderStatusRow, renderProgramList } from './templates';
+import { renderHeader, renderStatusRow, renderRunningView, renderProgramList } from './templates';
 
 @customElement('wateringhub-card')
 export class WateringHubCard extends LitElement {
@@ -67,6 +67,7 @@ export class WateringHubCard extends LitElement {
       <ha-card>
         ${renderHeader(title, status === 'running', () => this._stopAll(), this._t)}
         ${renderStatusRow(this._hass, this._programEntities, this._t)}
+        ${renderRunningView(this._hass, this._t)}
         ${renderProgramList(
           this._hass,
           this._programEntities,

@@ -3,6 +3,8 @@ import {
   discoverPrograms,
   getActiveProgramName,
   getGlobalStatus,
+  getRunningInfo,
+  formatRemainingTime,
   statusLabel,
   formatSchedule,
   formatRelative,
@@ -223,5 +225,91 @@ describe('formatNextRun', () => {
     const date = new Date(Date.now() + 3 * 60 * 60 * 1000);
     const hass = makeHass({ 'sensor.wateringhub_next_run': { state: date.toISOString() } });
     expect(formatNextRun(hass, mockT)).toContain('time.today_at');
+  });
+});
+
+// ── formatRemainingTime ──────────────────────────────────
+
+describe('formatRemainingTime', () => {
+  it('formats 90 seconds as 1:30', () => {
+    expect(formatRemainingTime(90)).toBe('1:30');
+  });
+
+  it('formats 3661 seconds as 1:01:01', () => {
+    expect(formatRemainingTime(3661)).toBe('1:01:01');
+  });
+
+  it('formats 0 as 0:00', () => {
+    expect(formatRemainingTime(0)).toBe('0:00');
+  });
+
+  it('formats negative value as 0:00', () => {
+    expect(formatRemainingTime(-10)).toBe('0:00');
+  });
+
+  it('formats 59 seconds as 0:59', () => {
+    expect(formatRemainingTime(59)).toBe('0:59');
+  });
+
+  it('formats 3600 seconds as 1:00:00', () => {
+    expect(formatRemainingTime(3600)).toBe('1:00:00');
+  });
+});
+
+// ── getRunningInfo ───────────────────────────────────────
+
+describe('getRunningInfo', () => {
+  it('returns null when status is idle', () => {
+    const hass = makeHass({ 'sensor.wateringhub_status': { state: 'idle' } });
+    expect(getRunningInfo(hass)).toBeNull();
+  });
+
+  it('returns null when status entity missing', () => {
+    const hass = makeHass({});
+    expect(getRunningInfo(hass)).toBeNull();
+  });
+
+  it('returns running info when status is running', () => {
+    const start = new Date(Date.now() - 60 * 1000).toISOString();
+    const hass = makeHass({
+      'sensor.wateringhub_status': {
+        state: 'running',
+        attributes: {
+          current_program: 'prog_quotidien',
+          current_zone_name: 'Jardin complet',
+          current_valve_name: 'Oscillant Cedre',
+          current_valve_start: start,
+          current_valve_duration: 900,
+          valves_done: 0,
+          valves_total: 2,
+          progress_percent: 0,
+        },
+      },
+    });
+    const info = getRunningInfo(hass);
+    expect(info).not.toBeNull();
+    expect(info!.programName).toBe('prog_quotidien');
+    expect(info!.zoneName).toBe('Jardin complet');
+    expect(info!.valveName).toBe('Oscillant Cedre');
+    expect(info!.valveDuration).toBe(900);
+    expect(info!.valvesDone).toBe(0);
+    expect(info!.valvesTotal).toBe(2);
+    expect(info!.remaining).toBeGreaterThan(0);
+    expect(info!.remaining).toBeLessThanOrEqual(840);
+    expect(info!.valvePercent).toBeGreaterThan(0);
+  });
+
+  it('handles missing attributes gracefully', () => {
+    const hass = makeHass({
+      'sensor.wateringhub_status': {
+        state: 'running',
+        attributes: {},
+      },
+    });
+    const info = getRunningInfo(hass);
+    expect(info).not.toBeNull();
+    expect(info!.programName).toBe('');
+    expect(info!.remaining).toBe(0);
+    expect(info!.valvesTotal).toBe(1);
   });
 });
