@@ -48,9 +48,7 @@ export function formatSchedule(schedule: ProgramSchedule | undefined, t: Transla
     case 'every_n_days':
       return t('schedule.every_n_days', { n: schedule.n ?? 2, time: schedule.time });
     case 'weekdays': {
-      const days = (schedule.days ?? [])
-        .map((d) => t(`days.${d}`))
-        .join(', ');
+      const days = (schedule.days ?? []).map((d) => t(`days.${d}`)).join(', ');
       return t('schedule.weekdays', { days, time: schedule.time });
     }
     default:

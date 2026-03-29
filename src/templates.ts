@@ -73,15 +73,9 @@ export function renderProgramList(
           <div class="program-header" @click=${() => onToggleExpand(entityId)}>
             ${isOn ? html`<div class="active-dot"></div>` : nothing}
             <span class="program-name ${isOn ? 'active' : ''}">${name}</span>
-            <ha-icon
-              class="chevron ${isExpanded ? 'open' : ''}"
-              icon="mdi:chevron-down"
-            ></ha-icon>
+            <ha-icon class="chevron ${isExpanded ? 'open' : ''}" icon="mdi:chevron-down"></ha-icon>
           </div>
-          <ha-switch
-            .checked=${isOn}
-            @change=${() => onToggleProgram(entityId)}
-          ></ha-switch>
+          <ha-switch .checked=${isOn} @change=${() => onToggleProgram(entityId)}></ha-switch>
         </div>
         ${renderProgramRecap(entity.attributes, isExpanded, t)}
       </div>

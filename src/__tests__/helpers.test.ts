@@ -11,7 +11,9 @@ import {
 
 // ── Mock helpers ─────────────────────────────────────────
 
-function makeHass(states: Record<string, { state: string; attributes?: Record<string, unknown> }>): Hass {
+function makeHass(
+  states: Record<string, { state: string; attributes?: Record<string, unknown> }>,
+): Hass {
   const hassStates: Record<string, any> = {};
   for (const [id, s] of Object.entries(states)) {
     hassStates[id] = { entity_id: id, state: s.state, attributes: s.attributes ?? {} };
@@ -73,7 +75,9 @@ describe('getActiveProgramName', () => {
     const hass = makeHass({
       'switch.wateringhub_prog_a': { state: 'on' },
     });
-    expect(getActiveProgramName(hass, ['switch.wateringhub_prog_a'])).toBe('switch.wateringhub_prog_a');
+    expect(getActiveProgramName(hass, ['switch.wateringhub_prog_a'])).toBe(
+      'switch.wateringhub_prog_a',
+    );
   });
 
   it('returns null when none active', () => {
@@ -102,9 +106,7 @@ describe('getGlobalStatus', () => {
 
 describe('statusLabel', () => {
   it('returns running with program name', () => {
-    expect(statusLabel('running', mockT, 'My Program')).toBe(
-      'status.running_program',
-    );
+    expect(statusLabel('running', mockT, 'My Program')).toBe('status.running_program');
   });
 
   it('returns translated status for idle', () => {
@@ -131,7 +133,11 @@ describe('formatSchedule', () => {
   });
 
   it('formats weekdays schedule', () => {
-    const schedule: ProgramSchedule = { type: 'weekdays', time: '22:00', days: ['mon', 'wed', 'fri'] };
+    const schedule: ProgramSchedule = {
+      type: 'weekdays',
+      time: '22:00',
+      days: ['mon', 'wed', 'fri'],
+    };
     expect(formatSchedule(schedule, mockT)).toBe('schedule.weekdays');
   });
 
