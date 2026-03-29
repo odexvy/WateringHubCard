@@ -1,4 +1,4 @@
-import type { Hass, HassEntity, Translator } from './types';
+import type { Hass, HassEntity, Translator, ProgramSchedule } from './types';
 
 // ── Entity discovery ─────────────────────────────────────
 
@@ -34,6 +34,28 @@ export function statusLabel(
   }
   const label = t(`status.${status}`);
   return label === `status.${status}` ? t('status.idle') : label;
+}
+
+// ── Schedule formatting ──────────────────────────────────
+
+const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+export function formatSchedule(schedule: ProgramSchedule | undefined, t: Translator): string {
+  if (!schedule) return '';
+  switch (schedule.type) {
+    case 'daily':
+      return t('schedule.daily', { time: schedule.time });
+    case 'every_n_days':
+      return t('schedule.every_n_days', { n: schedule.n ?? 2, time: schedule.time });
+    case 'weekdays': {
+      const days = (schedule.days ?? [])
+        .map((d) => t(`days.${d}`))
+        .join(', ');
+      return t('schedule.weekdays', { days, time: schedule.time });
+    }
+    default:
+      return schedule.time;
+  }
 }
 
 // ── Time formatting ──────────────────────────────────────

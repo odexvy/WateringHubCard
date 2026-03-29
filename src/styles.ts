@@ -65,11 +65,7 @@ export const cardStyles = css`
     display: flex;
     align-items: center;
     padding: 10px 0;
-    border-bottom: 1px solid var(--divider-color);
     gap: 12px;
-  }
-  .program:last-child {
-    border-bottom: none;
   }
   .program-name {
     flex: 1;
@@ -85,6 +81,83 @@ export const cardStyles = css`
     border-radius: 50%;
     background: var(--primary-color);
     flex-shrink: 0;
+  }
+
+  /* Program header (clickable row) */
+  .program-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 12px;
+    width: 100%;
+  }
+  .chevron {
+    transition: transform 0.2s;
+    color: var(--secondary-text-color);
+    flex-shrink: 0;
+    --mdc-icon-size: 20px;
+  }
+  .chevron.open {
+    transform: rotate(180deg);
+  }
+
+  /* Program recap (accordion content) */
+  .program-wrapper {
+    border-bottom: 1px solid var(--divider-color);
+  }
+  .program-wrapper:last-child {
+    border-bottom: none;
+  }
+  .program-recap {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+    padding-left: 20px;
+  }
+  .program-recap.open {
+    max-height: 500px;
+    padding-bottom: 8px;
+  }
+  .recap-schedule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--secondary-text-color);
+    padding: 8px 0 4px;
+  }
+  .recap-zone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--primary-text-color);
+    font-weight: 500;
+    padding: 6px 0 2px;
+  }
+  .recap-valve {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--secondary-text-color);
+    padding: 2px 0 2px 28px;
+  }
+  .recap-total {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--primary-text-color);
+    font-weight: 500;
+    padding: 8px 0 4px;
+  }
+  .recap-schedule ha-icon,
+  .recap-zone ha-icon,
+  .recap-valve ha-icon,
+  .recap-total ha-icon {
+    --mdc-icon-size: 18px;
+    color: var(--secondary-text-color);
   }
 
   /* No programs */

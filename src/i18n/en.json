@@ -17,5 +17,16 @@
   "time.never": "Never",
   "time.no_schedule": "No active program",
   "status.running_program": "Running: {name}",
-  "stop_confirm": "Stop all watering?"
+  "stop_confirm": "Stop all watering?",
+  "schedule.daily": "Every day at {time}",
+  "schedule.every_n_days": "Every {n} days at {time}",
+  "schedule.weekdays": "{days} at {time}",
+  "recap.total_duration": "Total duration: {duration} min",
+  "days.mon": "Mon",
+  "days.tue": "Tue",
+  "days.wed": "Wed",
+  "days.thu": "Thu",
+  "days.fri": "Fri",
+  "days.sat": "Sat",
+  "days.sun": "Sun"
 }

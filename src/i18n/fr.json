@@ -17,5 +17,16 @@
   "time.never": "Jamais",
   "time.no_schedule": "Aucun programme actif",
   "status.running_program": "En cours : {name}",
-  "stop_confirm": "Arrêter tout l'arrosage ?"
+  "stop_confirm": "Arrêter tout l'arrosage ?",
+  "schedule.daily": "Tous les jours à {time}",
+  "schedule.every_n_days": "Tous les {n} jours à {time}",
+  "schedule.weekdays": "{days} à {time}",
+  "recap.total_duration": "Durée totale : {duration} min",
+  "days.mon": "Lun",
+  "days.tue": "Mar",
+  "days.wed": "Mer",
+  "days.thu": "Jeu",
+  "days.fri": "Ven",
+  "days.sat": "Sam",
+  "days.sun": "Dim"
 }

@@ -2,16 +2,20 @@
 
 Custom [Home Assistant](https://www.home-assistant.io/) dashboard card for the **WateringHub** integration.
 
-Automatically discovers all `wateringhub_*` entities and provides a complete watering management UI.
+> **Requires [WateringHub](https://github.com/odexvy/WateringHub)** custom component. Install it first via HACS (Integration) or manually.
+
+Auto-discovers watering programs and provides a management UI.
 
 ## Features
 
-- Auto-discovery of watering programs
-- Toggle programs on/off with mutex logic (one active at a time)
-- Real-time running view with active valve, flow rate, and progress
-- Emergency stop button
+- Auto-discovery of `switch.wateringhub_*` programs
+- Toggle programs on/off (backend mutex: one active at a time)
+- Global status badge (idle / running / error) with animation
+- Active program name displayed when running
+- Program recap (accordion): schedule, zones, valves, total duration
+- Emergency stop button with confirmation (visible when running)
 - Relative time display (next run, last run)
-- i18n support (French, English)
+- i18n support (French, English — auto-detected from HA language)
 - Mobile-first responsive design
 - HA native CSS variables (dark/light theme compatible)
 
@@ -19,7 +23,7 @@ Automatically discovers all `wateringhub_*` entities and provides a complete wat
 
 1. Open HACS in Home Assistant
 2. Go to **Frontend** > **Custom repositories**
-3. Add this repository URL
+3. Add this repository URL, category **Plugin**
 4. Install **WateringHub Card**
 5. Restart Home Assistant
 
@@ -32,25 +36,26 @@ title: Mon Arrosage   # optional
 
 No entity configuration needed — the card auto-discovers all `wateringhub_*` entities.
 
-## Requirements
+## Entities
 
-This card requires the **WateringHub** custom component to be installed and configured. The component creates the following entities:
+The WateringHub component creates the following entities:
 
 | Entity | Description |
 |--------|-------------|
-| `switch.wateringhub_{program_id}` | Toggle program on/off |
-| `sensor.wateringhub_{program_id}_status` | `idle` / `running` / `disabled` |
-| `sensor.wateringhub_{program_id}_next_run` | Next scheduled run (ISO datetime) |
-| `sensor.wateringhub_{program_id}_last_run` | Last run (ISO datetime) |
-| `sensor.wateringhub_{valve_id}_status` | Valve status: `idle` / `running` |
-| `sensor.wateringhub_{valve_id}_flow` | Flow rate in L/min |
+| `switch.wateringhub_{program_id}` | Toggle program on/off (attributes: schedule, zones, total_duration) |
+| `sensor.wateringhub_status` | Global status: `idle` / `running` / `error` |
+| `sensor.wateringhub_next_run` | Next scheduled run (ISO datetime) |
+| `sensor.wateringhub_last_run` | Last run (ISO datetime) |
+
+The card also uses the `wateringhub.stop_all` service for the emergency stop button.
 
 ## Development
 
 ```bash
 yarn install
-yarn build       # build dist/wateringhub-card.js
+yarn build       # build dist/wateringhub-card.js (minified)
 yarn watch       # dev mode with auto-rebuild
+yarn format      # run prettier
 ```
 
 ## License

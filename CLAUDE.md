@@ -16,10 +16,32 @@ Custom Home Assistant card (LitElement + TypeScript) for the `wateringhub` integ
 - Service: `wateringhub.stop_all`
 - Never use `testwatering` anywhere
 
+## Entities
+
+- `switch.wateringhub_*` — per-program toggles (auto-discovered)
+- `sensor.wateringhub_status` — global: idle / running / error
+- `sensor.wateringhub_next_run` — global: ISO datetime
+- `sensor.wateringhub_last_run` — global: ISO datetime
+
+## File Structure
+
+```
+src/
+├── wateringhub-card.ts   # Main LitElement component (state + lifecycle)
+├── templates.ts          # HTML render functions (header, status, programs, recap)
+├── types.ts              # Interfaces (Hass, CardConfig, Schedule, Zone, Valve)
+├── helpers.ts            # Entity discovery, status, time/schedule formatting
+├── styles.ts             # CSS (HA native variables only)
+└── i18n/
+    ├── index.ts          # Translation loader
+    ├── en.json           # English (fallback)
+    └── fr.json           # French
+```
+
 ## Build
 
 ```bash
-yarn build    # esbuild → dist/wateringhub-card.js
+yarn build    # esbuild → dist/wateringhub-card.js (minified)
 yarn watch    # dev mode with watch
 ```
 
@@ -29,4 +51,4 @@ yarn watch    # dev mode with watch
 
 - Source: TypeScript (`.ts`, not `.tsx`)
 - i18n: FR + EN, fallback EN
-- LitElement uses tagged template literals (`html`...``), not JSX
+- LitElement uses tagged template literals, not JSX
