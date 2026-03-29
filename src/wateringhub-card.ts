@@ -22,8 +22,10 @@ export class WateringHubCard extends LitElement {
   @state() private _hass!: Hass;
   @state() private _programEntities: string[] = [];
   @state() private _expandedProgram: string | null = null;
+  @state() private _tick = 0;
 
   private _t: Translator = (key: string) => key;
+  private _timerInterval: ReturnType<typeof setInterval> | null = null;
 
   static readonly styles = cardStyles;
 
@@ -37,6 +39,29 @@ export class WateringHubCard extends LitElement {
     this._t = getTranslator(hass.language);
     if (prevHass?.states !== hass.states) {
       this._programEntities = discoverPrograms(hass);
+    }
+    this._updateTimer(getGlobalStatus(hass));
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._clearTimer();
+  }
+
+  private _updateTimer(status: string): void {
+    if (status === 'running' && !this._timerInterval) {
+      this._timerInterval = setInterval(() => {
+        this._tick++;
+      }, 1000);
+    } else if (status !== 'running' && this._timerInterval) {
+      this._clearTimer();
+    }
+  }
+
+  private _clearTimer(): void {
+    if (this._timerInterval) {
+      clearInterval(this._timerInterval);
+      this._timerInterval = null;
     }
   }
 

@@ -117,7 +117,7 @@ export function renderProgramList(
     if (!entity) return nothing;
 
     const isOn = entity.state === 'on';
-    const isExpanded = expandedProgram === entityId;
+    const isExpanded = isOn || expandedProgram === entityId;
     const name =
       typeof entity.attributes.friendly_name === 'string'
         ? entity.attributes.friendly_name
