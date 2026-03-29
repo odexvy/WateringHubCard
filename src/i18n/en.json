@@ -33,5 +33,7 @@
   "running.valve": "Valve: {name}",
   "running.remaining": "{time} remaining",
   "running.progress": "Valve {done} of {total}",
-  "running.global_progress": "Overall progress"
+  "running.global_progress": "Overall progress",
+  "error.program": "Error — {name}",
+  "error.auto_stopped": "All valves have been automatically closed."
 }

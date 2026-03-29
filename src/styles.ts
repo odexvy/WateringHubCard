@@ -60,6 +60,41 @@ export const cardStyles = css`
     color: var(--secondary-text-color);
   }
 
+  /* Error view */
+  .error-view {
+    border: 1px solid var(--error-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .error-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--error-color);
+    margin-bottom: 8px;
+  }
+  .error-title ha-icon {
+    --mdc-icon-size: 20px;
+    color: var(--error-color);
+  }
+  .error-message {
+    font-size: 13px;
+    color: var(--primary-text-color);
+    padding: 8px 12px;
+    background: var(--secondary-background-color);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-family: monospace;
+  }
+  .error-auto-stopped {
+    font-size: 12px;
+    color: var(--secondary-text-color);
+    font-style: italic;
+  }
+
   /* Running view */
   .running-view {
     border: 1px solid var(--divider-color);

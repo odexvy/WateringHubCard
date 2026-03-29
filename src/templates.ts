@@ -8,19 +8,20 @@ import {
   formatSchedule,
   getActiveProgramName,
   getRunningInfo,
+  getErrorInfo,
   formatRemainingTime,
 } from './helpers';
 
 export function renderHeader(
   title: string,
-  isRunning: boolean,
+  showStopButton: boolean,
   onStopAll: () => void,
   t: Translator,
 ): TemplateResult {
   return html`
     <div class="header">
       <span class="title">${title}</span>
-      ${isRunning
+      ${showStopButton
         ? html`<button class="stop-btn" @click=${onStopAll}>${t('stop_all')}</button>`
         : nothing}
     </div>
@@ -42,6 +43,22 @@ export function renderStatusRow(
       <span class="info-item">
         ${t('last')}: ${formatRelative(hass, 'sensor.wateringhub_last_run', t, hass.language)}
       </span>
+    </div>
+  `;
+}
+
+export function renderErrorView(hass: Hass, t: Translator): TemplateResult {
+  const info = getErrorInfo(hass);
+  if (!info) return html``;
+
+  return html`
+    <div class="error-view">
+      <div class="error-title">
+        <ha-icon icon="mdi:alert-circle"></ha-icon>
+        ${t('error.program', { name: info.programName })}
+      </div>
+      ${info.errorMessage ? html`<div class="error-message">${info.errorMessage}</div>` : nothing}
+      <div class="error-auto-stopped">${t('error.auto_stopped')}</div>
     </div>
   `;
 }

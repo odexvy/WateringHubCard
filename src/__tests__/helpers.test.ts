@@ -3,6 +3,7 @@ import {
   discoverPrograms,
   getActiveProgramName,
   getGlobalStatus,
+  getErrorInfo,
   getRunningInfo,
   formatRemainingTime,
   statusLabel,
@@ -311,5 +312,67 @@ describe('getRunningInfo', () => {
     expect(info!.programName).toBe('');
     expect(info!.remaining).toBe(0);
     expect(info!.valvesTotal).toBe(1);
+  });
+});
+
+// ── getErrorInfo ─────────────────────────────────────────
+
+describe('getErrorInfo', () => {
+  it('returns null when status is idle', () => {
+    const hass = makeHass({ 'sensor.wateringhub_status': { state: 'idle' } });
+    expect(getErrorInfo(hass)).toBeNull();
+  });
+
+  it('returns null when status is running', () => {
+    const hass = makeHass({ 'sensor.wateringhub_status': { state: 'running' } });
+    expect(getErrorInfo(hass)).toBeNull();
+  });
+
+  it('returns error info with program friendly name', () => {
+    const hass = makeHass({
+      'sensor.wateringhub_status': {
+        state: 'error',
+        attributes: {
+          current_program: 'prog_quotidien',
+          error_message: 'Device unavailable: switch.fake_valve_1',
+        },
+      },
+      'switch.wateringhub_prog_quotidien': {
+        state: 'off',
+        attributes: { friendly_name: 'Arrosage quotidien' },
+      },
+    });
+    const info = getErrorInfo(hass);
+    expect(info).not.toBeNull();
+    expect(info!.programName).toBe('Arrosage quotidien');
+    expect(info!.errorMessage).toBe('Device unavailable: switch.fake_valve_1');
+  });
+
+  it('falls back to program id when switch not found', () => {
+    const hass = makeHass({
+      'sensor.wateringhub_status': {
+        state: 'error',
+        attributes: {
+          current_program: 'prog_unknown',
+          error_message: 'Some error',
+        },
+      },
+    });
+    const info = getErrorInfo(hass);
+    expect(info).not.toBeNull();
+    expect(info!.programName).toBe('prog_unknown');
+  });
+
+  it('handles missing attributes gracefully', () => {
+    const hass = makeHass({
+      'sensor.wateringhub_status': {
+        state: 'error',
+        attributes: {},
+      },
+    });
+    const info = getErrorInfo(hass);
+    expect(info).not.toBeNull();
+    expect(info!.programName).toBe('');
+    expect(info!.errorMessage).toBe('');
   });
 });

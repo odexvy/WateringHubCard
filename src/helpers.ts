@@ -36,6 +36,33 @@ export function statusLabel(
   return label === `status.${status}` ? t('status.idle') : label;
 }
 
+// ── Error info ───────────────────────────────────────────
+
+export interface ErrorInfo {
+  programName: string;
+  errorMessage: string;
+}
+
+export function getErrorInfo(hass: Hass): ErrorInfo | null {
+  const entity = hass.states['sensor.wateringhub_status'];
+  if (entity?.state !== 'error') return null;
+
+  const attrs = entity.attributes;
+  const programId = attrs.current_program as string | null;
+  let programName = programId ?? '';
+  if (programId) {
+    const switchEntity = hass.states[`switch.wateringhub_${programId}`];
+    if (typeof switchEntity?.attributes.friendly_name === 'string') {
+      programName = switchEntity.attributes.friendly_name;
+    }
+  }
+
+  return {
+    programName,
+    errorMessage: (attrs.error_message as string) ?? '',
+  };
+}
+
 // ── Running info ─────────────────────────────────────────
 
 export interface RunningInfo {

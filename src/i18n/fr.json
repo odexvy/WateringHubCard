@@ -33,5 +33,7 @@
   "running.valve": "Vanne : {name}",
   "running.remaining": "{time} restant",
   "running.progress": "Vanne {done} sur {total}",
-  "running.global_progress": "Progression globale"
+  "running.global_progress": "Progression globale",
+  "error.program": "Erreur — {name}",
+  "error.auto_stopped": "Toutes les vannes ont été fermées automatiquement."
 }
