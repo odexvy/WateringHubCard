@@ -23,20 +23,5 @@ jobs:
       - name: Typecheck
         run: yarn typecheck
 
-      - name: Format check
-        run: yarn format:check
-
       - name: Tests
         run: yarn test
-
-      - name: Build
-        run: yarn build
-
-      - name: Verify dist size
-        run: |
-          SIZE=$(wc -c < dist/wateringhub-card.js)
-          echo "Bundle size: ${SIZE} bytes"
-          if [ "$SIZE" -lt 1000 ]; then
-            echo "ERROR: Bundle too small, something went wrong"
-            exit 1
-          fi

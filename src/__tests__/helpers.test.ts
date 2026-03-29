@@ -14,7 +14,7 @@ import {
 function makeHass(
   states: Record<string, { state: string; attributes?: Record<string, unknown> }>,
 ): Hass {
-  const hassStates: Record<string, any> = {};
+  const hassStates: Hass['states'] = {};
   for (const [id, s] of Object.entries(states)) {
     hassStates[id] = { entity_id: id, state: s.state, attributes: s.attributes ?? {} };
   }

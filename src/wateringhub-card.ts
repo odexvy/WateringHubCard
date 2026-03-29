@@ -82,7 +82,6 @@ export class WateringHubCard extends LitElement {
 
 // Register in HA card picker
 declare global {
-  // eslint-disable-next-line no-var
   var customCards: Array<{ type: string; name: string; description: string }> | undefined;
 }
 

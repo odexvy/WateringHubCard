@@ -38,8 +38,6 @@ export function statusLabel(
 
 // ── Schedule formatting ──────────────────────────────────
 
-const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-
 export function formatSchedule(schedule: ProgramSchedule | undefined, t: Translator): string {
   if (!schedule) return '';
   switch (schedule.type) {
