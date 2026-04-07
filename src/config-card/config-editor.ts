@@ -38,26 +38,6 @@ export class WateringHubConfigEditor extends LitElement {
     return getAvailableValves(this._hass);
   }
 
-  private _getAvailableSwitches(): { entity_id: string; name: string }[] {
-    if (!this._hass) return [];
-    const currentEntityIds = new Set(this._getValves().map((v) => v.entity_id));
-    return Object.keys(this._hass.states)
-      .filter(
-        (id) =>
-          id.startsWith('switch.') &&
-          !id.startsWith('switch.wateringhub_') &&
-          !currentEntityIds.has(id),
-      )
-      .map((id) => ({
-        entity_id: id,
-        name:
-          typeof this._hass.states[id].attributes.friendly_name === 'string'
-            ? this._hass.states[id].attributes.friendly_name
-            : id,
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }
-
   private async _setValves(valves: ValveFormEntry[]): Promise<void> {
     await this._hass.callService('wateringhub', 'set_valves', { valves });
   }
@@ -71,10 +51,18 @@ export class WateringHubConfigEditor extends LitElement {
   }
 
   private _startAdd(): void {
-    const switches = this._getAvailableSwitches();
     this._adding = true;
-    this._newEntityId = switches[0]?.entity_id ?? '';
-    this._newName = switches[0]?.name ?? '';
+    this._newEntityId = '';
+    this._newName = '';
+  }
+
+  private _onEntityPicked(e: CustomEvent): void {
+    const entityId = e.detail.value as string;
+    this._newEntityId = entityId;
+    if (entityId && this._hass.states[entityId]) {
+      const friendly = this._hass.states[entityId].attributes.friendly_name;
+      this._newName = typeof friendly === 'string' ? friendly : entityId;
+    }
   }
 
   private async _confirmAdd(): Promise<void> {
@@ -95,7 +83,6 @@ export class WateringHubConfigEditor extends LitElement {
 
   render() {
     const valves = this._getValves();
-    const switches = this._getAvailableSwitches();
 
     return html`
       <div class="editor-section">
@@ -124,23 +111,15 @@ export class WateringHubConfigEditor extends LitElement {
         ${this._adding
           ? html`
               <div class="add-form">
-                <select
-                  @change=${(e: Event) => {
-                    const entityId = (e.target as HTMLSelectElement).value;
-                    this._newEntityId = entityId;
-                    const sw = switches.find((s) => s.entity_id === entityId);
-                    if (sw) this._newName = sw.name;
-                  }}
-                >
-                  ${switches.map(
-                    (s) => html`
-                      <option value="${s.entity_id}" ?selected=${s.entity_id === this._newEntityId}>
-                        ${s.name} (${s.entity_id})
-                      </option>
-                    `,
-                  )}
-                </select>
+                <ha-entity-picker
+                  .hass=${this._hass}
+                  .includeDomains=${['switch']}
+                  .value=${this._newEntityId}
+                  @value-changed=${this._onEntityPicked}
+                  allow-custom-entity
+                ></ha-entity-picker>
                 <input
+                  class="form-input"
                   type="text"
                   .value=${this._newName}
                   placeholder="${this._t('config.valve_name')}"

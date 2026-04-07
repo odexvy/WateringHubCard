@@ -1,5 +1,7 @@
 # WateringHub Card
 
+<img src="images/icon.png" alt="WateringHub" width="128">
+
 Custom [Home Assistant](https://www.home-assistant.io/) dashboard card for the **WateringHub** integration.
 
 > **Requires [WateringHub](https://github.com/odexvy/WateringHub)** custom component (backend integration). Install it first via HACS (Integration) or manually.
@@ -27,7 +29,7 @@ Auto-discovers watering programs and provides a management UI.
 
 ### Config Card (`wateringhub-config-card`)
 
-- **Visual editor**: configure valves by picking switch entities from HA (no YAML, no reboot)
+- **Visual editor**: configure valves with native HA entity picker (autocomplete, search, icons — no YAML, no reboot)
 - Manage programs: create, edit, delete (trigger time, zones, per-valve durations and frequency override, dry run toggle)
 - Manage zones: create, edit, delete (name, valve selection)
 - View available valves (read-only tab)

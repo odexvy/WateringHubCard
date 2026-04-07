@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.22
+**Version :** 0.0.23
 **Branche :** master
 
 ---
@@ -61,7 +61,7 @@ Le repo contient **deux custom cards** dans un seul bundle :
 ### Fonctionnalités
 
 - **Éditeur visuel** — `getConfigElement()` pour configurer les vannes depuis le card picker HA :
-  - Sélection d'entités `switch.*` de HA (exclut les `switch.wateringhub_*`)
+  - Sélection d'entités via `ha-entity-picker` natif HA (autocomplete, icônes, recherche, filtré sur switch)
   - Nommage personnalisé de chaque vanne (pré-rempli avec friendly_name)
   - Appelle `wateringhub.set_valves` à chaque ajout/suppression (pas de reboot)
 - **Titre** — header "WateringHub Config"
