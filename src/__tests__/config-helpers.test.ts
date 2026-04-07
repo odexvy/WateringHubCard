@@ -8,7 +8,12 @@ function makeHass(
   for (const [id, s] of Object.entries(states)) {
     hassStates[id] = { entity_id: id, state: s.state, attributes: s.attributes ?? {} };
   }
-  return { states: hassStates, language: 'en', callService: jest.fn() };
+  return {
+    states: hassStates,
+    language: 'en',
+    connection: { subscribeEvents: jest.fn() },
+    callService: jest.fn(),
+  };
 }
 
 // ── getAvailableValves ───────────────────────────────────

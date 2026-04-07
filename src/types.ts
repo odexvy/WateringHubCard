@@ -4,9 +4,19 @@ export interface HassEntity {
   attributes: Record<string, unknown>;
 }
 
+export interface HassEvent {
+  event_type: string;
+  data: Record<string, unknown>;
+}
+
+export interface HassConnection {
+  subscribeEvents(callback: (event: HassEvent) => void, eventType: string): Promise<() => void>;
+}
+
 export interface Hass {
   states: Record<string, HassEntity>;
   language: string;
+  connection: HassConnection;
   callService(domain: string, service: string, data?: Record<string, unknown>): Promise<void>;
 }
 

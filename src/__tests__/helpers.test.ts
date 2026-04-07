@@ -24,6 +24,7 @@ function makeHass(
   return {
     states: hassStates,
     language: 'en',
+    connection: { subscribeEvents: jest.fn() },
     callService: jest.fn(),
   };
 }

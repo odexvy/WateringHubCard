@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.25
+**Version :** 0.0.26
 **Branche :** master
 
 ---
@@ -200,7 +200,7 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 ### Moyen terme (nécessite du backend)
 
 - [x] **Progression vannes améliorée** — timeline verticale des vannes avec icônes (done/running/pending)
-- [ ] **Listener d'événements** — `hass.connection.subscribeEvents` pour updates instantanés
+- [x] **Listener d'événements** — `hass.connection.subscribeEvents('wateringhub_event')` pour updates instantanés
 - [ ] **Débit** — afficher le débit en L/min dans la running view
 
 ### Long terme

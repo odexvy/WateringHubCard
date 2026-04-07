@@ -25,6 +25,7 @@ export class WateringHubCard extends LitElement {
 
   private _t: Translator = (key: string) => key;
   private _timerInterval: ReturnType<typeof setInterval> | null = null;
+  private _unsubEvents: (() => void) | null = null;
 
   static readonly styles = [sharedStyles, cardStyles];
 
@@ -40,11 +41,32 @@ export class WateringHubCard extends LitElement {
       this._programEntities = discoverPrograms(hass);
     }
     this._updateTimer(getGlobalStatus(hass));
+    this._subscribeEvents();
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this._clearTimer();
+    this._unsubscribeEvents();
+  }
+
+  private _subscribeEvents(): void {
+    if (this._unsubEvents || !this._hass?.connection) return;
+    this._hass.connection
+      .subscribeEvents(() => {
+        // Force re-render on any wateringhub event
+        this._tick++;
+      }, 'wateringhub_event')
+      .then((unsub) => {
+        this._unsubEvents = unsub;
+      });
+  }
+
+  private _unsubscribeEvents(): void {
+    if (this._unsubEvents) {
+      this._unsubEvents();
+      this._unsubEvents = null;
+    }
   }
 
   private _updateTimer(status: string): void {
