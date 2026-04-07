@@ -39,6 +39,17 @@ export interface ZoneConfig {
   valves: string[]; // valve IDs only
 }
 
+// Valve sequence (running view)
+
+export interface ValveStep {
+  valve_id: string;
+  valve_name: string;
+  zone_id: string;
+  zone_name: string;
+  duration: number;
+  status: 'done' | 'running' | 'pending';
+}
+
 // Dashboard card types
 
 export interface ProgramValve {

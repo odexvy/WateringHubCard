@@ -2,19 +2,38 @@
 
 Custom [Home Assistant](https://www.home-assistant.io/) dashboard card for the **WateringHub** integration.
 
-> **Requires [WateringHub](https://github.com/odexvy/WateringHub)** custom component. Install it first via HACS (Integration) or manually.
+> **Requires [WateringHub](https://github.com/odexvy/WateringHub)** custom component (backend integration). Install it first via HACS (Integration) or manually.
+
+| Repository | Role |
+|------------|------|
+| [WateringHubCard](https://github.com/odexvy/WateringHubCard) | Frontend — this repo (HA custom card) |
+| [WateringHub](https://github.com/odexvy/WateringHub) | Backend — HA custom integration |
 
 Auto-discovers watering programs and provides a management UI.
 
 ## Features
+
+### Dashboard Card (`wateringhub-card`)
 
 - Auto-discovery of `switch.wateringhub_*` programs
 - Toggle programs on/off (backend mutex: one active at a time)
 - Global status badge (idle / running / error) with animation
 - Active program name displayed when running
 - Program recap (accordion): schedule, zones, valves, total duration
+- Running view: smooth CSS-driven progress bars, valve sequence with status icons (done / running / pending) grouped by zone
+- Error view: program name, error message, auto-stop notice
 - Emergency stop button with confirmation (visible when running)
 - Relative time display (next run, last run)
+
+### Config Card (`wateringhub-config-card`)
+
+- Manage programs: create, edit, delete (schedule, zones, per-valve durations)
+- Manage zones: create, edit, delete (name, valve selection)
+- View available valves (read-only, auto-discovered from backend)
+- Inline forms with live validation
+
+### Shared
+
 - i18n support (French, English — auto-detected from HA language)
 - Mobile-first responsive design
 - HA native CSS variables (dark/light theme compatible)
@@ -30,11 +49,15 @@ Auto-discovers watering programs and provides a management UI.
 ## Configuration
 
 ```yaml
+# Dashboard card
 type: custom:wateringhub-card
 title: Mon Arrosage   # optional
+
+# Config card (zones & programs management)
+type: custom:wateringhub-config-card
 ```
 
-No entity configuration needed — the card auto-discovers all `wateringhub_*` entities.
+No entity configuration needed — both cards auto-discover all `wateringhub_*` entities.
 
 ## Entities
 

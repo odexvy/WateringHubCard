@@ -5,6 +5,11 @@
 - **Developer**: has full git write access (commit, push, tag, release, branch)
 - **Claude**: read-only git access. Do NOT run `git commit`, `git push`, `git tag`, `git branch`, or any destructive git command. Claude can use `git status`, `git log`, `git diff` for context.
 
+## Repositories
+
+- **Frontend (this repo):** https://github.com/odexvy/WateringHubCard
+- **Backend (HA integration):** https://github.com/odexvy/WateringHub
+
 ## Project
 
 Custom Home Assistant card (LitElement + TypeScript) for the `wateringhub` integration.

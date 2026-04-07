@@ -8,7 +8,7 @@ import type { Hass, CardConfig, Translator } from './types';
 import { getTranslator } from './i18n/index';
 import { sharedStyles } from './shared-styles';
 import { cardStyles } from './styles';
-import { discoverPrograms, getGlobalStatus } from './helpers';
+import { discoverPrograms, getGlobalStatus, getRunningInfo } from './helpers';
 import {
   renderHeader,
   renderStatusRow,
@@ -24,6 +24,7 @@ export class WateringHubCard extends LitElement {
   @state() private _programEntities: string[] = [];
   @state() private _expandedProgram: string | null = null;
   @state() private _tick = 0;
+  @state() private _valveKey = '';
 
   private _t: Translator = (key: string) => key;
   private _timerInterval: ReturnType<typeof setInterval> | null = null;
@@ -41,7 +42,15 @@ export class WateringHubCard extends LitElement {
     if (prevHass?.states !== hass.states) {
       this._programEntities = discoverPrograms(hass);
     }
-    this._updateTimer(getGlobalStatus(hass));
+    const status = getGlobalStatus(hass);
+    this._updateTimer(status);
+
+    // Track valve changes to reset progress bars
+    const info = status === 'running' ? getRunningInfo(hass) : null;
+    const newKey = info ? `${info.valveStart}` : '';
+    if (newKey !== this._valveKey) {
+      this._valveKey = newKey;
+    }
   }
 
   disconnectedCallback(): void {
@@ -99,7 +108,8 @@ export class WateringHubCard extends LitElement {
       <ha-card>
         ${renderHeader(title, status === 'running', () => this._stopAll(), this._t)}
         ${renderStatusRow(this._hass, this._programEntities, this._t)}
-        ${renderErrorView(this._hass, this._t)} ${renderRunningView(this._hass, this._t)}
+        ${renderErrorView(this._hass, this._t)}
+        ${renderRunningView(this._hass, this._valveKey, this._t)}
         ${renderProgramList(
           this._hass,
           this._programEntities,

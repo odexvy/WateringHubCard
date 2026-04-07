@@ -1,4 +1,4 @@
-import type { Hass, HassEntity, Translator, ProgramSchedule } from './types';
+import type { Hass, HassEntity, Translator, ProgramSchedule, ValveStep } from './types';
 
 // ── Entity discovery ─────────────────────────────────────
 
@@ -79,6 +79,8 @@ export interface RunningInfo {
   remaining: number;
   valvePercent: number;
   finePercent: number;
+  globalEndPercent: number;
+  valveSequence: ValveStep[];
 }
 
 export function getRunningInfo(hass: Hass): RunningInfo | null {
@@ -97,6 +99,10 @@ export function getRunningInfo(hass: Hass): RunningInfo | null {
   const remaining = Math.max(0, valveDuration - elapsed);
   const valvePercent = valveDuration > 0 ? Math.min(100, (elapsed / valveDuration) * 100) : 0;
   const finePercent = ((valvesDone + valvePercent / 100) / valvesTotal) * 100;
+  const globalEndPercent = ((valvesDone + 1) / valvesTotal) * 100;
+  const valveSequence = Array.isArray(attrs.valves_sequence)
+    ? (attrs.valves_sequence as ValveStep[])
+    : [];
 
   return {
     programName: (attrs.current_program as string) ?? '',
@@ -110,6 +116,8 @@ export function getRunningInfo(hass: Hass): RunningInfo | null {
     remaining,
     valvePercent,
     finePercent,
+    globalEndPercent,
+    valveSequence,
   };
 }
 

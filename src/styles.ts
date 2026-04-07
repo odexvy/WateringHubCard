@@ -132,7 +132,6 @@ export const cardStyles = css`
     height: 100%;
     border-radius: 4px;
     background: var(--primary-color);
-    transition: width 1s linear;
   }
   .running-bar-fill.global {
     background: var(--warning-color);
@@ -145,6 +144,65 @@ export const cardStyles = css`
   .running-global-label {
     font-size: 12px;
     color: var(--secondary-text-color);
+  }
+
+  /* Valve sequence */
+  .valve-sequence {
+    margin-bottom: 12px;
+  }
+  .seq-zone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary-text-color);
+    padding: 8px 0 4px;
+  }
+  .seq-zone ha-icon {
+    --mdc-icon-size: 16px;
+    color: var(--secondary-text-color);
+  }
+  .seq-valve {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0 6px 24px;
+    font-size: 13px;
+  }
+  .seq-valve ha-icon {
+    --mdc-icon-size: 18px;
+    flex-shrink: 0;
+  }
+  .seq-valve-name {
+    flex: 1;
+  }
+  .seq-valve-info {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .seq-done {
+    color: var(--secondary-text-color);
+  }
+  .seq-done ha-icon {
+    color: var(--success-color);
+  }
+  .seq-running {
+    color: var(--primary-text-color);
+    font-weight: 500;
+  }
+  .seq-running ha-icon {
+    color: var(--primary-color);
+  }
+  .seq-running .seq-valve-info {
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+  .seq-pending {
+    color: var(--secondary-text-color);
+  }
+  .seq-pending ha-icon {
+    color: var(--disabled-text-color);
   }
 
   /* Programs */
