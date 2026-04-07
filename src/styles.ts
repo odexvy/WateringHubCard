@@ -80,14 +80,18 @@ export const cardStyles = css`
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 8px 16px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     transition: opacity 0.2s;
   }
   .running-stop-btn:hover {
     opacity: 0.85;
+  }
+  .running-stop-btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
   }
 
   /* Dry run badge */
@@ -175,10 +179,15 @@ export const cardStyles = css`
     background: var(--divider-color);
   }
   .tl-zone {
-    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
     font-weight: 500;
-    color: var(--secondary-text-color);
-    padding: 6px 0 2px;
+    color: white;
+    background: var(--primary-color);
+    margin: 6px 0 2px;
   }
   .tl-step {
     display: flex;
@@ -255,6 +264,17 @@ export const cardStyles = css`
     gap: 12px;
     flex: 1;
     min-width: 0;
+    border-radius: 8px;
+    padding: 4px;
+    margin: -4px;
+    transition: background 0.2s;
+  }
+  .program-header:hover {
+    background: var(--secondary-background-color);
+  }
+  .program-header:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
   }
   .program-name {
     flex: 1;

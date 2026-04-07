@@ -112,17 +112,13 @@ export function renderRunningView(
       </div>
 
       ${info.valveSequence.length > 0
-        ? renderValveTimeline(info.valveSequence, info.remaining, t)
+        ? renderValveTimeline(info.valveSequence, info.remaining)
         : nothing}
     </div>
   `;
 }
 
-function renderValveTimeline(
-  steps: ValveStep[],
-  remaining: number,
-  _t: Translator,
-): TemplateResult {
+function renderValveTimeline(steps: ValveStep[], remaining: number): TemplateResult {
   // Group by zone, preserving order
   const groups: { zoneName: string; valves: ValveStep[] }[] = [];
   for (const step of steps) {

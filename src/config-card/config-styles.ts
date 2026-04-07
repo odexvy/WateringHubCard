@@ -24,6 +24,10 @@ export const configStyles = css`
     color: var(--primary-color);
     border-bottom-color: var(--primary-color);
   }
+  .tab:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+  }
 
   /* List items */
   .list-item {
@@ -235,6 +239,10 @@ export const configStyles = css`
   .btn:hover {
     opacity: 0.85;
   }
+  .btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
   .btn-primary {
     background: var(--primary-color);
     color: var(--text-primary-color);
@@ -261,6 +269,14 @@ export const configStyles = css`
   .add-btn:hover {
     border-color: var(--primary-color);
     color: var(--primary-color);
+  }
+  .add-btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+  .action-btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
   }
 
   /* Total duration */
