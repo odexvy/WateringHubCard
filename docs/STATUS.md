@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.21
+**Version :** 0.0.22
 **Branche :** master
 
 ---
@@ -121,6 +121,7 @@ WateringHubCard/
 ├── src/
 │   ├── index.ts                       # Point d'entrée (importe les 2 cards)
 │   ├── wateringhub-card.ts            # Dashboard card (state, lifecycle)
+│   ├── card-editor.ts                 # Éditeur visuel dashboard (titre)
 │   ├── templates.ts                   # Templates dashboard (header, status, error, running, programmes, recap)
 │   ├── helpers.ts                     # Helpers partagés (discovery, statut, friendly name, error/running info, formatage)
 │   ├── shared-styles.ts               # CSS partagé (ha-card, header, empty-state)
@@ -141,7 +142,7 @@ WateringHubCard/
 │       ├── helpers.test.ts            # Tests helpers dashboard
 │       └── config-helpers.test.ts     # Tests helpers config
 ├── dist/
-│   └── wateringhub-card.js            # Bundle unique (63.0kb minifié, les 2 cards + éditeur)
+│   └── wateringhub-card.js            # Bundle unique (63.8kb minifié, les 2 cards + éditeurs)
 ├── .github/workflows/ci.yml           # CI : typecheck + tests
 ├── .husky/pre-commit                  # lint-staged (eslint --fix + prettier --write)
 ├── package.json                       # esbuild pointe vers src/index.ts
@@ -192,7 +193,7 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 - [x] **Running view** — vanne active, countdown, barres de progression
 - [x] **Error view** — message d'erreur, auto-stop
 - [x] **Config card** — CRUD zones + programmes via services HA
-- [x] **Editeur visuel** — `getConfigElement()` sur la config card (picker vannes via set_valves)
+- [x] **Editeur visuel** — `getConfigElement()` sur les deux cards (config: picker vannes via set_valves, dashboard: titre)
 - [ ] Tests pour i18n (`getTranslator`)
 - [x] Tests pour config-helpers (`getAvailableValves`, `getZones`, `generateId`)
 

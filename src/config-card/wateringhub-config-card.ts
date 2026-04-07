@@ -25,8 +25,8 @@ import './config-editor';
 
 @customElement('wateringhub-config-card')
 export class WateringHubConfigCard extends LitElement {
-  static getConfigElement(): string {
-    return 'wateringhub-config-editor';
+  static getConfigElement(): HTMLElement {
+    return document.createElement('wateringhub-config-editor');
   }
   @state() private _config!: CardConfig;
   @state() private _hass!: Hass;

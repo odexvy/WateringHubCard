@@ -10,9 +10,13 @@ import { sharedStyles } from './shared-styles';
 import { cardStyles } from './styles';
 import { discoverPrograms, getGlobalStatus } from './helpers';
 import { renderHeader, renderErrorView, renderRunningView, renderProgramList } from './templates';
+import './card-editor';
 
 @customElement('wateringhub-card')
 export class WateringHubCard extends LitElement {
+  static getConfigElement(): HTMLElement {
+    return document.createElement('wateringhub-card-editor');
+  }
   @state() private _config!: CardConfig;
   @state() private _hass!: Hass;
   @state() private _programEntities: string[] = [];

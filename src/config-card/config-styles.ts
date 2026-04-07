@@ -90,29 +90,6 @@ export const configStyles = css`
     padding: 16px;
     margin-bottom: 8px;
   }
-  .form-row {
-    margin-bottom: 12px;
-  }
-  .form-label {
-    font-size: 12px;
-    color: var(--secondary-text-color);
-    margin-bottom: 4px;
-    display: block;
-  }
-  .form-input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px 12px;
-    border: 1px solid var(--divider-color);
-    border-radius: 6px;
-    font-size: 14px;
-    color: var(--primary-text-color);
-    background: var(--card-background-color);
-  }
-  .form-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-  }
   .form-select {
     width: 100%;
     box-sizing: border-box;

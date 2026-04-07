@@ -33,6 +33,7 @@ Custom Home Assistant card (LitElement + TypeScript) for the `wateringhub` integ
 ```
 src/
 ├── wateringhub-card.ts   # Main LitElement component (state + lifecycle)
+├── card-editor.ts        # Visual editor for dashboard card (title)
 ├── templates.ts          # HTML render functions (header, running block, programs, recap)
 ├── types.ts              # Interfaces (Hass, CardConfig, Schedule, Zone, Valve, ValveStep)
 ├── helpers.ts            # Shared helpers (discovery, status, friendly name, running/error info, formatting)
@@ -50,6 +51,16 @@ src/
     ├── en.json           # English (fallback)
     └── fr.json           # French
 ```
+
+## Code Rules
+
+- **Styles in separate files** — never inline `css\`...\`` in components. Use dedicated `*-styles.ts` files (shared-styles.ts, styles.ts, config-styles.ts, editor-styles.ts)
+- **Shared styles** — common CSS (form-row, form-label, form-input, header, empty-state) goes in `shared-styles.ts`, imported by all components
+- **No unsafeCSS** — all CSS uses tagged template literals, no `unsafeCSS()`
+- **No React analogies** — no comments referencing React/RN patterns
+- **HA CSS variables only** — no hardcoded colors, use `var(--primary-color)` etc.
+- **i18n everything** — all user-visible strings use translation keys, never hardcoded text
+- **yarn only** — never npm
 
 ## Build
 

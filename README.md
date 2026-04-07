@@ -15,6 +15,7 @@ Auto-discovers watering programs and provides a management UI.
 
 ### Dashboard Card (`wateringhub-card`)
 
+- **Visual editor**: configure card title from HA card picker (no YAML needed)
 - Auto-discovery of `switch.wateringhub_*` programs
 - Toggle programs on/off (backend mutex: one active at a time)
 - Per-program status: idle badge + next/last run (active program), disabled badge (inactive)
