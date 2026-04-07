@@ -1,35 +1,31 @@
 import { css } from 'lit';
 
 export const cardStyles = css`
-  /* Status badge */
-  .status-row {
+  /* Program status line */
+  .program-status {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
+    gap: 8px;
+    padding: 2px 0 8px 32px;
     flex-wrap: wrap;
   }
-  .badge {
+  .badge-sm {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 12px;
-    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
     font-weight: 500;
     color: white;
   }
   .badge-idle {
     background: var(--success-color);
   }
-  .badge-running {
-    background: var(--warning-color);
+  .badge-disabled {
+    background: var(--disabled-text-color);
   }
-  .badge-error {
-    background: var(--error-color);
-  }
-  .info-item {
-    font-size: 13px;
+  .info-sm {
+    font-size: 12px;
     color: var(--secondary-text-color);
   }
 

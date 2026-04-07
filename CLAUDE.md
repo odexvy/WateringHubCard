@@ -33,10 +33,16 @@ Custom Home Assistant card (LitElement + TypeScript) for the `wateringhub` integ
 ```
 src/
 ├── wateringhub-card.ts   # Main LitElement component (state + lifecycle)
-├── templates.ts          # HTML render functions (header, status, programs, recap)
-├── types.ts              # Interfaces (Hass, CardConfig, Schedule, Zone, Valve)
-├── helpers.ts            # Entity discovery, status, time/schedule formatting
-├── styles.ts             # CSS (HA native variables only)
+├── templates.ts          # HTML render functions (header, running block, programs, recap)
+├── types.ts              # Interfaces (Hass, CardConfig, Schedule, Zone, Valve, ValveStep)
+├── helpers.ts            # Shared helpers (discovery, status, friendly name, running/error info, formatting)
+├── shared-styles.ts      # Shared CSS (ha-card, header, empty-state)
+├── styles.ts             # Dashboard CSS (HA native variables only)
+├── config-card/
+│   ├── wateringhub-config-card.ts  # Config card (state, tabs, CRUD)
+│   ├── config-templates.ts         # Config templates (valves, zones, programs, inline forms)
+│   ├── config-styles.ts            # Config CSS
+│   └── config-helpers.ts           # Config helpers (getAvailableValves, getZones, generateId)
 └── i18n/
     ├── index.ts          # Translation loader
     ├── en.json           # English (fallback)

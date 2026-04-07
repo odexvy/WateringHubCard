@@ -2,11 +2,9 @@ import { html, nothing, TemplateResult } from 'lit';
 import type { Hass, Translator, ProgramSchedule, ProgramZone, ValveStep } from './types';
 import {
   getGlobalStatus,
-  statusLabel,
   formatRelative,
   formatNextRun,
   formatSchedule,
-  getActiveProgramName,
   getRunningInfo,
   getErrorInfo,
   formatRemainingTime,
@@ -21,22 +19,23 @@ export function renderHeader(title: string): TemplateResult {
   `;
 }
 
-export function renderStatusRow(
-  hass: Hass,
-  programEntities: string[],
-  t: Translator,
-): TemplateResult {
-  const status = getGlobalStatus(hass);
-  const activeName = getActiveProgramName(hass, programEntities);
+function renderProgramStatus(hass: Hass, isOn: boolean, t: Translator): TemplateResult {
+  if (!isOn) {
+    return html`
+      <div class="program-status">
+        <span class="badge-sm badge-disabled">${t('status.disabled')}</span>
+      </div>
+    `;
+  }
 
-  // When running, status info is shown in the running block instead
+  const status = getGlobalStatus(hass);
   if (status === 'running') return html``;
 
   return html`
-    <div class="status-row">
-      <span class="badge badge-${status}"> ${statusLabel(status, t, activeName)} </span>
-      <span class="info-item"> ${t('next')}: ${formatNextRun(hass, t, hass.language)} </span>
-      <span class="info-item">
+    <div class="program-status">
+      <span class="badge-sm badge-idle">${t('status.idle')}</span>
+      <span class="info-sm">${t('next')}: ${formatNextRun(hass, t, hass.language)}</span>
+      <span class="info-sm">
         ${t('last')}: ${formatRelative(hass, 'sensor.wateringhub_last_run', t, hass.language)}
       </span>
     </div>
@@ -196,6 +195,7 @@ export function renderProgramList(
           </div>
           <ha-switch .checked=${isOn} @change=${() => onToggleProgram(entityId)}></ha-switch>
         </div>
+        ${renderProgramStatus(hass, isOn, t)}
         ${renderProgramRecap(entity.attributes, isExpanded, t)}
       </div>
     `;

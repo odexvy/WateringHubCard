@@ -9,13 +9,7 @@ import { getTranslator } from './i18n/index';
 import { sharedStyles } from './shared-styles';
 import { cardStyles } from './styles';
 import { discoverPrograms, getGlobalStatus } from './helpers';
-import {
-  renderHeader,
-  renderStatusRow,
-  renderErrorView,
-  renderRunningView,
-  renderProgramList,
-} from './templates';
+import { renderHeader, renderErrorView, renderRunningView, renderProgramList } from './templates';
 
 @customElement('wateringhub-card')
 export class WateringHubCard extends LitElement {
@@ -96,8 +90,7 @@ export class WateringHubCard extends LitElement {
 
     return html`
       <ha-card>
-        ${renderHeader(title)} ${renderStatusRow(this._hass, this._programEntities, this._t)}
-        ${renderErrorView(this._hass, this._t)}
+        ${renderHeader(title)} ${renderErrorView(this._hass, this._t)}
         ${renderRunningView(this._hass, () => this._stopAll(), this._t)}
         ${renderProgramList(
           this._hass,

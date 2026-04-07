@@ -1,7 +1,7 @@
 import { html, nothing, TemplateResult } from 'lit';
 import type { Hass, Translator, AvailableValve, ZoneConfig, ProgramSchedule } from '../types';
 import { getAvailableValves, getZones } from './config-helpers';
-import { discoverPrograms, getFriendlyName } from '../helpers';
+import { discoverPrograms, getFriendlyName, formatSchedule } from '../helpers';
 
 // ── Tabs ─────────────────────────────────────────────────
 
@@ -249,7 +249,7 @@ function renderProgramItem(
   const schedule = entity.attributes.schedule as ProgramSchedule | undefined;
   const totalDuration = entity.attributes.total_duration as number | undefined;
   const dryRun = entity.attributes.dry_run === true;
-  const scheduleStr = schedule ? `${schedule.type} — ${schedule.time}` : '';
+  const scheduleStr = formatSchedule(schedule, t);
 
   return html`
     <div class="list-item">
@@ -323,9 +323,9 @@ function renderProgramForm(
                 },
               })}
           >
-            <option value="daily">Daily</option>
-            <option value="every_n_days">Every N days</option>
-            <option value="weekdays">Weekdays</option>
+            <option value="daily">${t('config.schedule_daily')}</option>
+            <option value="every_n_days">${t('config.schedule_every_n_days')}</option>
+            <option value="weekdays">${t('config.schedule_weekdays')}</option>
           </select>
         </div>
         <div>

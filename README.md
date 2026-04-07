@@ -17,19 +17,19 @@ Auto-discovers watering programs and provides a management UI.
 
 - Auto-discovery of `switch.wateringhub_*` programs
 - Toggle programs on/off (backend mutex: one active at a time)
-- Global status badge (idle / running / error) with animation
-- Active program name displayed when running
+- Per-program status: idle badge + next/last run (active program), disabled badge (inactive)
 - Program recap (accordion): schedule, zones, valves, total duration
-- Running view: smooth CSS-driven progress bars, valve sequence with status icons (done / running / pending) grouped by zone
+- Running block: SVG circular progress with total remaining time, valve timeline grouped by zone (done / running / pending)
+- Dry run mode: "Test mode" badge when running without activating physical valves
 - Error view: program name, error message, auto-stop notice
-- Emergency stop button with confirmation (visible when running)
-- Relative time display (next run, last run)
+- Emergency stop button inside running block
 
 ### Config Card (`wateringhub-config-card`)
 
-- Manage programs: create, edit, delete (schedule, zones, per-valve durations)
+- Manage programs: create, edit, delete (schedule, zones, per-valve durations, dry run toggle)
 - Manage zones: create, edit, delete (name, valve selection)
 - View available valves (read-only, auto-discovered from backend)
+- Translated schedule type selector (daily / every N days / weekdays)
 - Inline forms with live validation
 
 ### Shared

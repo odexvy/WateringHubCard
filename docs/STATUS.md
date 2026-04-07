@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.12
+**Version :** 0.0.17
 **Branche :** master
 
 ---
@@ -23,31 +23,36 @@ Le repo contient **deux custom cards** dans un seul bundle :
 
 - **Auto-discovery** — scanne `hass.states` pour les entités `switch.wateringhub_*`, aucune config nécessaire
 - **Liste des programmes** — affiche chaque programme avec son nom + toggle switch
-- **Recap programme (accordéon)** — chevron à gauche pour déplier/replier, un seul ouvert à la fois :
-  - Schedule : daily / every_n_days / weekdays avec l'heure
+- **Statut par programme** — sous chaque programme :
+  - Programme actif (toggle ON) : badge vert "En attente" + prochain run + dernier run
+  - Programme inactif (toggle OFF) : badge gris "Désactivé"
+  - Quand running : pas de statut inline (info dans le running block)
+- **Recap programme (accordéon)** — chevron pour déplier/replier :
+  - Schedule : "Tous les jours à 22:00" / "Lun, Mer, Ven à 07:00" (traduit)
   - Zones avec icône HA `mdi:map-marker`
   - Vannes par zone avec icône `mdi:water` + durée
   - Durée totale avec icône `mdi:timer-outline`
-- **Running view** — bloc dédié affiché quand status=running :
-  - Zone en cours (icône map-marker)
-  - Vanne active + countdown temps restant (calculé depuis `current_valve_start`)
-  - Barre de progression de la vanne courante (couleur primary)
-  - Progression globale "Vanne X sur Y" (barre couleur warning)
+- **Running block** — bloc dédié affiché quand status=running :
+  - Cercle SVG de progression globale avec temps total restant au centre
+  - Nom du programme + "Vanne X sur Y"
+  - Timeline verticale des vannes groupées par zone (check/dot plein/cercle vide)
+  - Countdown en temps réel sur la vanne active
+  - Bouton "Tout arrêter" en haut à droite de l'encart
+  - Badge "Mode test" si dry_run actif
+- **Dry run** — mode test : exécute la séquence sans activer les vannes physiques
 - **Error view** — bloc dédié affiché quand status=error :
   - Nom du programme en erreur (résolu via friendly_name du switch)
   - Message d'erreur du backend (affiché en monospace)
   - Message "Toutes les vannes ont été fermées automatiquement"
-- **Badge de statut global** — idle (vert) / running (orange, animation pulse) / error (rouge)
-- **Arrêt d'urgence** — bouton Stop All visible uniquement quand running, avec dialogue de confirmation
 - **i18n** — Français + Anglais, détecté automatiquement depuis `hass.language`, fallback EN
 
 ### Les 3 états
 
 | Status  | Affichage                                                                      |
 | ------- | ------------------------------------------------------------------------------ |
-| idle    | Badge vert "En attente", next_run, last_run, liste des programmes              |
-| running | Badge orange animé "En cours : [nom]", running view, bouton Stop All           |
-| error   | Badge rouge "Erreur", error view (nom programme, message erreur, auto-stopped) |
+| idle    | Par programme : badge vert + next/last (actif) ou badge gris (inactif)         |
+| running | Running block : cercle SVG, timeline vannes, bouton stop, badge dry run        |
+| error   | Error view : nom programme, message erreur, auto-stopped                       |
 
 ---
 
@@ -55,7 +60,7 @@ Le repo contient **deux custom cards** dans un seul bundle :
 
 ### Fonctionnalités
 
-- **Titre** — header "WateringHub" harmonisé avec la dashboard card
+- **Titre** — header "WateringHub Config"
 - **3 onglets** : Programmes | Zones | Vannes (vannes en dernier, lecture seule)
 - **Onglet Programmes** (défaut) — CRUD inline :
   - Créer : nom + schedule (type/heure/options) + sélection zones + durée par vanne
@@ -82,8 +87,8 @@ Le repo contient **deux custom cards** dans un seul bundle :
 | `wateringhub.create_zone`    | `{ id, name, valves }`             | Créer une zone         |
 | `wateringhub.update_zone`    | `{ id, name?, valves? }`           | Modifier une zone      |
 | `wateringhub.delete_zone`    | `{ id }`                           | Supprimer une zone     |
-| `wateringhub.create_program` | `{ id, name, schedule, zones }`    | Créer un programme     |
-| `wateringhub.update_program` | `{ id, name?, schedule?, zones? }` | Modifier un programme  |
+| `wateringhub.create_program` | `{ id, name, schedule, zones, dry_run? }` | Créer un programme     |
+| `wateringhub.update_program` | `{ id, name?, schedule?, zones?, dry_run? }` | Modifier un programme  |
 | `wateringhub.delete_program` | `{ id }`                           | Supprimer un programme |
 | `wateringhub.stop_all`       | `{}`                               | Arrêt d'urgence        |
 
@@ -93,10 +98,10 @@ Le repo contient **deux custom cards** dans un seul bundle :
 
 | Entité                                             | Usage                                                                                                                                            |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `switch.wateringhub_*`                             | Toggles programmes (attributs : schedule, zones, total_duration)                                                                                 |
+| `switch.wateringhub_*`                             | Toggles programmes (attributs : schedule, zones, total_duration, dry_run)                                                                        |
 | `sensor.wateringhub_status`                        | Statut global : idle / running / error                                                                                                           |
 | `sensor.wateringhub_status` (attributs permanents) | available_valves, zones                                                                                                                          |
-| `sensor.wateringhub_status` (attributs running)    | current_program, current_zone_name, current_valve_name, current_valve_start, current_valve_duration, valves_done, valves_total, progress_percent |
+| `sensor.wateringhub_status` (attributs running)    | current_program, current_zone_name, current_valve_name, current_valve_start, current_valve_duration, valves_done, valves_total, progress_percent, valves_sequence, dry_run |
 | `sensor.wateringhub_status` (attributs error)      | current_program, error_message                                                                                                                   |
 | `sensor.wateringhub_next_run`                      | Prochain arrosage prévu (datetime ISO)                                                                                                           |
 | `sensor.wateringhub_last_run`                      | Dernier arrosage (datetime ISO)                                                                                                                  |
@@ -128,7 +133,7 @@ WateringHubCard/
 │       ├── helpers.test.ts            # Tests helpers dashboard
 │       └── config-helpers.test.ts     # Tests helpers config
 ├── dist/
-│   └── wateringhub-card.js            # Bundle unique (51.5kb minifié, les 2 cards)
+│   └── wateringhub-card.js            # Bundle unique (55.4kb minifié, les 2 cards)
 ├── .github/workflows/ci.yml           # CI : typecheck + tests
 ├── .husky/pre-commit                  # lint-staged (eslint --fix + prettier --write)
 ├── package.json                       # esbuild pointe vers src/index.ts
@@ -185,7 +190,7 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 
 ### Moyen terme (nécessite du backend)
 
-- [ ] **Progression vannes améliorée** — liste des vannes passées/en cours/futures avec icônes
+- [x] **Progression vannes améliorée** — timeline verticale des vannes avec icônes (done/running/pending)
 - [ ] **Listener d'événements** — `hass.connection.subscribeEvents` pour updates instantanés
 - [ ] **Débit** — afficher le débit en L/min dans la running view
 
@@ -217,3 +222,7 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 14. **Formulaires inline** — les formulaires CRUD s'ouvrent en place dans la liste
 15. **Styles partagés** — `shared-styles.ts` pour le CSS commun (ha-card, header, empty-state), importé par les deux cards
 16. **getFriendlyName()** — helper partagé pour résoudre le friendly_name d'une entité avec fallback
+17. **Running block SVG** — cercle de progression SVG avec `stroke-dashoffset`, mis à jour par `_tick` (1s) sans CSS transition
+18. **Statut par programme** — badge idle/disabled sous chaque programme (plus de status-row globale)
+19. **Dry run** — flag `dry_run` par programme, badge "Mode test" dans running block et liste config
+20. **Un seul programme actif** — les sensors next_run/last_run globaux sont affichés sous le programme actif uniquement
