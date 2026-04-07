@@ -18,7 +18,6 @@ export class WateringHubConfigEditor extends LitElement {
   @state() private _hass!: Hass;
   @state() private _adding = false;
   @state() private _newEntityId = '';
-  @state() private _newName = '';
 
   private _t: Translator = (key: string) => key;
 
@@ -53,28 +52,28 @@ export class WateringHubConfigEditor extends LitElement {
   private _startAdd(): void {
     this._adding = true;
     this._newEntityId = '';
-    this._newName = '';
   }
 
   private _onEntityPicked(e: CustomEvent): void {
-    const entityId = e.detail.value as string;
-    this._newEntityId = entityId;
-    if (entityId && this._hass.states[entityId]) {
-      const friendly = this._hass.states[entityId].attributes.friendly_name;
-      this._newName = typeof friendly === 'string' ? friendly : entityId;
-    }
+    this._newEntityId = e.detail.value as string;
+  }
+
+  private _getFriendlyName(entityId: string): string {
+    const entity = this._hass?.states[entityId];
+    const friendly = entity?.attributes.friendly_name;
+    return typeof friendly === 'string' ? friendly : entityId;
   }
 
   private async _confirmAdd(): Promise<void> {
-    if (!this._newEntityId || !this._newName) return;
+    if (!this._newEntityId) return;
+    const name = this._getFriendlyName(this._newEntityId);
     const valves = [
       ...this._getValves().map((v) => ({ entity_id: v.entity_id, name: v.name })),
-      { entity_id: this._newEntityId, name: this._newName },
+      { entity_id: this._newEntityId, name },
     ];
     await this._setValves(valves);
     this._adding = false;
     this._newEntityId = '';
-    this._newName = '';
   }
 
   private _cancelAdd(): void {
@@ -118,15 +117,6 @@ export class WateringHubConfigEditor extends LitElement {
                   @value-changed=${this._onEntityPicked}
                   allow-custom-entity
                 ></ha-entity-picker>
-                <input
-                  class="form-input"
-                  type="text"
-                  .value=${this._newName}
-                  placeholder="${this._t('config.valve_name')}"
-                  @input=${(e: InputEvent) => {
-                    this._newName = (e.target as HTMLInputElement).value;
-                  }}
-                />
                 <div class="add-form-actions">
                   <button class="btn btn-cancel" @click=${() => this._cancelAdd()}>
                     ${this._t('config.cancel')}

@@ -62,6 +62,5 @@
   "config.editor_valves": "Valves",
   "config.add_valve": "Add valve",
   "config.select_entity": "Switch entity",
-  "config.valve_name": "Valve name",
   "config.confirm_delete_valve": "Delete this valve?"
 }

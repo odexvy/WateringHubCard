@@ -1,6 +1,6 @@
 # WateringHub Card
 
-<img src="images/icon.png" alt="WateringHub" width="128">
+<img src="https://raw.githubusercontent.com/odexvy/WateringHubCard/master/images/icon.png" alt="WateringHub" width="128">
 
 Custom [Home Assistant](https://www.home-assistant.io/) dashboard card for the **WateringHub** integration.
 

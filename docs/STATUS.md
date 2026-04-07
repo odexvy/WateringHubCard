@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.23
+**Version :** 0.0.24
 **Branche :** master
 
 ---
@@ -62,7 +62,7 @@ Le repo contient **deux custom cards** dans un seul bundle :
 
 - **Éditeur visuel** — `getConfigElement()` pour configurer les vannes depuis le card picker HA :
   - Sélection d'entités via `ha-entity-picker` natif HA (autocomplete, icônes, recherche, filtré sur switch)
-  - Nommage personnalisé de chaque vanne (pré-rempli avec friendly_name)
+  - Nom automatique depuis le friendly_name du switch sélectionné
   - Appelle `wateringhub.set_valves` à chaque ajout/suppression (pas de reboot)
 - **Titre** — header "WateringHub Config"
 - **3 onglets** : Programmes | Zones | Vannes (vannes en dernier, lecture seule)
@@ -142,7 +142,7 @@ WateringHubCard/
 │       ├── helpers.test.ts            # Tests helpers dashboard
 │       └── config-helpers.test.ts     # Tests helpers config
 ├── dist/
-│   └── wateringhub-card.js            # Bundle unique (63.8kb minifié, les 2 cards + éditeurs)
+│   └── wateringhub-card.js            # Bundle unique (63.0kb minifié, les 2 cards + éditeurs)
 ├── .github/workflows/ci.yml           # CI : typecheck + tests
 ├── .husky/pre-commit                  # lint-staged (eslint --fix + prettier --write)
 ├── package.json                       # esbuild pointe vers src/index.ts
@@ -209,7 +209,7 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 - [ ] **Historique / statistiques** — graphique des exécutions avec consommation d'eau
 - [ ] **Multi-langue** — ajouter ES, DE, IT, PT
 - [ ] **HACS repo officiel** — soumettre au repo HACS officiel
-- [ ] **Image de preview** — screenshot dans le README pour le card picker HA
+- [x] **Image de preview** — icône dans le README (images/icon.png) pour HACS et HA
 
 ---
 
