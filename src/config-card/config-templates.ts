@@ -333,197 +333,203 @@ function renderProgramForm(
       <!-- Zones + valves with durations -->
       <div class="form-row">
         <label class="form-label">${t('config.select_zones')}</label>
-        ${zones.map((zone) => {
-          const formZoneIdx = form.zones.findIndex((fz) => fz.zone_id === zone.id);
-          const formZone = formZoneIdx >= 0 ? form.zones[formZoneIdx] : null;
-          const isSelected = !!formZone;
-          const moveZone = (dir: -1 | 1) => {
-            const arr = [...form.zones];
-            const newIdx = formZoneIdx + dir;
-            [arr[formZoneIdx], arr[newIdx]] = [arr[newIdx], arr[formZoneIdx]];
-            onFormUpdate({ ...form, zones: arr });
-          };
-          return html`
-            <div class="form-zone-section">
-              <div class="zone-header-row">
-                <label class="checkbox-item">
-                  <input
-                    type="checkbox"
-                    .checked=${isSelected}
-                    @change=${() => {
-                      const newZones = isSelected
-                        ? form.zones.filter((fz) => fz.zone_id !== zone.id)
-                        : [
-                            ...form.zones,
-                            {
-                              zone_id: zone.id,
-                              valves: zone.valves.map((vid) => ({ valve_id: vid, duration: 10 })),
-                            },
-                          ];
-                      onFormUpdate({ ...form, zones: newZones });
-                    }}
-                  />
-                  <span class="form-zone-name">${zone.name}</span>
-                </label>
-                ${isSelected && form.zones.length > 1
+        ${[
+          ...form.zones.map((fz) => zones.find((z) => z.id === fz.zone_id)),
+          ...zones.filter((z) => !form.zones.some((fz) => fz.zone_id === z.id)),
+        ]
+          .filter((z): z is ZoneConfig => !!z)
+          .map((zone) => {
+            const formZoneIdx = form.zones.findIndex((fz) => fz.zone_id === zone.id);
+            const formZone = formZoneIdx >= 0 ? form.zones[formZoneIdx] : null;
+            const isSelected = !!formZone;
+            const moveZone = (dir: -1 | 1) => {
+              const arr = [...form.zones];
+              const newIdx = formZoneIdx + dir;
+              [arr[formZoneIdx], arr[newIdx]] = [arr[newIdx], arr[formZoneIdx]];
+              onFormUpdate({ ...form, zones: arr });
+            };
+            return html`
+              <div class="form-zone-section">
+                <div class="zone-header-row">
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      .checked=${isSelected}
+                      @change=${() => {
+                        const newZones = isSelected
+                          ? form.zones.filter((fz) => fz.zone_id !== zone.id)
+                          : [
+                              ...form.zones,
+                              {
+                                zone_id: zone.id,
+                                valves: zone.valves.map((vid) => ({ valve_id: vid, duration: 10 })),
+                              },
+                            ];
+                        onFormUpdate({ ...form, zones: newZones });
+                      }}
+                    />
+                    <span class="form-zone-name">${zone.name}</span>
+                  </label>
+                  ${isSelected && form.zones.length > 1
+                    ? html`
+                        <div class="reorder-btns">
+                          <button
+                            class="reorder-btn"
+                            ?disabled=${formZoneIdx === 0}
+                            @click=${() => moveZone(-1)}
+                          >
+                            <ha-icon icon="mdi:chevron-up"></ha-icon>
+                          </button>
+                          <button
+                            class="reorder-btn"
+                            ?disabled=${formZoneIdx === form.zones.length - 1}
+                            @click=${() => moveZone(1)}
+                          >
+                            <ha-icon icon="mdi:chevron-down"></ha-icon>
+                          </button>
+                        </div>
+                      `
+                    : nothing}
+                </div>
+                ${isSelected && formZone
                   ? html`
-                      <div class="reorder-btns">
-                        <button
-                          class="reorder-btn"
-                          ?disabled=${formZoneIdx === 0}
-                          @click=${() => moveZone(-1)}
-                        >
-                          <ha-icon icon="mdi:chevron-up"></ha-icon>
-                        </button>
-                        <button
-                          class="reorder-btn"
-                          ?disabled=${formZoneIdx === form.zones.length - 1}
-                          @click=${() => moveZone(1)}
-                        >
-                          <ha-icon icon="mdi:chevron-down"></ha-icon>
-                        </button>
-                      </div>
+                      ${formZone.valves.map((fv, valveIdx) => {
+                        const valveName =
+                          valves.find((v) => v.id === fv.valve_id)?.name ?? fv.valve_id;
+                        const updateValve = (patch: Partial<ProgramValveForm>) => {
+                          const newValves = formZone.valves.map((v) =>
+                            v.valve_id === fv.valve_id ? { ...v, ...patch } : v,
+                          );
+                          const newZones = form.zones.map((fz) =>
+                            fz.zone_id === zone.id ? { ...fz, valves: newValves } : fz,
+                          );
+                          onFormUpdate({ ...form, zones: newZones });
+                        };
+                        const freqType = fv.frequency?.type ?? '';
+                        const today = new Date().toISOString().slice(0, 10);
+                        const moveValve = (dir: -1 | 1) => {
+                          const arr = [...formZone.valves];
+                          const newIdx = valveIdx + dir;
+                          [arr[valveIdx], arr[newIdx]] = [arr[newIdx], arr[valveIdx]];
+                          const newZones = form.zones.map((fz) =>
+                            fz.zone_id === zone.id ? { ...fz, valves: arr } : fz,
+                          );
+                          onFormUpdate({ ...form, zones: newZones });
+                        };
+                        const isFirst = valveIdx === 0;
+                        const isLast = valveIdx === formZone.valves.length - 1;
+                        return html`
+                          <div class="valve-config-block">
+                            <div class="valve-duration-row">
+                              <div class="reorder-btns">
+                                <button
+                                  class="reorder-btn"
+                                  ?disabled=${isFirst}
+                                  @click=${() => moveValve(-1)}
+                                >
+                                  <ha-icon icon="mdi:chevron-up"></ha-icon>
+                                </button>
+                                <button
+                                  class="reorder-btn"
+                                  ?disabled=${isLast}
+                                  @click=${() => moveValve(1)}
+                                >
+                                  <ha-icon icon="mdi:chevron-down"></ha-icon>
+                                </button>
+                              </div>
+                              <label>${valveName}</label>
+                              <input
+                                class="valve-duration-input"
+                                type="number"
+                                min="1"
+                                .value=${String(fv.duration)}
+                                @input=${(e: InputEvent) =>
+                                  updateValve({
+                                    duration: parseInt((e.target as HTMLInputElement).value) || 1,
+                                  })}
+                              />
+                              <span>min</span>
+                            </div>
+                            <div class="valve-frequency-row">
+                              <select
+                                class="valve-freq-select"
+                                .value=${freqType}
+                                @change=${(e: Event) => {
+                                  const val = (e.target as HTMLSelectElement).value;
+                                  if (!val) {
+                                    updateValve({ frequency: undefined });
+                                  } else if (val === 'every_n_days') {
+                                    updateValve({
+                                      frequency: { type: 'every_n_days', n: 2, start_date: today },
+                                    });
+                                  } else {
+                                    updateValve({ frequency: { type: 'weekdays', days: [] } });
+                                  }
+                                }}
+                              >
+                                <option value="">${t('config.follows_program')}</option>
+                                <option value="every_n_days">
+                                  ${t('config.frequency_every_n', { n: fv.frequency?.n ?? 2 })}
+                                </option>
+                                <option value="weekdays">${t('config.frequency_weekdays')}</option>
+                              </select>
+                              ${freqType === 'every_n_days'
+                                ? html`
+                                    <input
+                                      class="valve-freq-n-input"
+                                      type="number"
+                                      min="2"
+                                      .value=${String(fv.frequency?.n ?? 2)}
+                                      @input=${(e: InputEvent) =>
+                                        updateValve({
+                                          frequency: {
+                                            ...fv.frequency!,
+                                            n: parseInt((e.target as HTMLInputElement).value) || 2,
+                                          },
+                                        })}
+                                    />
+                                    <span>j</span>
+                                  `
+                                : nothing}
+                              ${freqType === 'weekdays'
+                                ? html`
+                                    <div class="valve-freq-days">
+                                      ${['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(
+                                        (day) => {
+                                          const checked =
+                                            fv.frequency?.days?.includes(day) ?? false;
+                                          return html`
+                                            <label class="valve-freq-day">
+                                              <input
+                                                type="checkbox"
+                                                .checked=${checked}
+                                                @change=${() => {
+                                                  const days = fv.frequency?.days ?? [];
+                                                  const newDays = checked
+                                                    ? days.filter((d) => d !== day)
+                                                    : [...days, day];
+                                                  updateValve({
+                                                    frequency: { ...fv.frequency!, days: newDays },
+                                                  });
+                                                }}
+                                              />
+                                              ${t(`days.${day}`)}
+                                            </label>
+                                          `;
+                                        },
+                                      )}
+                                    </div>
+                                  `
+                                : nothing}
+                            </div>
+                          </div>
+                        `;
+                      })}
                     `
                   : nothing}
               </div>
-              ${isSelected && formZone
-                ? html`
-                    ${formZone.valves.map((fv, valveIdx) => {
-                      const valveName =
-                        valves.find((v) => v.id === fv.valve_id)?.name ?? fv.valve_id;
-                      const updateValve = (patch: Partial<ProgramValveForm>) => {
-                        const newValves = formZone.valves.map((v) =>
-                          v.valve_id === fv.valve_id ? { ...v, ...patch } : v,
-                        );
-                        const newZones = form.zones.map((fz) =>
-                          fz.zone_id === zone.id ? { ...fz, valves: newValves } : fz,
-                        );
-                        onFormUpdate({ ...form, zones: newZones });
-                      };
-                      const freqType = fv.frequency?.type ?? '';
-                      const today = new Date().toISOString().slice(0, 10);
-                      const moveValve = (dir: -1 | 1) => {
-                        const arr = [...formZone.valves];
-                        const newIdx = valveIdx + dir;
-                        [arr[valveIdx], arr[newIdx]] = [arr[newIdx], arr[valveIdx]];
-                        const newZones = form.zones.map((fz) =>
-                          fz.zone_id === zone.id ? { ...fz, valves: arr } : fz,
-                        );
-                        onFormUpdate({ ...form, zones: newZones });
-                      };
-                      const isFirst = valveIdx === 0;
-                      const isLast = valveIdx === formZone.valves.length - 1;
-                      return html`
-                        <div class="valve-config-block">
-                          <div class="valve-duration-row">
-                            <div class="reorder-btns">
-                              <button
-                                class="reorder-btn"
-                                ?disabled=${isFirst}
-                                @click=${() => moveValve(-1)}
-                              >
-                                <ha-icon icon="mdi:chevron-up"></ha-icon>
-                              </button>
-                              <button
-                                class="reorder-btn"
-                                ?disabled=${isLast}
-                                @click=${() => moveValve(1)}
-                              >
-                                <ha-icon icon="mdi:chevron-down"></ha-icon>
-                              </button>
-                            </div>
-                            <label>${valveName}</label>
-                            <input
-                              class="valve-duration-input"
-                              type="number"
-                              min="1"
-                              .value=${String(fv.duration)}
-                              @input=${(e: InputEvent) =>
-                                updateValve({
-                                  duration: parseInt((e.target as HTMLInputElement).value) || 1,
-                                })}
-                            />
-                            <span>min</span>
-                          </div>
-                          <div class="valve-frequency-row">
-                            <select
-                              class="valve-freq-select"
-                              .value=${freqType}
-                              @change=${(e: Event) => {
-                                const val = (e.target as HTMLSelectElement).value;
-                                if (!val) {
-                                  updateValve({ frequency: undefined });
-                                } else if (val === 'every_n_days') {
-                                  updateValve({
-                                    frequency: { type: 'every_n_days', n: 2, start_date: today },
-                                  });
-                                } else {
-                                  updateValve({ frequency: { type: 'weekdays', days: [] } });
-                                }
-                              }}
-                            >
-                              <option value="">${t('config.follows_program')}</option>
-                              <option value="every_n_days">
-                                ${t('config.frequency_every_n', { n: fv.frequency?.n ?? 2 })}
-                              </option>
-                              <option value="weekdays">${t('config.frequency_weekdays')}</option>
-                            </select>
-                            ${freqType === 'every_n_days'
-                              ? html`
-                                  <input
-                                    class="valve-freq-n-input"
-                                    type="number"
-                                    min="2"
-                                    .value=${String(fv.frequency?.n ?? 2)}
-                                    @input=${(e: InputEvent) =>
-                                      updateValve({
-                                        frequency: {
-                                          ...fv.frequency!,
-                                          n: parseInt((e.target as HTMLInputElement).value) || 2,
-                                        },
-                                      })}
-                                  />
-                                  <span>j</span>
-                                `
-                              : nothing}
-                            ${freqType === 'weekdays'
-                              ? html`
-                                  <div class="valve-freq-days">
-                                    ${['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(
-                                      (day) => {
-                                        const checked = fv.frequency?.days?.includes(day) ?? false;
-                                        return html`
-                                          <label class="valve-freq-day">
-                                            <input
-                                              type="checkbox"
-                                              .checked=${checked}
-                                              @change=${() => {
-                                                const days = fv.frequency?.days ?? [];
-                                                const newDays = checked
-                                                  ? days.filter((d) => d !== day)
-                                                  : [...days, day];
-                                                updateValve({
-                                                  frequency: { ...fv.frequency!, days: newDays },
-                                                });
-                                              }}
-                                            />
-                                            ${t(`days.${day}`)}
-                                          </label>
-                                        `;
-                                      },
-                                    )}
-                                  </div>
-                                `
-                              : nothing}
-                          </div>
-                        </div>
-                      `;
-                    })}
-                  `
-                : nothing}
-            </div>
-          `;
-        })}
+            `;
+          })}
       </div>
 
       ${totalDuration > 0
