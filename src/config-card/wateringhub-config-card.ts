@@ -1,7 +1,14 @@
 import { LitElement, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
-import type { Hass, CardConfig, Translator, ZoneConfig, ProgramSchedule } from '../types';
+import type {
+  Hass,
+  CardConfig,
+  Translator,
+  ZoneConfig,
+  ProgramSchedule,
+  ValveFrequency,
+} from '../types';
 import { getTranslator } from '../i18n/index';
 import { sharedStyles } from '../shared-styles';
 import { configStyles } from './config-styles';
@@ -105,11 +112,15 @@ export class WateringHubConfigCard extends LitElement {
     const zones = (
       (attrs.zones as Array<{
         zone_id: string;
-        valves: Array<{ valve_id: string; duration: number }>;
+        valves: Array<{ valve_id: string; duration: number; frequency?: ValveFrequency }>;
       }>) ?? []
     ).map((z) => ({
       zone_id: z.zone_id,
-      valves: z.valves.map((v) => ({ valve_id: v.valve_id, duration: v.duration })),
+      valves: z.valves.map((v) => ({
+        valve_id: v.valve_id,
+        duration: v.duration,
+        frequency: v.frequency,
+      })),
     }));
 
     this._editingProgram = {
@@ -140,7 +151,11 @@ export class WateringHubConfigCard extends LitElement {
       dry_run: form.dry_run,
       zones: form.zones.map((z) => ({
         zone_id: z.zone_id,
-        valves: z.valves.map((v) => ({ valve_id: v.valve_id, duration: v.duration })),
+        valves: z.valves.map((v) => ({
+          valve_id: v.valve_id,
+          duration: v.duration,
+          ...(v.frequency ? { frequency: v.frequency } : {}),
+        })),
       })),
     });
     this._editingProgram = null;

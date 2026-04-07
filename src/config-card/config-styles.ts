@@ -173,6 +173,58 @@ export const configStyles = css`
     background: var(--card-background-color);
   }
 
+  /* Valve config block (duration + frequency) */
+  .valve-config-block {
+    padding: 4px 0 8px 24px;
+    border-bottom: 1px solid var(--divider-color);
+    margin-bottom: 4px;
+  }
+  .valve-config-block:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  .valve-frequency-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0 0;
+    flex-wrap: wrap;
+  }
+  .valve-freq-select {
+    padding: 3px 8px;
+    border: 1px solid var(--divider-color);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--primary-text-color);
+    background: var(--card-background-color);
+  }
+  .valve-freq-n-input {
+    width: 50px;
+    padding: 3px 6px;
+    border: 1px solid var(--divider-color);
+    border-radius: 4px;
+    font-size: 12px;
+    text-align: right;
+    color: var(--primary-text-color);
+    background: var(--card-background-color);
+  }
+  .valve-freq-days {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 4px 0;
+  }
+  .valve-freq-day {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    color: var(--primary-text-color);
+  }
+  .valve-freq-day input[type='checkbox'] {
+    accent-color: var(--primary-color);
+  }
+
   /* Zone section inside program form */
   .form-zone-section {
     border: 1px solid var(--divider-color);

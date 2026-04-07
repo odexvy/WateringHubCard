@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.17
+**Version :** 0.0.18
 **Branche :** master
 
 ---
@@ -63,7 +63,8 @@ Le repo contient **deux custom cards** dans un seul bundle :
 - **Titre** — header "WateringHub Config"
 - **3 onglets** : Programmes | Zones | Vannes (vannes en dernier, lecture seule)
 - **Onglet Programmes** (défaut) — CRUD inline :
-  - Créer : nom + schedule (type/heure/options) + sélection zones + durée par vanne
+  - Créer : nom + schedule (type/heure/options) + sélection zones + durée et fréquence par vanne
+  - Fréquence par vanne : "Suit le programme" (défaut) / "Tous les N jours" / "Jours spécifiques"
   - Modifier : formulaire inline pré-rempli
   - Supprimer : confirmation → `wateringhub.delete_program`
 - **Onglet Zones** — CRUD inline :
@@ -87,8 +88,8 @@ Le repo contient **deux custom cards** dans un seul bundle :
 | `wateringhub.create_zone`    | `{ id, name, valves }`             | Créer une zone         |
 | `wateringhub.update_zone`    | `{ id, name?, valves? }`           | Modifier une zone      |
 | `wateringhub.delete_zone`    | `{ id }`                           | Supprimer une zone     |
-| `wateringhub.create_program` | `{ id, name, schedule, zones, dry_run? }` | Créer un programme     |
-| `wateringhub.update_program` | `{ id, name?, schedule?, zones?, dry_run? }` | Modifier un programme  |
+| `wateringhub.create_program` | `{ id, name, schedule, zones, dry_run? }` | Créer un programme (zones[].valves[].frequency optionnel) |
+| `wateringhub.update_program` | `{ id, name?, schedule?, zones?, dry_run? }` | Modifier un programme (zones[].valves[].frequency optionnel) |
 | `wateringhub.delete_program` | `{ id }`                           | Supprimer un programme |
 | `wateringhub.stop_all`       | `{}`                               | Arrêt d'urgence        |
 
@@ -98,7 +99,7 @@ Le repo contient **deux custom cards** dans un seul bundle :
 
 | Entité                                             | Usage                                                                                                                                            |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `switch.wateringhub_*`                             | Toggles programmes (attributs : schedule, zones, total_duration, dry_run)                                                                        |
+| `switch.wateringhub_*`                             | Toggles programmes (attributs : schedule, zones avec frequency par vanne, total_duration, dry_run)                                               |
 | `sensor.wateringhub_status`                        | Statut global : idle / running / error                                                                                                           |
 | `sensor.wateringhub_status` (attributs permanents) | available_valves, zones                                                                                                                          |
 | `sensor.wateringhub_status` (attributs running)    | current_program, current_zone_name, current_valve_name, current_valve_start, current_valve_duration, valves_done, valves_total, progress_percent, valves_sequence, dry_run |
@@ -119,7 +120,7 @@ WateringHubCard/
 │   ├── helpers.ts                     # Helpers partagés (discovery, statut, friendly name, error/running info, formatage)
 │   ├── shared-styles.ts               # CSS partagé (ha-card, header, empty-state)
 │   ├── styles.ts                      # CSS dashboard
-│   ├── types.ts                       # Types partagés (Hass, CardConfig, Schedule, Zone, Valve, AvailableValve, ZoneConfig)
+│   ├── types.ts                       # Types partagés (Hass, CardConfig, Schedule, Zone, Valve, ValveFrequency, ValveStep)
 │   ├── config-card/
 │   │   ├── wateringhub-config-card.ts # Config card (state, tabs, CRUD)
 │   │   ├── config-templates.ts        # Templates config (valves, zones, programmes, formulaires inline)
@@ -133,7 +134,7 @@ WateringHubCard/
 │       ├── helpers.test.ts            # Tests helpers dashboard
 │       └── config-helpers.test.ts     # Tests helpers config
 ├── dist/
-│   └── wateringhub-card.js            # Bundle unique (55.4kb minifié, les 2 cards)
+│   └── wateringhub-card.js            # Bundle unique (59.8kb minifié, les 2 cards)
 ├── .github/workflows/ci.yml           # CI : typecheck + tests
 ├── .husky/pre-commit                  # lint-staged (eslint --fix + prettier --write)
 ├── package.json                       # esbuild pointe vers src/index.ts
@@ -226,3 +227,4 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 18. **Statut par programme** — badge idle/disabled sous chaque programme (plus de status-row globale)
 19. **Dry run** — flag `dry_run` par programme, badge "Mode test" dans running block et liste config
 20. **Un seul programme actif** — les sensors next_run/last_run globaux sont affichés sous le programme actif uniquement
+21. **Fréquence par vanne** — chaque vanne peut overrider la fréquence du programme (every_n_days ou weekdays), l'heure reste globale, les vannes non éligibles sont skippées côté backend

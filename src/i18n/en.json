@@ -62,5 +62,10 @@
   "config.dry_run": "Test mode",
   "config.dry_run_hint": "Runs the sequence without activating valves",
   "running.dry_run": "Test mode",
+  "config.frequency": "Frequency",
+  "config.follows_program": "Follows program",
+  "config.frequency_every_n": "Every {n} days",
+  "config.frequency_weekdays": "Specific days",
+  "recap.frequency_every_n": "every {n}d",
   "config.title": "WateringHub Config"
 }

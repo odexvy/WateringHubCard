@@ -50,12 +50,22 @@ export interface ValveStep {
   status: 'done' | 'running' | 'pending';
 }
 
+// Valve frequency override
+
+export interface ValveFrequency {
+  type: 'every_n_days' | 'weekdays';
+  n?: number;
+  start_date?: string;
+  days?: string[];
+}
+
 // Dashboard card types
 
 export interface ProgramValve {
   valve_id: string;
   valve_name: string;
   duration: number;
+  frequency?: ValveFrequency;
 }
 
 export interface ProgramZone {

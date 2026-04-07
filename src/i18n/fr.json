@@ -62,5 +62,10 @@
   "config.dry_run": "Mode test",
   "config.dry_run_hint": "Exécute la séquence sans activer les vannes",
   "running.dry_run": "Mode test",
+  "config.frequency": "Fréquence",
+  "config.follows_program": "Suit le programme",
+  "config.frequency_every_n": "Tous les {n} jours",
+  "config.frequency_weekdays": "Jours spécifiques",
+  "recap.frequency_every_n": "tous les {n}j",
   "config.title": "WateringHub Config"
 }

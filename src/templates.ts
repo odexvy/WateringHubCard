@@ -1,5 +1,12 @@
 import { html, nothing, TemplateResult } from 'lit';
-import type { Hass, Translator, ProgramSchedule, ProgramZone, ValveStep } from './types';
+import type {
+  Hass,
+  Translator,
+  ProgramSchedule,
+  ProgramZone,
+  ValveStep,
+  ValveFrequency,
+} from './types';
 import {
   getGlobalStatus,
   formatRelative,
@@ -229,7 +236,8 @@ function renderProgramRecap(
             (valve) => html`
               <div class="recap-valve">
                 <ha-icon icon="mdi:water"></ha-icon>
-                ${valve.valve_name} — ${valve.duration} min
+                ${valve.valve_name} — ${valve.duration}
+                min${formatValveFrequency(valve.frequency, t)}
               </div>
             `,
           )}
@@ -243,4 +251,16 @@ function renderProgramRecap(
         : nothing}
     </div>
   `;
+}
+
+function formatValveFrequency(frequency: ValveFrequency | undefined, t: Translator): string {
+  if (!frequency) return '';
+  if (frequency.type === 'every_n_days') {
+    return ` · ${t('recap.frequency_every_n', { n: frequency.n ?? 2 })}`;
+  }
+  if (frequency.type === 'weekdays' && frequency.days?.length) {
+    const dayLabels = frequency.days.map((d) => t(`days.${d}`)).join(', ');
+    return ` · ${dayLabels}`;
+  }
+  return '';
 }

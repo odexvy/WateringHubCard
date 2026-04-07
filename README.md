@@ -26,7 +26,7 @@ Auto-discovers watering programs and provides a management UI.
 
 ### Config Card (`wateringhub-config-card`)
 
-- Manage programs: create, edit, delete (schedule, zones, per-valve durations, dry run toggle)
+- Manage programs: create, edit, delete (schedule, zones, per-valve durations and frequency override, dry run toggle)
 - Manage zones: create, edit, delete (name, valve selection)
 - View available valves (read-only, auto-discovered from backend)
 - Translated schedule type selector (daily / every N days / weekdays)
@@ -65,7 +65,7 @@ The WateringHub component creates the following entities:
 
 | Entity | Description |
 |--------|-------------|
-| `switch.wateringhub_{program_id}` | Toggle program on/off (attributes: schedule, zones, total_duration) |
+| `switch.wateringhub_{program_id}` | Toggle program on/off (attributes: schedule, zones, total_duration, dry_run) |
 | `sensor.wateringhub_status` | Global status: `idle` / `running` / `error` |
 | `sensor.wateringhub_next_run` | Next scheduled run (ISO datetime) |
 | `sensor.wateringhub_last_run` | Last run (ISO datetime) |

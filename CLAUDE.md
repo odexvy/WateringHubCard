@@ -23,8 +23,8 @@ Custom Home Assistant card (LitElement + TypeScript) for the `wateringhub` integ
 
 ## Entities
 
-- `switch.wateringhub_*` — per-program toggles (auto-discovered)
-- `sensor.wateringhub_status` — global: idle / running / error
+- `switch.wateringhub_*` — per-program toggles (auto-discovered, attrs: schedule, zones, total_duration, dry_run)
+- `sensor.wateringhub_status` — global: idle / running / error (running attrs: valves_sequence, dry_run)
 - `sensor.wateringhub_next_run` — global: ISO datetime
 - `sensor.wateringhub_last_run` — global: ISO datetime
 
