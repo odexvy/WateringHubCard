@@ -18,11 +18,7 @@ export interface CardConfig {
 export type Translator = (key: string, params?: Record<string, string | number>) => string;
 
 export interface ProgramSchedule {
-  type: 'daily' | 'every_n_days' | 'weekdays';
   time: string;
-  n?: number;
-  start_date?: string;
-  days?: string[];
 }
 
 // Config card types

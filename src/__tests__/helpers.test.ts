@@ -125,23 +125,9 @@ describe('statusLabel', () => {
 // ── formatSchedule ───────────────────────────────────────
 
 describe('formatSchedule', () => {
-  it('formats daily schedule', () => {
-    const schedule: ProgramSchedule = { type: 'daily', time: '22:00' };
-    expect(formatSchedule(schedule, mockT)).toBe('schedule.daily');
-  });
-
-  it('formats every_n_days schedule', () => {
-    const schedule: ProgramSchedule = { type: 'every_n_days', time: '22:00', n: 3 };
-    expect(formatSchedule(schedule, mockT)).toBe('schedule.every_n_days');
-  });
-
-  it('formats weekdays schedule', () => {
-    const schedule: ProgramSchedule = {
-      type: 'weekdays',
-      time: '22:00',
-      days: ['mon', 'wed', 'fri'],
-    };
-    expect(formatSchedule(schedule, mockT)).toBe('schedule.weekdays');
+  it('returns time from schedule', () => {
+    const schedule: ProgramSchedule = { time: '22:00' };
+    expect(formatSchedule(schedule, mockT)).toBe('22:00');
   });
 
   it('returns empty string for undefined', () => {

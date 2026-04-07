@@ -315,92 +315,20 @@ function renderProgramForm(
         />
       </div>
 
-      <!-- Schedule -->
-      <div class="form-row-inline">
-        <div>
-          <label class="form-label">${t('config.schedule_type')}</label>
-          <select
-            class="form-select"
-            .value=${form.schedule.type}
-            @change=${(e: Event) =>
-              onFormUpdate({
-                ...form,
-                schedule: {
-                  ...form.schedule,
-                  type: (e.target as HTMLSelectElement).value as ProgramSchedule['type'],
-                },
-              })}
-          >
-            <option value="daily">${t('config.schedule_daily')}</option>
-            <option value="every_n_days">${t('config.schedule_every_n_days')}</option>
-            <option value="weekdays">${t('config.schedule_weekdays')}</option>
-          </select>
-        </div>
-        <div>
-          <label class="form-label">${t('config.schedule_time')}</label>
-          <input
-            class="form-input"
-            type="time"
-            .value=${form.schedule.time}
-            @input=${(e: InputEvent) =>
-              onFormUpdate({
-                ...form,
-                schedule: { ...form.schedule, time: (e.target as HTMLInputElement).value },
-              })}
-          />
-        </div>
+      <!-- Schedule — time only -->
+      <div class="form-row">
+        <label class="form-label">${t('config.trigger_time')}</label>
+        <input
+          class="form-input"
+          type="time"
+          .value=${form.schedule.time}
+          @input=${(e: InputEvent) =>
+            onFormUpdate({
+              ...form,
+              schedule: { time: (e.target as HTMLInputElement).value },
+            })}
+        />
       </div>
-
-      ${form.schedule.type === 'every_n_days'
-        ? html`
-            <div class="form-row">
-              <label class="form-label">${t('config.schedule_every_n')}</label>
-              <input
-                class="form-input"
-                type="number"
-                min="2"
-                .value=${String(form.schedule.n ?? 2)}
-                @input=${(e: InputEvent) =>
-                  onFormUpdate({
-                    ...form,
-                    schedule: {
-                      ...form.schedule,
-                      n: parseInt((e.target as HTMLInputElement).value) || 2,
-                    },
-                  })}
-              />
-            </div>
-          `
-        : nothing}
-      ${form.schedule.type === 'weekdays'
-        ? html`
-            <div class="form-row">
-              <label class="form-label">${t('config.schedule_days')}</label>
-              <div class="checkbox-list" style="flex-direction:row; flex-wrap:wrap;">
-                ${['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => {
-                  const checked = form.schedule.days?.includes(day) ?? false;
-                  return html`
-                    <label class="checkbox-item">
-                      <input
-                        type="checkbox"
-                        .checked=${checked}
-                        @change=${() => {
-                          const days = form.schedule.days ?? [];
-                          const newDays = checked ? days.filter((d) => d !== day) : [...days, day];
-                          onFormUpdate({
-                            ...form,
-                            schedule: { ...form.schedule, days: newDays },
-                          });
-                        }}
-                      />
-                      ${t(`days.${day}`)}
-                    </label>
-                  `;
-                })}
-              </div>
-            </div>
-          `
-        : nothing}
 
       <!-- Zones + valves with durations -->
       <div class="form-row">

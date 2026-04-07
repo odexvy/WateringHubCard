@@ -158,20 +158,9 @@ export function formatRemainingTime(seconds: number): string {
 
 // ── Schedule formatting ──────────────────────────────────
 
-export function formatSchedule(schedule: ProgramSchedule | undefined, t: Translator): string {
+export function formatSchedule(schedule: ProgramSchedule | undefined, _t: Translator): string {
   if (!schedule) return '';
-  switch (schedule.type) {
-    case 'daily':
-      return t('schedule.daily', { time: schedule.time });
-    case 'every_n_days':
-      return t('schedule.every_n_days', { n: schedule.n ?? 2, time: schedule.time });
-    case 'weekdays': {
-      const days = (schedule.days ?? []).map((d) => t(`days.${d}`)).join(', ');
-      return t('schedule.weekdays', { days, time: schedule.time });
-    }
-    default:
-      return schedule.time;
-  }
+  return schedule.time;
 }
 
 // ── Time formatting ──────────────────────────────────────
