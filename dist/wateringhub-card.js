@@ -379,28 +379,22 @@ var pt=Object.defineProperty;var ut=Object.getOwnPropertyDescriptor;var v=(r,e,t
       ${t.errorMessage?c`<div class="error-message">${t.errorMessage}</div>`:u}
       <div class="error-auto-stopped">${e("error.auto_stopped")}</div>
     </div>
-  `:c``}function et(r,e,t){let n=ne(r);return n?c`
+  `:c``}function et(r,e,t,n,i){let o=ne(r);return o?c`
     <div class="running-view">
-      ${n.valveSequence.length>0?kt(n.valveSequence,n.remaining,t):zt(n,t)}
+      ${o.valveSequence.length>0?kt(o.valveSequence,o.remaining,i):zt(o,i)}
 
       <div class="running-bar-section">
         <div class="running-bar">
-          ${_e(e,c`<div
-              class="running-bar-fill"
-              style="width: 100%; transition: width ${n.remaining}s linear"
-            ></div>`)}
+          ${_e(e,c`<div class="running-bar-fill" style="${t}"></div>`)}
         </div>
       </div>
 
       <div class="running-global">
         <span class="running-global-label">
-          ${t("running.progress",{done:n.valvesDone+1,total:n.valvesTotal})}
+          ${i("running.progress",{done:o.valvesDone+1,total:o.valvesTotal})}
         </span>
         <div class="running-bar">
-          ${_e(e,c`<div
-              class="running-bar-fill global"
-              style="width: ${n.globalEndPercent}%; transition: width ${n.remaining}s linear"
-            ></div>`)}
+          ${_e(e,c`<div class="running-bar-fill global" style="${n}"></div>`)}
         </div>
       </div>
     </div>
@@ -469,12 +463,12 @@ var pt=Object.defineProperty;var ut=Object.getOwnPropertyDescriptor;var v=(r,e,t
             ${t("recap.total_duration",{duration:o})}
           </div>`:u}
     </div>
-  `}var y=class extends b{constructor(){super(...arguments);this._programEntities=[];this._expandedProgram=null;this._tick=0;this._valveKey="";this._t=t=>t;this._timerInterval=null}setConfig(t){this._config=t}set hass(t){let n=this._hass;this._hass=t,this._t=ee(t.language),n?.states!==t.states&&(this._programEntities=re(t));let i=V(t);this._updateTimer(i);let o=i==="running"?ne(t):null,s=o?`${o.valveStart}`:"";s!==this._valveKey&&(this._valveKey=s)}disconnectedCallback(){super.disconnectedCallback(),this._clearTimer()}_updateTimer(t){t==="running"&&!this._timerInterval?this._timerInterval=setInterval(()=>{this._tick++},1e3):t!=="running"&&this._timerInterval&&this._clearTimer()}_clearTimer(){this._timerInterval&&(clearInterval(this._timerInterval),this._timerInterval=null)}getCardSize(){return 3}_toggleExpand(t){this._expandedProgram=this._expandedProgram===t?null:t}_toggleProgram(t){let n=this._hass.states[t];if(!n)return;let i=n.state==="on"?"turn_off":"turn_on";this._hass.callService("switch",i,{entity_id:t})}_stopAll(){confirm(this._t("stop_confirm"))&&this._hass.callService("wateringhub","stop_all",{})}render(){if(!this._hass||!this._config)return c`<ha-card>${this._t("loading")}</ha-card>`;let t=V(this._hass),n=this._config.title??"WateringHub";return c`
+  `}var y=class extends b{constructor(){super(...arguments);this._programEntities=[];this._expandedProgram=null;this._tick=0;this._valveKey="";this._t=t=>t;this._timerInterval=null;this._valveBarStyle="";this._globalBarStyle=""}setConfig(t){this._config=t}set hass(t){let n=this._hass;this._hass=t,this._t=ee(t.language),n?.states!==t.states&&(this._programEntities=re(t));let i=V(t);this._updateTimer(i);let o=i==="running"?ne(t):null,s=o?`${o.valveStart}`:"";s!==this._valveKey&&(this._valveKey=s,o?(this._valveBarStyle=`width: 100%; transition: width ${o.remaining}s linear`,this._globalBarStyle=`width: ${o.globalEndPercent}%; transition: width ${o.remaining}s linear`):(this._valveBarStyle="",this._globalBarStyle=""))}disconnectedCallback(){super.disconnectedCallback(),this._clearTimer()}_updateTimer(t){t==="running"&&!this._timerInterval?this._timerInterval=setInterval(()=>{this._tick++},1e3):t!=="running"&&this._timerInterval&&this._clearTimer()}_clearTimer(){this._timerInterval&&(clearInterval(this._timerInterval),this._timerInterval=null)}getCardSize(){return 3}_toggleExpand(t){this._expandedProgram=this._expandedProgram===t?null:t}_toggleProgram(t){let n=this._hass.states[t];if(!n)return;let i=n.state==="on"?"turn_off":"turn_on";this._hass.callService("switch",i,{entity_id:t})}_stopAll(){confirm(this._t("stop_confirm"))&&this._hass.callService("wateringhub","stop_all",{})}render(){if(!this._hass||!this._config)return c`<ha-card>${this._t("loading")}</ha-card>`;let t=V(this._hass),n=this._config.title??"WateringHub";return c`
       <ha-card>
         ${Qe(n,t==="running",()=>this._stopAll(),this._t)}
         ${We(this._hass,this._programEntities,this._t)}
         ${Xe(this._hass,this._t)}
-        ${et(this._hass,this._valveKey,this._t)}
+        ${et(this._hass,this._valveKey,this._valveBarStyle,this._globalBarStyle,this._t)}
         ${tt(this._hass,this._programEntities,this._expandedProgram,i=>this._toggleExpand(i),i=>this._toggleProgram(i),this._t)}
       </ha-card>
     `}};y.styles=[te,Le],v([f()],y.prototype,"_config",2),v([f()],y.prototype,"_hass",2),v([f()],y.prototype,"_programEntities",2),v([f()],y.prototype,"_expandedProgram",2),v([f()],y.prototype,"_tick",2),v([f()],y.prototype,"_valveKey",2),y=v([W("wateringhub-card")],y);globalThis.customCards=globalThis.customCards||[];globalThis.customCards.push({type:"wateringhub-card",name:"WateringHub Card",description:"Watering management card for WateringHub"});var rt=A`

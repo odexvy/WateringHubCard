@@ -28,6 +28,8 @@ export class WateringHubCard extends LitElement {
 
   private _t: Translator = (key: string) => key;
   private _timerInterval: ReturnType<typeof setInterval> | null = null;
+  private _valveBarStyle = '';
+  private _globalBarStyle = '';
 
   static readonly styles = [sharedStyles, cardStyles];
 
@@ -45,11 +47,18 @@ export class WateringHubCard extends LitElement {
     const status = getGlobalStatus(hass);
     this._updateTimer(status);
 
-    // Track valve changes to reset progress bars
+    // Track valve changes to compute bar styles once
     const info = status === 'running' ? getRunningInfo(hass) : null;
     const newKey = info ? `${info.valveStart}` : '';
     if (newKey !== this._valveKey) {
       this._valveKey = newKey;
+      if (info) {
+        this._valveBarStyle = `width: 100%; transition: width ${info.remaining}s linear`;
+        this._globalBarStyle = `width: ${info.globalEndPercent}%; transition: width ${info.remaining}s linear`;
+      } else {
+        this._valveBarStyle = '';
+        this._globalBarStyle = '';
+      }
     }
   }
 
@@ -109,7 +118,13 @@ export class WateringHubCard extends LitElement {
         ${renderHeader(title, status === 'running', () => this._stopAll(), this._t)}
         ${renderStatusRow(this._hass, this._programEntities, this._t)}
         ${renderErrorView(this._hass, this._t)}
-        ${renderRunningView(this._hass, this._valveKey, this._t)}
+        ${renderRunningView(
+          this._hass,
+          this._valveKey,
+          this._valveBarStyle,
+          this._globalBarStyle,
+          this._t,
+        )}
         ${renderProgramList(
           this._hass,
           this._programEntities,

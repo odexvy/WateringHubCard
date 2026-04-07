@@ -65,7 +65,13 @@ export function renderErrorView(hass: Hass, t: Translator): TemplateResult {
   `;
 }
 
-export function renderRunningView(hass: Hass, valveKey: string, t: Translator): TemplateResult {
+export function renderRunningView(
+  hass: Hass,
+  valveKey: string,
+  valveBarStyle: string,
+  globalBarStyle: string,
+  t: Translator,
+): TemplateResult {
   const info = getRunningInfo(hass);
   if (!info) return html``;
 
@@ -77,13 +83,7 @@ export function renderRunningView(hass: Hass, valveKey: string, t: Translator): 
 
       <div class="running-bar-section">
         <div class="running-bar">
-          ${keyed(
-            valveKey,
-            html`<div
-              class="running-bar-fill"
-              style="width: 100%; transition: width ${info.remaining}s linear"
-            ></div>`,
-          )}
+          ${keyed(valveKey, html`<div class="running-bar-fill" style="${valveBarStyle}"></div>`)}
         </div>
       </div>
 
@@ -94,10 +94,7 @@ export function renderRunningView(hass: Hass, valveKey: string, t: Translator): 
         <div class="running-bar">
           ${keyed(
             valveKey,
-            html`<div
-              class="running-bar-fill global"
-              style="width: ${info.globalEndPercent}%; transition: width ${info.remaining}s linear"
-            ></div>`,
+            html`<div class="running-bar-fill global" style="${globalBarStyle}"></div>`,
           )}
         </div>
       </div>
