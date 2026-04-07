@@ -77,6 +77,9 @@ export interface RunningInfo {
   valvesTotal: number;
   progressPercent: number;
   remaining: number;
+  totalRemaining: number;
+  totalDuration: number;
+  totalElapsed: number;
   valvePercent: number;
   finePercent: number;
   globalEndPercent: number;
@@ -105,6 +108,24 @@ export function getRunningInfo(hass: Hass): RunningInfo | null {
     ? (attrs.valves_sequence as ValveStep[])
     : [];
 
+  // Total remaining: current valve remaining + all pending valve durations
+  const pendingDuration = valveSequence
+    .filter((v) => v.status === 'pending')
+    .reduce((s, v) => s + v.duration, 0);
+  const totalRemaining = remaining + pendingDuration;
+
+  // Total duration of all valves (from sequence or fallback)
+  const totalDuration =
+    valveSequence.length > 0
+      ? valveSequence.reduce((s, v) => s + v.duration, 0)
+      : valveDuration * valvesTotal;
+
+  // Total elapsed across all valves
+  const doneDuration = valveSequence
+    .filter((v) => v.status === 'done')
+    .reduce((s, v) => s + v.duration, 0);
+  const totalElapsed = doneDuration + elapsed;
+
   return {
     programName: (attrs.current_program as string) ?? '',
     zoneName: (attrs.current_zone_name as string) ?? '',
@@ -115,6 +136,9 @@ export function getRunningInfo(hass: Hass): RunningInfo | null {
     valvesTotal,
     progressPercent: (attrs.progress_percent as number) ?? 0,
     remaining,
+    totalRemaining,
+    totalDuration,
+    totalElapsed,
     valvePercent,
     finePercent,
     globalEndPercent,

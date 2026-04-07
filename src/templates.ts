@@ -1,5 +1,4 @@
 import { html, nothing, TemplateResult } from 'lit';
-import { keyed } from 'lit/directives/keyed.js';
 import type { Hass, Translator, ProgramSchedule, ProgramZone, ValveStep } from './types';
 import {
   getGlobalStatus,
@@ -14,18 +13,10 @@ import {
   getFriendlyName,
 } from './helpers';
 
-export function renderHeader(
-  title: string,
-  showStopButton: boolean,
-  onStopAll: () => void,
-  t: Translator,
-): TemplateResult {
+export function renderHeader(title: string): TemplateResult {
   return html`
     <div class="header">
       <span class="title">${title}</span>
-      ${showStopButton
-        ? html`<button class="stop-btn" @click=${onStopAll}>${t('stop_all')}</button>`
-        : nothing}
     </div>
   `;
 }
@@ -37,6 +28,9 @@ export function renderStatusRow(
 ): TemplateResult {
   const status = getGlobalStatus(hass);
   const activeName = getActiveProgramName(hass, programEntities);
+
+  // When running, status info is shown in the running block instead
+  if (status === 'running') return html``;
 
   return html`
     <div class="status-row">
@@ -67,62 +61,62 @@ export function renderErrorView(hass: Hass, t: Translator): TemplateResult {
 
 export function renderRunningView(
   hass: Hass,
-  valveKey: string,
-  valveBarStyle: string,
-  globalBarStyle: string,
+  onStopAll: () => void,
   t: Translator,
 ): TemplateResult {
   const info = getRunningInfo(hass);
   if (!info) return html``;
 
+  const CIRCUMFERENCE = 2 * Math.PI * 30;
+  const globalPct = info.totalDuration > 0 ? info.totalElapsed / info.totalDuration : 0;
+  const dashOffset = CIRCUMFERENCE * (1 - Math.min(1, globalPct));
+
   return html`
-    <div class="running-view">
+    <div class="running-block">
+      <button class="running-stop-btn" @click=${onStopAll}>${t('stop_all')}</button>
       ${info.dryRun ? html`<span class="badge-dry-run">${t('running.dry_run')}</span>` : nothing}
+
+      <div class="global-hero">
+        <div class="circular-progress">
+          <svg viewBox="0 0 68 68">
+            <circle class="cp-track" cx="34" cy="34" r="30" />
+            <circle
+              class="cp-fill"
+              cx="34"
+              cy="34"
+              r="30"
+              style="stroke-dasharray: ${CIRCUMFERENCE}; stroke-dashoffset: ${dashOffset}"
+            />
+          </svg>
+          <div class="cp-center">
+            <span class="cp-time">${formatRemainingTime(info.totalRemaining)}</span>
+          </div>
+        </div>
+        <div class="global-info">
+          <div class="global-program-name">
+            ${getFriendlyName(
+              hass.states[`switch.wateringhub_${info.programName}`],
+              info.programName,
+            )}
+          </div>
+          <div class="global-sub">
+            ${t('running.progress', { done: info.valvesDone + 1, total: info.valvesTotal })}
+          </div>
+        </div>
+      </div>
+
       ${info.valveSequence.length > 0
-        ? renderValveSequence(info.valveSequence, info.remaining, t)
-        : renderRunningCompact(info, t)}
-
-      <div class="running-bar-section">
-        <div class="running-bar">
-          ${keyed(valveKey, html`<div class="running-bar-fill" style="${valveBarStyle}"></div>`)}
-        </div>
-      </div>
-
-      <div class="running-global">
-        <span class="running-global-label">
-          ${t('running.progress', { done: info.valvesDone + 1, total: info.valvesTotal })}
-        </span>
-        <div class="running-bar">
-          ${keyed(
-            valveKey,
-            html`<div class="running-bar-fill global" style="${globalBarStyle}"></div>`,
-          )}
-        </div>
-      </div>
+        ? renderValveTimeline(info.valveSequence, info.remaining, t)
+        : nothing}
     </div>
   `;
 }
 
-function renderRunningCompact(
-  info: ReturnType<typeof getRunningInfo> & object,
-  t: Translator,
+function renderValveTimeline(
+  steps: ValveStep[],
+  remaining: number,
+  _t: Translator,
 ): TemplateResult {
-  return html`
-    <div class="running-zone">
-      <ha-icon icon="mdi:map-marker"></ha-icon>
-      ${t('running.zone', { name: info.zoneName })}
-    </div>
-    <div class="running-valve-row">
-      <ha-icon icon="mdi:water"></ha-icon>
-      <span class="running-valve-name">${info.valveName}</span>
-      <span class="running-valve-time">
-        ${t('running.remaining', { time: formatRemainingTime(info.remaining) })}
-      </span>
-    </div>
-  `;
-}
-
-function renderValveSequence(steps: ValveStep[], remaining: number, t: Translator): TemplateResult {
   // Group by zone, preserving order
   const groups: { zoneName: string; valves: ValveStep[] }[] = [];
   for (const step of steps) {
@@ -134,30 +128,34 @@ function renderValveSequence(steps: ValveStep[], remaining: number, t: Translato
     }
   }
 
+  // SVG icons as inline templates
+  const dotDone = html`<svg viewBox="0 0 24 24">
+    <path
+      fill="currentColor"
+      d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9Z"
+    />
+  </svg>`;
+  const dotRunning = html`<svg viewBox="0 0 24 24">
+    <circle fill="currentColor" cx="12" cy="12" r="6" />
+  </svg>`;
+  const dotPending = html`<svg viewBox="0 0 24 24">
+    <circle fill="none" stroke="currentColor" stroke-width="2" cx="12" cy="12" r="6" />
+  </svg>`;
+  const dotMap = { done: dotDone, running: dotRunning, pending: dotPending };
+
   return html`
-    <div class="valve-sequence">
+    <div class="valve-timeline">
       ${groups.map(
         (group) => html`
-          <div class="seq-zone">
-            <ha-icon icon="mdi:map-marker"></ha-icon>
-            <span>${group.zoneName}</span>
-          </div>
+          <div class="tl-zone">${group.zoneName}</div>
           ${group.valves.map((v) => {
-            const iconMap = {
-              done: 'mdi:check-circle',
-              running: 'mdi:water',
-              pending: 'mdi:clock-outline',
-            };
-            const icon = iconMap[v.status];
             const durationMin = Math.ceil(v.duration / 60);
             return html`
-              <div class="seq-valve seq-${v.status}">
-                <ha-icon icon="${icon}"></ha-icon>
-                <span class="seq-valve-name">${v.valve_name}</span>
-                <span class="seq-valve-info">
-                  ${v.status === 'running'
-                    ? t('running.remaining', { time: formatRemainingTime(remaining) })
-                    : `${durationMin} min`}
+              <div class="tl-step tl-${v.status}">
+                <span class="tl-dot">${dotMap[v.status]}</span>
+                <span class="tl-step-name">${v.valve_name}</span>
+                <span class="tl-step-time">
+                  ${v.status === 'running' ? formatRemainingTime(remaining) : `${durationMin} min`}
                 </span>
               </div>
             `;
@@ -185,7 +183,7 @@ export function renderProgramList(
     if (!entity) return nothing;
 
     const isOn = entity.state === 'on';
-    const isExpanded = isOn || expandedProgram === entityId;
+    const isExpanded = expandedProgram === entityId;
     const name = getFriendlyName(entity, entityId);
 
     return html`

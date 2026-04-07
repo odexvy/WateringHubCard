@@ -64,5 +64,5 @@
   "config.dry_run": "Test mode",
   "config.dry_run_hint": "Runs the sequence without activating valves",
   "running.dry_run": "Test mode",
-  "config.title": "WateringHub"
+  "config.title": "WateringHub Config"
 }

@@ -8,7 +8,7 @@ import type { Hass, CardConfig, Translator } from './types';
 import { getTranslator } from './i18n/index';
 import { sharedStyles } from './shared-styles';
 import { cardStyles } from './styles';
-import { discoverPrograms, getGlobalStatus, getRunningInfo } from './helpers';
+import { discoverPrograms, getGlobalStatus } from './helpers';
 import {
   renderHeader,
   renderStatusRow,
@@ -24,12 +24,9 @@ export class WateringHubCard extends LitElement {
   @state() private _programEntities: string[] = [];
   @state() private _expandedProgram: string | null = null;
   @state() private _tick = 0;
-  @state() private _valveKey = '';
 
   private _t: Translator = (key: string) => key;
   private _timerInterval: ReturnType<typeof setInterval> | null = null;
-  private _valveBarStyle = '';
-  private _globalBarStyle = '';
 
   static readonly styles = [sharedStyles, cardStyles];
 
@@ -44,22 +41,7 @@ export class WateringHubCard extends LitElement {
     if (prevHass?.states !== hass.states) {
       this._programEntities = discoverPrograms(hass);
     }
-    const status = getGlobalStatus(hass);
-    this._updateTimer(status);
-
-    // Track valve changes to compute bar styles once
-    const info = status === 'running' ? getRunningInfo(hass) : null;
-    const newKey = info ? `${info.valveStart}` : '';
-    if (newKey !== this._valveKey) {
-      this._valveKey = newKey;
-      if (info) {
-        this._valveBarStyle = `width: 100%; transition: width ${info.remaining}s linear`;
-        this._globalBarStyle = `width: ${info.globalEndPercent}%; transition: width ${info.remaining}s linear`;
-      } else {
-        this._valveBarStyle = '';
-        this._globalBarStyle = '';
-      }
-    }
+    this._updateTimer(getGlobalStatus(hass));
   }
 
   disconnectedCallback(): void {
@@ -110,21 +92,13 @@ export class WateringHubCard extends LitElement {
       return html`<ha-card>${this._t('loading')}</ha-card>`;
     }
 
-    const status = getGlobalStatus(this._hass);
     const title = this._config.title ?? 'WateringHub';
 
     return html`
       <ha-card>
-        ${renderHeader(title, status === 'running', () => this._stopAll(), this._t)}
-        ${renderStatusRow(this._hass, this._programEntities, this._t)}
+        ${renderHeader(title)} ${renderStatusRow(this._hass, this._programEntities, this._t)}
         ${renderErrorView(this._hass, this._t)}
-        ${renderRunningView(
-          this._hass,
-          this._valveKey,
-          this._valveBarStyle,
-          this._globalBarStyle,
-          this._t,
-        )}
+        ${renderRunningView(this._hass, () => this._stopAll(), this._t)}
         ${renderProgramList(
           this._hass,
           this._programEntities,
