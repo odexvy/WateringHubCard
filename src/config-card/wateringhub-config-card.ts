@@ -3,6 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 
 import type { Hass, CardConfig, Translator, ZoneConfig, ProgramSchedule } from '../types';
 import { getTranslator } from '../i18n/index';
+import { sharedStyles } from '../shared-styles';
 import { configStyles } from './config-styles';
 import { generateId } from './config-helpers';
 import {
@@ -18,13 +19,13 @@ import {
 export class WateringHubConfigCard extends LitElement {
   @state() private _config!: CardConfig;
   @state() private _hass!: Hass;
-  @state() private _activeTab = 'valves';
+  @state() private _activeTab = 'programs';
   @state() private _editingZone: ZoneFormState | null = null;
   @state() private _editingProgram: ProgramFormState | null = null;
 
   private _t: Translator = (key: string) => key;
 
-  static readonly styles = configStyles;
+  static readonly styles = [sharedStyles, configStyles];
 
   setConfig(config: CardConfig): void {
     this._config = config;
@@ -159,6 +160,7 @@ export class WateringHubConfigCard extends LitElement {
 
     return html`
       <ha-card>
+        <div class="header"><span class="title">${this._t('config.title')}</span></div>
         ${renderTabs(this._activeTab, (tab) => this._setTab(tab), this._t)}
         ${this._activeTab === 'valves' ? renderValvesTab(this._hass, this._t) : ''}
         ${this._activeTab === 'zones'

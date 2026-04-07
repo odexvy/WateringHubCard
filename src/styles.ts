@@ -1,23 +1,6 @@
 import { css } from 'lit';
 
 export const cardStyles = css`
-  ha-card {
-    padding: 20px;
-  }
-
-  /* Header */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  .title {
-    font-size: 20px;
-    font-weight: 500;
-    color: var(--primary-text-color);
-  }
-
   /* Status badge */
   .status-row {
     display: flex;
@@ -267,14 +250,6 @@ export const cardStyles = css`
   .recap-total ha-icon {
     --mdc-icon-size: 18px;
     color: var(--secondary-text-color);
-  }
-
-  /* No programs */
-  .no-programs {
-    text-align: center;
-    padding: 32px;
-    color: var(--secondary-text-color);
-    font-size: 14px;
   }
 
   /* Stop button */

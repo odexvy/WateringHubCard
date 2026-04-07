@@ -60,5 +60,6 @@
   "config.select_zones": "Select zones",
   "config.duration_min": "Duration (min)",
   "config.valve_entity": "Entity",
-  "config.total_duration": "Total: {duration} min"
+  "config.total_duration": "Total: {duration} min",
+  "config.title": "WateringHub"
 }

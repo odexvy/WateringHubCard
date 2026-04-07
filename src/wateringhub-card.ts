@@ -6,6 +6,7 @@ import { customElement, state } from 'lit/decorators.js';
 
 import type { Hass, CardConfig, Translator } from './types';
 import { getTranslator } from './i18n/index';
+import { sharedStyles } from './shared-styles';
 import { cardStyles } from './styles';
 import { discoverPrograms, getGlobalStatus } from './helpers';
 import {
@@ -27,7 +28,7 @@ export class WateringHubCard extends LitElement {
   private _t: Translator = (key: string) => key;
   private _timerInterval: ReturnType<typeof setInterval> | null = null;
 
-  static readonly styles = cardStyles;
+  static readonly styles = [sharedStyles, cardStyles];
 
   setConfig(config: CardConfig): void {
     this._config = config;

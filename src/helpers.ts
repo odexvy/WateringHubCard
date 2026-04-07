@@ -10,12 +10,19 @@ export function getActiveProgramName(hass: Hass, programEntities: string[]): str
   for (const entityId of programEntities) {
     const entity = hass.states[entityId];
     if (entity?.state === 'on') {
-      return typeof entity.attributes.friendly_name === 'string'
-        ? entity.attributes.friendly_name
-        : entityId;
+      return getFriendlyName(entity, entityId);
     }
   }
   return null;
+}
+
+export function getFriendlyName(
+  entity: { attributes: Record<string, unknown> } | undefined,
+  fallback: string,
+): string {
+  return typeof entity?.attributes.friendly_name === 'string'
+    ? entity.attributes.friendly_name
+    : fallback;
 }
 
 // ── Status ───────────────────────────────────────────────
@@ -49,13 +56,8 @@ export function getErrorInfo(hass: Hass): ErrorInfo | null {
 
   const attrs = entity.attributes;
   const programId = attrs.current_program as string | null;
-  let programName = programId ?? '';
-  if (programId) {
-    const switchEntity = hass.states[`switch.wateringhub_${programId}`];
-    if (typeof switchEntity?.attributes.friendly_name === 'string') {
-      programName = switchEntity.attributes.friendly_name;
-    }
-  }
+  const switchEntity = programId ? hass.states[`switch.wateringhub_${programId}`] : undefined;
+  const programName = getFriendlyName(switchEntity, programId ?? '');
 
   return {
     programName,

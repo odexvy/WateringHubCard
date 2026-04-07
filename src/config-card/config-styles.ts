@@ -1,10 +1,6 @@
 import { css } from 'lit';
 
 export const configStyles = css`
-  ha-card {
-    padding: 20px;
-  }
-
   /* Tabs */
   .tabs {
     display: flex;
@@ -220,14 +216,6 @@ export const configStyles = css`
   .add-btn:hover {
     border-color: var(--primary-color);
     color: var(--primary-color);
-  }
-
-  /* Empty state */
-  .empty-state {
-    text-align: center;
-    padding: 32px;
-    color: var(--secondary-text-color);
-    font-size: 14px;
   }
 
   /* Total duration */

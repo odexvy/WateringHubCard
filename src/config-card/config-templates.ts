@@ -1,7 +1,7 @@
 import { html, nothing, TemplateResult } from 'lit';
 import type { Hass, Translator, AvailableValve, ZoneConfig, ProgramSchedule } from '../types';
 import { getAvailableValves, getZones } from './config-helpers';
-import { discoverPrograms } from '../helpers';
+import { discoverPrograms, getFriendlyName } from '../helpers';
 
 // ── Tabs ─────────────────────────────────────────────────
 
@@ -11,9 +11,9 @@ export function renderTabs(
   t: Translator,
 ): TemplateResult {
   const tabs = [
-    { id: 'valves', label: t('config.tab_valves') },
-    { id: 'zones', label: t('config.tab_zones') },
     { id: 'programs', label: t('config.tab_programs') },
+    { id: 'zones', label: t('config.tab_zones') },
+    { id: 'valves', label: t('config.tab_valves') },
   ];
   return html`
     <div class="tabs">
@@ -244,10 +244,7 @@ function renderProgramItem(
   onDelete: (entityId: string) => void,
   t: Translator,
 ): TemplateResult {
-  const name =
-    typeof entity.attributes.friendly_name === 'string'
-      ? entity.attributes.friendly_name
-      : entityId;
+  const name = getFriendlyName(entity, entityId);
   const schedule = entity.attributes.schedule as ProgramSchedule | undefined;
   const totalDuration = entity.attributes.total_duration as number | undefined;
   const scheduleStr = schedule ? `${schedule.type} — ${schedule.time}` : '';

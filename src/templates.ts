@@ -10,6 +10,7 @@ import {
   getRunningInfo,
   getErrorInfo,
   formatRemainingTime,
+  getFriendlyName,
 } from './helpers';
 
 export function renderHeader(
@@ -109,7 +110,7 @@ export function renderProgramList(
   t: Translator,
 ): TemplateResult {
   if (programEntities.length === 0) {
-    return html`<div class="no-programs">${t('no_programs')}</div>`;
+    return html`<div class="empty-state">${t('no_programs')}</div>`;
   }
 
   return html`${programEntities.map((entityId) => {
@@ -118,10 +119,7 @@ export function renderProgramList(
 
     const isOn = entity.state === 'on';
     const isExpanded = isOn || expandedProgram === entityId;
-    const name =
-      typeof entity.attributes.friendly_name === 'string'
-        ? entity.attributes.friendly_name
-        : entityId;
+    const name = getFriendlyName(entity, entityId);
 
     return html`
       <div class="program-wrapper">
