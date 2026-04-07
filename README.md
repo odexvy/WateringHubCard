@@ -24,7 +24,7 @@ WateringHub Card provides two custom Lovelace cards for managing your irrigation
 - **Visual editor** — configure card title from HA card picker
 - **Auto-discovery** — finds all `switch.wateringhub_*` programs automatically
 - **Per-program status** — idle badge + next/last run, disabled badge for inactive programs
-- **Program recap** — accordion with trigger time, zones, valves, per-valve frequency, total duration
+- **Program recap** — accordion with trigger time, zone badges, valves, per-valve frequency, total duration
 - **Running block** — SVG circular progress, valve timeline grouped by zone (done / running / pending)
 - **Dry run mode** — "Test mode" badge when running without activating physical valves
 - **Error view** — program name, error message, auto-stop notice
@@ -33,9 +33,10 @@ WateringHub Card provides two custom Lovelace cards for managing your irrigation
 ### Config Card (`wateringhub-config-card`)
 
 - **Visual editor** — configure valves with native HA entity picker (autocomplete, search, icons)
-- **Programs** — create, edit, delete (trigger time, zones, per-valve durations and frequency, dry run toggle)
+- **Programs** — create, edit, delete (trigger time, zones, per-valve durations and frequency, dry run toggle, drag & drop valve reorder)
 - **Zones** — create, edit, delete (name, valve selection)
 - **Valves** — read-only tab showing configured valves
+- **Toast notifications** — visual confirmation on save/delete actions
 
 ### Shared
 

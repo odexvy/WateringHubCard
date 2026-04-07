@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import type {
@@ -32,6 +32,7 @@ export class WateringHubConfigCard extends LitElement {
   @state() private _hass!: Hass;
   @state() private _activeTab = 'programs';
   @state() private _editingZone: ZoneFormState | null = null;
+  @state() private _toast = '';
   @state() private _editingProgram: ProgramFormState | null = null;
 
   private _t: Translator = (key: string) => key;
@@ -49,6 +50,13 @@ export class WateringHubConfigCard extends LitElement {
 
   getCardSize(): number {
     return 5;
+  }
+
+  private _showToast(msg: string): void {
+    this._toast = msg;
+    setTimeout(() => {
+      this._toast = '';
+    }, 3000);
   }
 
   // ── Tab ────────────────────────────────────────────────
@@ -86,11 +94,13 @@ export class WateringHubConfigCard extends LitElement {
       valves: form.valves,
     });
     this._editingZone = null;
+    this._showToast(this._t('config.saved'));
   }
 
   private async _deleteZone(zoneId: string): Promise<void> {
     if (confirm(this._t('config.confirm_delete_zone'))) {
       await this._hass.callService('wateringhub', 'delete_zone', { id: zoneId });
+      this._showToast(this._t('config.deleted'));
     }
   }
 
@@ -163,6 +173,7 @@ export class WateringHubConfigCard extends LitElement {
       })),
     });
     this._editingProgram = null;
+    this._showToast(this._t('config.saved'));
   }
 
   private async _deleteProgram(entityId: string): Promise<void> {
@@ -170,6 +181,7 @@ export class WateringHubConfigCard extends LitElement {
       const entity = this._hass.states[entityId];
       const programId = (entity?.attributes.program_id as string) ?? '';
       await this._hass.callService('wateringhub', 'delete_program', { id: programId });
+      this._showToast(this._t('config.deleted'));
     }
   }
 
@@ -211,6 +223,7 @@ export class WateringHubConfigCard extends LitElement {
               this._t,
             )
           : ''}
+        ${this._toast ? html`<div class="toast">${this._toast}</div>` : nothing}
       </ha-card>
     `;
   }

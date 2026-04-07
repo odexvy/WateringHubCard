@@ -225,8 +225,7 @@ function renderProgramRecap(
       ${zones.map(
         (zone) => html`
           <div class="recap-zone">
-            <ha-icon icon="mdi:map-marker"></ha-icon>
-            ${zone.zone_name}
+            <span class="recap-zone-badge">${zone.zone_name}</span>
           </div>
           ${zone.valves.map(
             (valve) => html`

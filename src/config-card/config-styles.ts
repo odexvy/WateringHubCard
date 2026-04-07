@@ -154,8 +154,20 @@ export const configStyles = css`
     background: var(--card-background-color);
   }
 
+  /* Drag handle */
+  .drag-handle {
+    --mdc-icon-size: 18px;
+    color: var(--disabled-text-color);
+    cursor: grab;
+    flex-shrink: 0;
+  }
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
   /* Valve config block (duration + frequency) */
   .valve-config-block {
+    cursor: default;
     padding: 4px 0 8px 24px;
     border-bottom: 1px solid var(--divider-color);
     margin-bottom: 4px;
@@ -285,5 +297,31 @@ export const configStyles = css`
     color: var(--secondary-text-color);
     margin-top: 8px;
     text-align: right;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-text-color);
+    color: var(--card-background-color);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 100;
+    animation: toast-in 0.3s ease;
+  }
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   }
 `;

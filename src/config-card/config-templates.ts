@@ -359,7 +359,7 @@ function renderProgramForm(
               </label>
               ${isSelected && formZone
                 ? html`
-                    ${formZone.valves.map((fv) => {
+                    ${formZone.valves.map((fv, valveIdx) => {
                       const valveName =
                         valves.find((v) => v.id === fv.valve_id)?.name ?? fv.valve_id;
                       const updateValve = (patch: Partial<ProgramValveForm>) => {
@@ -373,9 +373,33 @@ function renderProgramForm(
                       };
                       const freqType = fv.frequency?.type ?? '';
                       const today = new Date().toISOString().slice(0, 10);
+                      const reorderValves = (fromIdx: number, toIdx: number) => {
+                        const arr = [...formZone.valves];
+                        const [moved] = arr.splice(fromIdx, 1);
+                        arr.splice(toIdx, 0, moved);
+                        const newZones = form.zones.map((fz) =>
+                          fz.zone_id === zone.id ? { ...fz, valves: arr } : fz,
+                        );
+                        onFormUpdate({ ...form, zones: newZones });
+                      };
                       return html`
-                        <div class="valve-config-block">
+                        <div
+                          class="valve-config-block"
+                          draggable="true"
+                          @dragstart=${(e: DragEvent) => {
+                            e.dataTransfer?.setData('text/plain', String(valveIdx));
+                          }}
+                          @dragover=${(e: DragEvent) => e.preventDefault()}
+                          @drop=${(e: DragEvent) => {
+                            e.preventDefault();
+                            const fromIdx = parseInt(e.dataTransfer?.getData('text/plain') ?? '');
+                            if (!isNaN(fromIdx) && fromIdx !== valveIdx) {
+                              reorderValves(fromIdx, valveIdx);
+                            }
+                          }}
+                        >
                           <div class="valve-duration-row">
+                            <ha-icon class="drag-handle" icon="mdi:drag"></ha-icon>
                             <label>${valveName}</label>
                             <input
                               class="valve-duration-input"

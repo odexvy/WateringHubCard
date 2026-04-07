@@ -324,13 +324,17 @@ export const cardStyles = css`
     padding: 10px 0 6px;
   }
   .recap-zone {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--primary-text-color);
-    font-weight: 500;
     padding: 8px 0 4px;
+  }
+  .recap-zone-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: white;
+    background: var(--primary-color);
   }
   .recap-valve {
     display: flex;
@@ -352,7 +356,6 @@ export const cardStyles = css`
     margin-top: 6px;
   }
   .recap-schedule ha-icon,
-  .recap-zone ha-icon,
   .recap-valve ha-icon,
   .recap-total ha-icon {
     --mdc-icon-size: 18px;

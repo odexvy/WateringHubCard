@@ -62,5 +62,7 @@
   "config.editor_valves": "Vannes",
   "config.add_valve": "Ajouter une vanne",
   "config.select_entity": "Entité switch",
-  "config.confirm_delete_valve": "Supprimer cette vanne ?"
+  "config.confirm_delete_valve": "Supprimer cette vanne ?",
+  "config.saved": "Enregistré",
+  "config.deleted": "Supprimé"
 }

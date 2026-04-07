@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.26
+**Version :** 0.0.27
 **Branche :** master
 
 ---
@@ -29,7 +29,7 @@ Le repo contient **deux custom cards** dans un seul bundle :
   - Quand running : pas de statut inline (info dans le running block)
 - **Recap programme (accordéon)** — chevron pour déplier/replier :
   - Schedule : "Tous les jours à 22:00" / "Lun, Mer, Ven à 07:00" (traduit)
-  - Zones avec icône HA `mdi:map-marker`
+  - Zones avec badge coloré (primary-color)
   - Vannes par zone avec icône `mdi:water` + durée
   - Durée totale avec icône `mdi:timer-outline`
 - **Running block** — bloc dédié affiché quand status=running :
@@ -77,6 +77,8 @@ Le repo contient **deux custom cards** dans un seul bundle :
   - Supprimer : confirmation → `wateringhub.delete_zone`
 - **Onglet Vannes** — lecture seule, liste des valves disponibles (depuis `available_valves` sur sensor status)
 - **Formulaires inline** : s'ouvrent en place dans la liste, un seul ouvert à la fois
+- **Drag & drop** : réordonner les vannes dans un programme par glisser-déposer
+- **Toast notifications** : confirmation visuelle après chaque save/delete (zone, programme)
 - **i18n** : FR + EN, mêmes fichiers que la dashboard card
 
 ### Modèle de données
@@ -142,7 +144,7 @@ WateringHubCard/
 │       ├── helpers.test.ts            # Tests helpers dashboard
 │       └── config-helpers.test.ts     # Tests helpers config
 ├── dist/
-│   └── wateringhub-card.js            # Bundle unique (63.0kb minifié, les 2 cards + éditeurs)
+│   └── wateringhub-card.js            # Bundle unique (66.0kb minifié, les 2 cards + éditeurs)
 ├── .github/workflows/ci.yml           # CI : typecheck + tests
 ├── .husky/pre-commit                  # lint-staged (eslint --fix + prettier --write)
 ├── package.json                       # esbuild pointe vers src/index.ts
