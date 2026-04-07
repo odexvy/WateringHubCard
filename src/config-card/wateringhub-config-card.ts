@@ -91,6 +91,7 @@ export class WateringHubConfigCard extends LitElement {
       name: '',
       schedule: { type: 'daily', time: '22:00' },
       zones: [],
+      dry_run: false,
       isNew: true,
     };
   }
@@ -116,6 +117,7 @@ export class WateringHubConfigCard extends LitElement {
       name: typeof attrs.friendly_name === 'string' ? attrs.friendly_name : programId,
       schedule,
       zones,
+      dry_run: attrs.dry_run === true,
       isNew: false,
     };
   }
@@ -135,6 +137,7 @@ export class WateringHubConfigCard extends LitElement {
       id,
       name: form.name,
       schedule: form.schedule,
+      dry_run: form.dry_run,
       zones: form.zones.map((z) => ({
         zone_id: z.zone_id,
         valves: z.valves.map((v) => ({ valve_id: v.valve_id, duration: v.duration })),

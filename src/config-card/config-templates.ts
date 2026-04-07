@@ -197,6 +197,7 @@ export interface ProgramFormState {
   name: string;
   schedule: ProgramSchedule;
   zones: ProgramZoneForm[];
+  dry_run: boolean;
   isNew: boolean;
 }
 
@@ -247,13 +248,17 @@ function renderProgramItem(
   const name = getFriendlyName(entity, entityId);
   const schedule = entity.attributes.schedule as ProgramSchedule | undefined;
   const totalDuration = entity.attributes.total_duration as number | undefined;
+  const dryRun = entity.attributes.dry_run === true;
   const scheduleStr = schedule ? `${schedule.type} — ${schedule.time}` : '';
 
   return html`
     <div class="list-item">
       <div class="list-item-header">
         <div>
-          <div class="list-item-name">${name}</div>
+          <div class="list-item-name">
+            ${name}
+            ${dryRun ? html`<span class="dry-run-tag">${t('config.dry_run')}</span>` : nothing}
+          </div>
           <div class="list-item-sub">
             ${scheduleStr}${totalDuration ? ` — ${totalDuration} min` : ''}
           </div>
@@ -457,6 +462,19 @@ function renderProgramForm(
             ${t('config.total_duration', { duration: totalDuration })}
           </div>`
         : nothing}
+
+      <!-- Dry run toggle -->
+      <div class="form-row">
+        <label class="checkbox-item">
+          <input
+            type="checkbox"
+            .checked=${form.dry_run}
+            @change=${() => onFormUpdate({ ...form, dry_run: !form.dry_run })}
+          />
+          ${t('config.dry_run')}
+        </label>
+        <div class="form-hint">${t('config.dry_run_hint')}</div>
+      </div>
 
       <div class="form-actions">
         <button class="btn btn-cancel" @click=${onCancel}>${t('config.cancel')}</button>

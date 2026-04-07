@@ -146,6 +146,20 @@ export const cardStyles = css`
     color: var(--secondary-text-color);
   }
 
+  /* Dry run badge */
+  .badge-dry-run {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--secondary-background-color);
+    color: var(--secondary-text-color);
+    border: 1px dashed var(--divider-color);
+    margin-bottom: 12px;
+  }
+
   /* Valve sequence */
   .valve-sequence {
     margin-bottom: 12px;

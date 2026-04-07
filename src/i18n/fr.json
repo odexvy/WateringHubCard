@@ -61,5 +61,8 @@
   "config.duration_min": "Durée (min)",
   "config.valve_entity": "Entité",
   "config.total_duration": "Total : {duration} min",
+  "config.dry_run": "Mode test",
+  "config.dry_run_hint": "Exécute la séquence sans activer les vannes",
+  "running.dry_run": "Mode test",
   "config.title": "WateringHub"
 }

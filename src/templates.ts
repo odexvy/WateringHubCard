@@ -77,6 +77,7 @@ export function renderRunningView(
 
   return html`
     <div class="running-view">
+      ${info.dryRun ? html`<span class="badge-dry-run">${t('running.dry_run')}</span>` : nothing}
       ${info.valveSequence.length > 0
         ? renderValveSequence(info.valveSequence, info.remaining, t)
         : renderRunningCompact(info, t)}

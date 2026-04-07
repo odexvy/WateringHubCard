@@ -47,6 +47,22 @@ export const configStyles = css`
     color: var(--secondary-text-color);
     margin-top: 2px;
   }
+  .dry-run-tag {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--secondary-background-color);
+    color: var(--secondary-text-color);
+    border: 1px dashed var(--divider-color);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .form-hint {
+    font-size: 11px;
+    color: var(--secondary-text-color);
+    margin-top: 4px;
+  }
   .list-item-actions {
     display: flex;
     gap: 8px;

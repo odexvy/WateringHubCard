@@ -81,6 +81,7 @@ export interface RunningInfo {
   finePercent: number;
   globalEndPercent: number;
   valveSequence: ValveStep[];
+  dryRun: boolean;
 }
 
 export function getRunningInfo(hass: Hass): RunningInfo | null {
@@ -118,6 +119,7 @@ export function getRunningInfo(hass: Hass): RunningInfo | null {
     finePercent,
     globalEndPercent,
     valveSequence,
+    dryRun: attrs.dry_run === true,
   };
 }
 
