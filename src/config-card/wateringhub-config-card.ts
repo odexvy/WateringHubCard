@@ -21,9 +21,13 @@ import {
   type ZoneFormState,
   type ProgramFormState,
 } from './config-templates';
+import './config-editor';
 
 @customElement('wateringhub-config-card')
 export class WateringHubConfigCard extends LitElement {
+  static getConfigElement(): string {
+    return 'wateringhub-config-editor';
+  }
   @state() private _config!: CardConfig;
   @state() private _hass!: Hass;
   @state() private _activeTab = 'programs';
@@ -96,7 +100,7 @@ export class WateringHubConfigCard extends LitElement {
     this._editingProgram = {
       id: '',
       name: '',
-      schedule: { time: '22:00' },
+      schedule: { time: '06:00' },
       zones: [],
       dry_run: false,
       isNew: true,
@@ -108,7 +112,7 @@ export class WateringHubConfigCard extends LitElement {
     if (!entity) return;
     const attrs = entity.attributes;
     const programId = (attrs.program_id as string) ?? '';
-    const schedule = (attrs.schedule as ProgramSchedule) ?? { time: '22:00' };
+    const schedule = (attrs.schedule as ProgramSchedule) ?? { time: '06:00' };
     const zones = (
       (attrs.zones as Array<{
         zone_id: string;

@@ -74,8 +74,8 @@ export const cardStyles = css`
   }
   .running-stop-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 16px;
+    right: 16px;
     background: var(--error-color);
     color: white;
     border: none;

@@ -1,6 +1,6 @@
-var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t,r)=>{for(var n=r>1?void 0:r?it(e,t):e,i=o.length-1,s;i>=0;i--)(s=o[i])&&(n=(r?s(e,t,n):s(n))||n);return r&&n&&nt(e,t,n),n};var j=globalThis,U=j.ShadowRoot&&(j.ShadyCSS===void 0||j.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,ne=Symbol(),xe=new WeakMap,H=class{constructor(e,t,r){if(this._$cssResult$=!0,r!==ne)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=e,this.t=t}get styleSheet(){let e=this.o,t=this.t;if(U&&e===void 0){let r=t!==void 0&&t.length===1;r&&(e=xe.get(t)),e===void 0&&((this.o=e=new CSSStyleSheet).replaceSync(this.cssText),r&&xe.set(t,e))}return e}toString(){return this.cssText}},$e=o=>new H(typeof o=="string"?o:o+"",void 0,ne),P=(o,...e)=>{let t=o.length===1?o[0]:e.reduce((r,n,i)=>r+(s=>{if(s._$cssResult$===!0)return s.cssText;if(typeof s=="number")return s;throw Error("Value passed to 'css' function must be a 'css' function result: "+s+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(n)+o[i+1],o[0]);return new H(t,o,ne)},we=(o,e)=>{if(U)o.adoptedStyleSheets=e.map(t=>t instanceof CSSStyleSheet?t:t.styleSheet);else for(let t of e){let r=document.createElement("style"),n=j.litNonce;n!==void 0&&r.setAttribute("nonce",n),r.textContent=t.cssText,o.appendChild(r)}},ie=U?o=>o:o=>o instanceof CSSStyleSheet?(e=>{let t="";for(let r of e.cssRules)t+=r.cssText;return $e(t)})(o):o;var{is:st,defineProperty:at,getOwnPropertyDescriptor:lt,getOwnPropertyNames:ct,getOwnPropertySymbols:dt,getPrototypeOf:pt}=Object,B=globalThis,Se=B.trustedTypes,ut=Se?Se.emptyScript:"",mt=B.reactiveElementPolyfillSupport,D=(o,e)=>o,I={toAttribute(o,e){switch(e){case Boolean:o=o?ut:null;break;case Object:case Array:o=o==null?o:JSON.stringify(o)}return o},fromAttribute(o,e){let t=o;switch(e){case Boolean:t=o!==null;break;case Number:t=o===null?null:Number(o);break;case Object:case Array:try{t=JSON.parse(o)}catch{t=null}}return t}},J=(o,e)=>!st(o,e),Ae={attribute:!0,type:String,converter:I,reflect:!1,useDefault:!1,hasChanged:J};Symbol.metadata??=Symbol("metadata"),B.litPropertyMetadata??=new WeakMap;var E=class extends HTMLElement{static addInitializer(e){this._$Ei(),(this.l??=[]).push(e)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(e,t=Ae){if(t.state&&(t.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(e)&&((t=Object.create(t)).wrapped=!0),this.elementProperties.set(e,t),!t.noAccessor){let r=Symbol(),n=this.getPropertyDescriptor(e,r,t);n!==void 0&&at(this.prototype,e,n)}}static getPropertyDescriptor(e,t,r){let{get:n,set:i}=lt(this.prototype,e)??{get(){return this[t]},set(s){this[t]=s}};return{get:n,set(s){let l=n?.call(this);i?.call(this,s),this.requestUpdate(e,l,r)},configurable:!0,enumerable:!0}}static getPropertyOptions(e){return this.elementProperties.get(e)??Ae}static _$Ei(){if(this.hasOwnProperty(D("elementProperties")))return;let e=pt(this);e.finalize(),e.l!==void 0&&(this.l=[...e.l]),this.elementProperties=new Map(e.elementProperties)}static finalize(){if(this.hasOwnProperty(D("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(D("properties"))){let t=this.properties,r=[...ct(t),...dt(t)];for(let n of r)this.createProperty(n,t[n])}let e=this[Symbol.metadata];if(e!==null){let t=litPropertyMetadata.get(e);if(t!==void 0)for(let[r,n]of t)this.elementProperties.set(r,n)}this._$Eh=new Map;for(let[t,r]of this.elementProperties){let n=this._$Eu(t,r);n!==void 0&&this._$Eh.set(n,t)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(e){let t=[];if(Array.isArray(e)){let r=new Set(e.flat(1/0).reverse());for(let n of r)t.unshift(ie(n))}else e!==void 0&&t.push(ie(e));return t}static _$Eu(e,t){let r=t.attribute;return r===!1?void 0:typeof r=="string"?r:typeof e=="string"?e.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){this._$ES=new Promise(e=>this.enableUpdating=e),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach(e=>e(this))}addController(e){(this._$EO??=new Set).add(e),this.renderRoot!==void 0&&this.isConnected&&e.hostConnected?.()}removeController(e){this._$EO?.delete(e)}_$E_(){let e=new Map,t=this.constructor.elementProperties;for(let r of t.keys())this.hasOwnProperty(r)&&(e.set(r,this[r]),delete this[r]);e.size>0&&(this._$Ep=e)}createRenderRoot(){let e=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return we(e,this.constructor.elementStyles),e}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(!0),this._$EO?.forEach(e=>e.hostConnected?.())}enableUpdating(e){}disconnectedCallback(){this._$EO?.forEach(e=>e.hostDisconnected?.())}attributeChangedCallback(e,t,r){this._$AK(e,r)}_$ET(e,t){let r=this.constructor.elementProperties.get(e),n=this.constructor._$Eu(e,r);if(n!==void 0&&r.reflect===!0){let i=(r.converter?.toAttribute!==void 0?r.converter:I).toAttribute(t,r.type);this._$Em=e,i==null?this.removeAttribute(n):this.setAttribute(n,i),this._$Em=null}}_$AK(e,t){let r=this.constructor,n=r._$Eh.get(e);if(n!==void 0&&this._$Em!==n){let i=r.getPropertyOptions(n),s=typeof i.converter=="function"?{fromAttribute:i.converter}:i.converter?.fromAttribute!==void 0?i.converter:I;this._$Em=n;let l=s.fromAttribute(t,i.type);this[n]=l??this._$Ej?.get(n)??l,this._$Em=null}}requestUpdate(e,t,r,n=!1,i){if(e!==void 0){let s=this.constructor;if(n===!1&&(i=this[e]),r??=s.getPropertyOptions(e),!((r.hasChanged??J)(i,t)||r.useDefault&&r.reflect&&i===this._$Ej?.get(e)&&!this.hasAttribute(s._$Eu(e,r))))return;this.C(e,t,r)}this.isUpdatePending===!1&&(this._$ES=this._$EP())}C(e,t,{useDefault:r,reflect:n,wrapped:i},s){r&&!(this._$Ej??=new Map).has(e)&&(this._$Ej.set(e,s??t??this[e]),i!==!0||s!==void 0)||(this._$AL.has(e)||(this.hasUpdated||r||(t=void 0),this._$AL.set(e,t)),n===!0&&this._$Em!==e&&(this._$Eq??=new Set).add(e))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(t){Promise.reject(t)}let e=this.scheduleUpdate();return e!=null&&await e,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(let[n,i]of this._$Ep)this[n]=i;this._$Ep=void 0}let r=this.constructor.elementProperties;if(r.size>0)for(let[n,i]of r){let{wrapped:s}=i,l=this[n];s!==!0||this._$AL.has(n)||l===void 0||this.C(n,void 0,i,l)}}let e=!1,t=this._$AL;try{e=this.shouldUpdate(t),e?(this.willUpdate(t),this._$EO?.forEach(r=>r.hostUpdate?.()),this.update(t)):this._$EM()}catch(r){throw e=!1,this._$EM(),r}e&&this._$AE(t)}willUpdate(e){}_$AE(e){this._$EO?.forEach(t=>t.hostUpdated?.()),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(e)),this.updated(e)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(e){return!0}update(e){this._$Eq&&=this._$Eq.forEach(t=>this._$ET(t,this[t])),this._$EM()}updated(e){}firstUpdated(e){}};E.elementStyles=[],E.shadowRootOptions={mode:"open"},E[D("elementProperties")]=new Map,E[D("finalized")]=new Map,mt?.({ReactiveElement:E}),(B.reactiveElementVersions??=[]).push("2.1.2");var ue=globalThis,Ee=o=>o,G=ue.trustedTypes,Te=G?G.createPolicy("lit-html",{createHTML:o=>o}):void 0,Re="$lit$",T=`lit$${Math.random().toFixed(9).slice(2)}$`,qe="?"+T,gt=`<${qe}>`,C=document,V=()=>C.createComment(""),F=o=>o===null||typeof o!="object"&&typeof o!="function",me=Array.isArray,ht=o=>me(o)||typeof o?.[Symbol.iterator]=="function",se=`[ 	
-\f\r]`,Z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,Pe=/-->/g,ze=/>/g,z=RegExp(`>|${se}(?:([^\\s"'>=/]+)(${se}*=${se}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`,"g"),ke=/'/g,Ce=/"/g,Me=/^(?:script|style|textarea|title)$/i,ge=o=>(e,...t)=>({_$litType$:o,strings:e,values:t}),d=ge(1),qt=ge(2),Mt=ge(3),N=Symbol.for("lit-noChange"),u=Symbol.for("lit-nothing"),Ne=new WeakMap,k=C.createTreeWalker(C,129);function He(o,e){if(!me(o)||!o.hasOwnProperty("raw"))throw Error("invalid template strings array");return Te!==void 0?Te.createHTML(e):e}var vt=(o,e)=>{let t=o.length-1,r=[],n,i=e===2?"<svg>":e===3?"<math>":"",s=Z;for(let l=0;l<t;l++){let a=o[l],c,m,p=-1,g=0;for(;g<a.length&&(s.lastIndex=g,m=s.exec(a),m!==null);)g=s.lastIndex,s===Z?m[1]==="!--"?s=Pe:m[1]!==void 0?s=ze:m[2]!==void 0?(Me.test(m[2])&&(n=RegExp("</"+m[2],"g")),s=z):m[3]!==void 0&&(s=z):s===z?m[0]===">"?(s=n??Z,p=-1):m[1]===void 0?p=-2:(p=s.lastIndex-m[2].length,c=m[1],s=m[3]===void 0?z:m[3]==='"'?Ce:ke):s===Ce||s===ke?s=z:s===Pe||s===ze?s=Z:(s=z,n=void 0);let h=s===z&&o[l+1].startsWith("/>")?" ":"";i+=s===Z?a+gt:p>=0?(r.push(c),a.slice(0,p)+Re+a.slice(p)+T+h):a+T+(p===-2?l:h)}return[He(o,i+(o[t]||"<?>")+(e===2?"</svg>":e===3?"</math>":"")),r]},O=class o{constructor({strings:e,_$litType$:t},r){let n;this.parts=[];let i=0,s=0,l=e.length-1,a=this.parts,[c,m]=vt(e,t);if(this.el=o.createElement(c,r),k.currentNode=this.el.content,t===2||t===3){let p=this.el.content.firstChild;p.replaceWith(...p.childNodes)}for(;(n=k.nextNode())!==null&&a.length<l;){if(n.nodeType===1){if(n.hasAttributes())for(let p of n.getAttributeNames())if(p.endsWith(Re)){let g=m[s++],h=n.getAttribute(p).split(T),v=/([.?@])?(.*)/.exec(g);a.push({type:1,index:i,name:v[2],strings:h,ctor:v[1]==="."?le:v[1]==="?"?ce:v[1]==="@"?de:q}),n.removeAttribute(p)}else p.startsWith(T)&&(a.push({type:6,index:i}),n.removeAttribute(p));if(Me.test(n.tagName)){let p=n.textContent.split(T),g=p.length-1;if(g>0){n.textContent=G?G.emptyScript:"";for(let h=0;h<g;h++)n.append(p[h],V()),k.nextNode(),a.push({type:2,index:++i});n.append(p[g],V())}}}else if(n.nodeType===8)if(n.data===qe)a.push({type:2,index:i});else{let p=-1;for(;(p=n.data.indexOf(T,p+1))!==-1;)a.push({type:7,index:i}),p+=T.length-1}i++}}static createElement(e,t){let r=C.createElement("template");return r.innerHTML=e,r}};function R(o,e,t=o,r){if(e===N)return e;let n=r!==void 0?t._$Co?.[r]:t._$Cl,i=F(e)?void 0:e._$litDirective$;return n?.constructor!==i&&(n?._$AO?.(!1),i===void 0?n=void 0:(n=new i(o),n._$AT(o,t,r)),r!==void 0?(t._$Co??=[])[r]=n:t._$Cl=n),n!==void 0&&(e=R(o,n._$AS(o,e.values),n,r)),e}var ae=class{constructor(e,t){this._$AV=[],this._$AN=void 0,this._$AD=e,this._$AM=t}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(e){let{el:{content:t},parts:r}=this._$AD,n=(e?.creationScope??C).importNode(t,!0);k.currentNode=n;let i=k.nextNode(),s=0,l=0,a=r[0];for(;a!==void 0;){if(s===a.index){let c;a.type===2?c=new L(i,i.nextSibling,this,e):a.type===1?c=new a.ctor(i,a.name,a.strings,this,e):a.type===6&&(c=new pe(i,this,e)),this._$AV.push(c),a=r[++l]}s!==a?.index&&(i=k.nextNode(),s++)}return k.currentNode=C,n}p(e){let t=0;for(let r of this._$AV)r!==void 0&&(r.strings!==void 0?(r._$AI(e,r,t),t+=r.strings.length-2):r._$AI(e[t])),t++}},L=class o{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(e,t,r,n){this.type=2,this._$AH=u,this._$AN=void 0,this._$AA=e,this._$AB=t,this._$AM=r,this.options=n,this._$Cv=n?.isConnected??!0}get parentNode(){let e=this._$AA.parentNode,t=this._$AM;return t!==void 0&&e?.nodeType===11&&(e=t.parentNode),e}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(e,t=this){e=R(this,e,t),F(e)?e===u||e==null||e===""?(this._$AH!==u&&this._$AR(),this._$AH=u):e!==this._$AH&&e!==N&&this._(e):e._$litType$!==void 0?this.$(e):e.nodeType!==void 0?this.T(e):ht(e)?this.k(e):this._(e)}O(e){return this._$AA.parentNode.insertBefore(e,this._$AB)}T(e){this._$AH!==e&&(this._$AR(),this._$AH=this.O(e))}_(e){this._$AH!==u&&F(this._$AH)?this._$AA.nextSibling.data=e:this.T(C.createTextNode(e)),this._$AH=e}$(e){let{values:t,_$litType$:r}=e,n=typeof r=="number"?this._$AC(e):(r.el===void 0&&(r.el=O.createElement(He(r.h,r.h[0]),this.options)),r);if(this._$AH?._$AD===n)this._$AH.p(t);else{let i=new ae(n,this),s=i.u(this.options);i.p(t),this.T(s),this._$AH=i}}_$AC(e){let t=Ne.get(e.strings);return t===void 0&&Ne.set(e.strings,t=new O(e)),t}k(e){me(this._$AH)||(this._$AH=[],this._$AR());let t=this._$AH,r,n=0;for(let i of e)n===t.length?t.push(r=new o(this.O(V()),this.O(V()),this,this.options)):r=t[n],r._$AI(i),n++;n<t.length&&(this._$AR(r&&r._$AB.nextSibling,n),t.length=n)}_$AR(e=this._$AA.nextSibling,t){for(this._$AP?.(!1,!0,t);e!==this._$AB;){let r=Ee(e).nextSibling;Ee(e).remove(),e=r}}setConnected(e){this._$AM===void 0&&(this._$Cv=e,this._$AP?.(e))}},q=class{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(e,t,r,n,i){this.type=1,this._$AH=u,this._$AN=void 0,this.element=e,this.name=t,this._$AM=n,this.options=i,r.length>2||r[0]!==""||r[1]!==""?(this._$AH=Array(r.length-1).fill(new String),this.strings=r):this._$AH=u}_$AI(e,t=this,r,n){let i=this.strings,s=!1;if(i===void 0)e=R(this,e,t,0),s=!F(e)||e!==this._$AH&&e!==N,s&&(this._$AH=e);else{let l=e,a,c;for(e=i[0],a=0;a<i.length-1;a++)c=R(this,l[r+a],t,a),c===N&&(c=this._$AH[a]),s||=!F(c)||c!==this._$AH[a],c===u?e=u:e!==u&&(e+=(c??"")+i[a+1]),this._$AH[a]=c}s&&!n&&this.j(e)}j(e){e===u?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,e??"")}},le=class extends q{constructor(){super(...arguments),this.type=3}j(e){this.element[this.name]=e===u?void 0:e}},ce=class extends q{constructor(){super(...arguments),this.type=4}j(e){this.element.toggleAttribute(this.name,!!e&&e!==u)}},de=class extends q{constructor(e,t,r,n,i){super(e,t,r,n,i),this.type=5}_$AI(e,t=this){if((e=R(this,e,t,0)??u)===N)return;let r=this._$AH,n=e===u&&r!==u||e.capture!==r.capture||e.once!==r.once||e.passive!==r.passive,i=e!==u&&(r===u||n);n&&this.element.removeEventListener(this.name,this,r),i&&this.element.addEventListener(this.name,this,e),this._$AH=e}handleEvent(e){typeof this._$AH=="function"?this._$AH.call(this.options?.host??this.element,e):this._$AH.handleEvent(e)}},pe=class{constructor(e,t,r){this.element=e,this.type=6,this._$AN=void 0,this._$AM=t,this.options=r}get _$AU(){return this._$AM._$AU}_$AI(e){R(this,e)}};var ft=ue.litHtmlPolyfillSupport;ft?.(O,L),(ue.litHtmlVersions??=[]).push("3.3.2");var De=(o,e,t)=>{let r=t?.renderBefore??e,n=r._$litPart$;if(n===void 0){let i=t?.renderBefore??null;r._$litPart$=n=new L(e.insertBefore(V(),i),i,void 0,t??{})}return n._$AI(o),n};var he=globalThis,$=class extends E{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){let e=super.createRenderRoot();return this.renderOptions.renderBefore??=e.firstChild,e}update(e){let t=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(e),this._$Do=De(t,this.renderRoot,this.renderOptions)}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0)}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1)}render(){return N}};$._$litElement$=!0,$.finalized=!0,he.litElementHydrateSupport?.({LitElement:$});var _t=he.litElementPolyfillSupport;_t?.({LitElement:$});(he.litElementVersions??=[]).push("4.2.2");var K=o=>(e,t)=>{t!==void 0?t.addInitializer(()=>{customElements.define(o,e)}):customElements.define(o,e)};var yt={attribute:!0,type:String,converter:I,reflect:!1,hasChanged:J},bt=(o=yt,e,t)=>{let{kind:r,metadata:n}=t,i=globalThis.litPropertyMetadata.get(n);if(i===void 0&&globalThis.litPropertyMetadata.set(n,i=new Map),r==="setter"&&((o=Object.create(o)).wrapped=!0),i.set(t.name,o),r==="accessor"){let{name:s}=t;return{set(l){let a=e.get.call(this);e.set.call(this,l),this.requestUpdate(s,a,o,!0,l)},init(l){return l!==void 0&&this.C(s,void 0,o,l),l}}}if(r==="setter"){let{name:s}=t;return function(l){let a=this[s];e.call(this,l),this.requestUpdate(s,a,o,!0,l)}}throw Error("Unsupported decorator location: "+r)};function Ie(o){return(e,t)=>typeof t=="object"?bt(o,e,t):((r,n,i)=>{let s=n.hasOwnProperty(i);return n.constructor.createProperty(i,r),s?Object.getOwnPropertyDescriptor(n,i):void 0})(o,e,t)}function x(o){return Ie({...o,state:!0,attribute:!1})}var Ze={"status.idle":"Idle","status.running":"Running","status.error":"Error","status.disabled":"Disabled",stop_all:"Stop All",next:"Next",last:"Last",no_programs:"No programs found",loading:"Loading...","time.just_now":"just now","time.minutes_ago":"{count}m ago","time.hours_ago":"{count}h ago","time.days_ago":"{count}d ago","time.today_at":"today at {time}","time.tomorrow_at":"tomorrow at {time}","time.in_days":"in {count}d","time.never":"Never","time.no_schedule":"No active program","status.running_program":"Running: {name}",stop_confirm:"Stop all watering?","recap.total_duration":"Total duration: {duration} min","days.mon":"Mon","days.tue":"Tue","days.wed":"Wed","days.thu":"Thu","days.fri":"Fri","days.sat":"Sat","days.sun":"Sun","running.progress":"Valve {done} of {total}","error.program":"Error \u2014 {name}","error.auto_stopped":"All valves have been automatically closed.","config.tab_valves":"Valves","config.tab_zones":"Zones","config.tab_programs":"Programs","config.no_valves":"No valves configured","config.no_zones":"No zones created","config.no_programs":"No programs created","config.new_zone":"New zone","config.new_program":"New program","config.name":"Name","config.save":"Save","config.cancel":"Cancel","config.delete":"Delete","config.edit":"Edit","config.confirm_delete_zone":"Delete this zone?","config.confirm_delete_program":"Delete this program?","config.trigger_time":"Trigger time","config.select_valves":"Select valves","config.select_zones":"Select zones","config.valve_entity":"Entity","config.total_duration":"Total: {duration} min","config.dry_run":"Test mode","config.dry_run_hint":"Runs the sequence without activating valves","running.dry_run":"Test mode","config.frequency":"Frequency","config.follows_program":"Every day","config.frequency_every_n":"Every {n} days","config.frequency_weekdays":"Specific days","recap.frequency_every_n":"every {n}d","config.title":"WateringHub Config"};var Ve={"status.idle":"En attente","status.running":"Arrosage en cours","status.error":"Erreur","status.disabled":"D\xE9sactiv\xE9",stop_all:"Tout arr\xEAter",next:"Prochain",last:"Dernier",no_programs:"Aucun programme trouv\xE9",loading:"Chargement...","time.just_now":"\xE0 l'instant","time.minutes_ago":"il y a {count} min","time.hours_ago":"il y a {count}h","time.days_ago":"il y a {count}j","time.today_at":"aujourd'hui \xE0 {time}","time.tomorrow_at":"demain \xE0 {time}","time.in_days":"dans {count}j","time.never":"Jamais","time.no_schedule":"Aucun programme actif","status.running_program":"En cours : {name}",stop_confirm:"Arr\xEAter tout l'arrosage ?","recap.total_duration":"Dur\xE9e totale : {duration} min","days.mon":"Lun","days.tue":"Mar","days.wed":"Mer","days.thu":"Jeu","days.fri":"Ven","days.sat":"Sam","days.sun":"Dim","running.progress":"Vanne {done} sur {total}","error.program":"Erreur \u2014 {name}","error.auto_stopped":"Toutes les vannes ont \xE9t\xE9 ferm\xE9es automatiquement.","config.tab_valves":"Vannes","config.tab_zones":"Zones","config.tab_programs":"Programmes","config.no_valves":"Aucune vanne configur\xE9e","config.no_zones":"Aucune zone cr\xE9\xE9e","config.no_programs":"Aucun programme cr\xE9\xE9","config.new_zone":"Nouvelle zone","config.new_program":"Nouveau programme","config.name":"Nom","config.save":"Sauvegarder","config.cancel":"Annuler","config.delete":"Supprimer","config.edit":"Modifier","config.confirm_delete_zone":"Supprimer cette zone ?","config.confirm_delete_program":"Supprimer ce programme ?","config.trigger_time":"Heure de d\xE9clenchement","config.select_valves":"S\xE9lectionner les vannes","config.select_zones":"S\xE9lectionner les zones","config.valve_entity":"Entit\xE9","config.total_duration":"Total : {duration} min","config.dry_run":"Mode test","config.dry_run_hint":"Ex\xE9cute la s\xE9quence sans activer les vannes","running.dry_run":"Mode test","config.frequency":"Fr\xE9quence","config.follows_program":"Tous les jours","config.frequency_every_n":"Tous les {n} jours","config.frequency_weekdays":"Jours sp\xE9cifiques","recap.frequency_every_n":"tous les {n}j","config.title":"WateringHub Config"};var ve={en:Ze,fr:Ve};function W(o){let e=o?.toLowerCase().startsWith("fr")?"fr":"en",t=ve[e]??ve.en;return(r,n)=>{let i=t[r]??ve.en[r]??r;return n&&(i=i.replace(/\{(\w+)\}/g,(s,l)=>String(n[l]??s))),i}}var Q=P`
+var st=Object.defineProperty;var at=Object.getOwnPropertyDescriptor;var h=(n,e,t,r)=>{for(var o=r>1?void 0:r?at(e,t):e,i=n.length-1,s;i>=0;i--)(s=n[i])&&(o=(r?s(e,t,o):s(o))||o);return r&&o&&st(e,t,o),o};var K=globalThis,Y=K.ShadowRoot&&(K.ShadyCSS===void 0||K.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,ie=Symbol(),$e=new WeakMap,F=class{constructor(e,t,r){if(this._$cssResult$=!0,r!==ie)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=e,this.t=t}get styleSheet(){let e=this.o,t=this.t;if(Y&&e===void 0){let r=t!==void 0&&t.length===1;r&&(e=$e.get(t)),e===void 0&&((this.o=e=new CSSStyleSheet).replaceSync(this.cssText),r&&$e.set(t,e))}return e}toString(){return this.cssText}},we=n=>new F(typeof n=="string"?n:n+"",void 0,ie),T=(n,...e)=>{let t=n.length===1?n[0]:e.reduce((r,o,i)=>r+(s=>{if(s._$cssResult$===!0)return s.cssText;if(typeof s=="number")return s;throw Error("Value passed to 'css' function must be a 'css' function result: "+s+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(o)+n[i+1],n[0]);return new F(t,n,ie)},Se=(n,e)=>{if(Y)n.adoptedStyleSheets=e.map(t=>t instanceof CSSStyleSheet?t:t.styleSheet);else for(let t of e){let r=document.createElement("style"),o=K.litNonce;o!==void 0&&r.setAttribute("nonce",o),r.textContent=t.cssText,n.appendChild(r)}},se=Y?n=>n:n=>n instanceof CSSStyleSheet?(e=>{let t="";for(let r of e.cssRules)t+=r.cssText;return we(t)})(n):n;var{is:lt,defineProperty:ct,getOwnPropertyDescriptor:dt,getOwnPropertyNames:pt,getOwnPropertySymbols:ut,getPrototypeOf:mt}=Object,Q=globalThis,Ae=Q.trustedTypes,gt=Ae?Ae.emptyScript:"",vt=Q.reactiveElementPolyfillSupport,O=(n,e)=>n,L={toAttribute(n,e){switch(e){case Boolean:n=n?gt:null;break;case Object:case Array:n=n==null?n:JSON.stringify(n)}return n},fromAttribute(n,e){let t=n;switch(e){case Boolean:t=n!==null;break;case Number:t=n===null?null:Number(n);break;case Object:case Array:try{t=JSON.parse(n)}catch{t=null}}return t}},X=(n,e)=>!lt(n,e),Ee={attribute:!0,type:String,converter:L,reflect:!1,useDefault:!1,hasChanged:X};Symbol.metadata??=Symbol("metadata"),Q.litPropertyMetadata??=new WeakMap;var P=class extends HTMLElement{static addInitializer(e){this._$Ei(),(this.l??=[]).push(e)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(e,t=Ee){if(t.state&&(t.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(e)&&((t=Object.create(t)).wrapped=!0),this.elementProperties.set(e,t),!t.noAccessor){let r=Symbol(),o=this.getPropertyDescriptor(e,r,t);o!==void 0&&ct(this.prototype,e,o)}}static getPropertyDescriptor(e,t,r){let{get:o,set:i}=dt(this.prototype,e)??{get(){return this[t]},set(s){this[t]=s}};return{get:o,set(s){let l=o?.call(this);i?.call(this,s),this.requestUpdate(e,l,r)},configurable:!0,enumerable:!0}}static getPropertyOptions(e){return this.elementProperties.get(e)??Ee}static _$Ei(){if(this.hasOwnProperty(O("elementProperties")))return;let e=mt(this);e.finalize(),e.l!==void 0&&(this.l=[...e.l]),this.elementProperties=new Map(e.elementProperties)}static finalize(){if(this.hasOwnProperty(O("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(O("properties"))){let t=this.properties,r=[...pt(t),...ut(t)];for(let o of r)this.createProperty(o,t[o])}let e=this[Symbol.metadata];if(e!==null){let t=litPropertyMetadata.get(e);if(t!==void 0)for(let[r,o]of t)this.elementProperties.set(r,o)}this._$Eh=new Map;for(let[t,r]of this.elementProperties){let o=this._$Eu(t,r);o!==void 0&&this._$Eh.set(o,t)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(e){let t=[];if(Array.isArray(e)){let r=new Set(e.flat(1/0).reverse());for(let o of r)t.unshift(se(o))}else e!==void 0&&t.push(se(e));return t}static _$Eu(e,t){let r=t.attribute;return r===!1?void 0:typeof r=="string"?r:typeof e=="string"?e.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){this._$ES=new Promise(e=>this.enableUpdating=e),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach(e=>e(this))}addController(e){(this._$EO??=new Set).add(e),this.renderRoot!==void 0&&this.isConnected&&e.hostConnected?.()}removeController(e){this._$EO?.delete(e)}_$E_(){let e=new Map,t=this.constructor.elementProperties;for(let r of t.keys())this.hasOwnProperty(r)&&(e.set(r,this[r]),delete this[r]);e.size>0&&(this._$Ep=e)}createRenderRoot(){let e=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return Se(e,this.constructor.elementStyles),e}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(!0),this._$EO?.forEach(e=>e.hostConnected?.())}enableUpdating(e){}disconnectedCallback(){this._$EO?.forEach(e=>e.hostDisconnected?.())}attributeChangedCallback(e,t,r){this._$AK(e,r)}_$ET(e,t){let r=this.constructor.elementProperties.get(e),o=this.constructor._$Eu(e,r);if(o!==void 0&&r.reflect===!0){let i=(r.converter?.toAttribute!==void 0?r.converter:L).toAttribute(t,r.type);this._$Em=e,i==null?this.removeAttribute(o):this.setAttribute(o,i),this._$Em=null}}_$AK(e,t){let r=this.constructor,o=r._$Eh.get(e);if(o!==void 0&&this._$Em!==o){let i=r.getPropertyOptions(o),s=typeof i.converter=="function"?{fromAttribute:i.converter}:i.converter?.fromAttribute!==void 0?i.converter:L;this._$Em=o;let l=s.fromAttribute(t,i.type);this[o]=l??this._$Ej?.get(o)??l,this._$Em=null}}requestUpdate(e,t,r,o=!1,i){if(e!==void 0){let s=this.constructor;if(o===!1&&(i=this[e]),r??=s.getPropertyOptions(e),!((r.hasChanged??X)(i,t)||r.useDefault&&r.reflect&&i===this._$Ej?.get(e)&&!this.hasAttribute(s._$Eu(e,r))))return;this.C(e,t,r)}this.isUpdatePending===!1&&(this._$ES=this._$EP())}C(e,t,{useDefault:r,reflect:o,wrapped:i},s){r&&!(this._$Ej??=new Map).has(e)&&(this._$Ej.set(e,s??t??this[e]),i!==!0||s!==void 0)||(this._$AL.has(e)||(this.hasUpdated||r||(t=void 0),this._$AL.set(e,t)),o===!0&&this._$Em!==e&&(this._$Eq??=new Set).add(e))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(t){Promise.reject(t)}let e=this.scheduleUpdate();return e!=null&&await e,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(let[o,i]of this._$Ep)this[o]=i;this._$Ep=void 0}let r=this.constructor.elementProperties;if(r.size>0)for(let[o,i]of r){let{wrapped:s}=i,l=this[o];s!==!0||this._$AL.has(o)||l===void 0||this.C(o,void 0,i,l)}}let e=!1,t=this._$AL;try{e=this.shouldUpdate(t),e?(this.willUpdate(t),this._$EO?.forEach(r=>r.hostUpdate?.()),this.update(t)):this._$EM()}catch(r){throw e=!1,this._$EM(),r}e&&this._$AE(t)}willUpdate(e){}_$AE(e){this._$EO?.forEach(t=>t.hostUpdated?.()),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(e)),this.updated(e)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(e){return!0}update(e){this._$Eq&&=this._$Eq.forEach(t=>this._$ET(t,this[t])),this._$EM()}updated(e){}firstUpdated(e){}};P.elementStyles=[],P.shadowRootOptions={mode:"open"},P[O("elementProperties")]=new Map,P[O("finalized")]=new Map,vt?.({ReactiveElement:P}),(Q.reactiveElementVersions??=[]).push("2.1.2");var me=globalThis,Te=n=>n,W=me.trustedTypes,Pe=W?W.createPolicy("lit-html",{createHTML:n=>n}):void 0,qe="$lit$",z=`lit$${Math.random().toFixed(9).slice(2)}$`,Me="?"+z,ht=`<${Me}>`,C=document,U=()=>C.createComment(""),B=n=>n===null||typeof n!="object"&&typeof n!="function",ge=Array.isArray,ft=n=>ge(n)||typeof n?.[Symbol.iterator]=="function",ae=`[ 	
+\f\r]`,j=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,ze=/-->/g,ke=/>/g,k=RegExp(`>|${ae}(?:([^\\s"'>=/]+)(${ae}*=${ae}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`,"g"),Ne=/'/g,Ce=/"/g,Ve=/^(?:script|style|textarea|title)$/i,ve=n=>(e,...t)=>({_$litType$:n,strings:e,values:t}),c=ve(1),Vt=ve(2),It=ve(3),R=Symbol.for("lit-noChange"),u=Symbol.for("lit-nothing"),Re=new WeakMap,N=C.createTreeWalker(C,129);function Ie(n,e){if(!ge(n)||!n.hasOwnProperty("raw"))throw Error("invalid template strings array");return Pe!==void 0?Pe.createHTML(e):e}var _t=(n,e)=>{let t=n.length-1,r=[],o,i=e===2?"<svg>":e===3?"<math>":"",s=j;for(let l=0;l<t;l++){let a=n[l],d,m,p=-1,g=0;for(;g<a.length&&(s.lastIndex=g,m=s.exec(a),m!==null);)g=s.lastIndex,s===j?m[1]==="!--"?s=ze:m[1]!==void 0?s=ke:m[2]!==void 0?(Ve.test(m[2])&&(o=RegExp("</"+m[2],"g")),s=k):m[3]!==void 0&&(s=k):s===k?m[0]===">"?(s=o??j,p=-1):m[1]===void 0?p=-2:(p=s.lastIndex-m[2].length,d=m[1],s=m[3]===void 0?k:m[3]==='"'?Ce:Ne):s===Ce||s===Ne?s=k:s===ze||s===ke?s=j:(s=k,o=void 0);let v=s===k&&n[l+1].startsWith("/>")?" ":"";i+=s===j?a+ht:p>=0?(r.push(d),a.slice(0,p)+qe+a.slice(p)+z+v):a+z+(p===-2?l:v)}return[Ie(n,i+(n[t]||"<?>")+(e===2?"</svg>":e===3?"</math>":"")),r]},J=class n{constructor({strings:e,_$litType$:t},r){let o;this.parts=[];let i=0,s=0,l=e.length-1,a=this.parts,[d,m]=_t(e,t);if(this.el=n.createElement(d,r),N.currentNode=this.el.content,t===2||t===3){let p=this.el.content.firstChild;p.replaceWith(...p.childNodes)}for(;(o=N.nextNode())!==null&&a.length<l;){if(o.nodeType===1){if(o.hasAttributes())for(let p of o.getAttributeNames())if(p.endsWith(qe)){let g=m[s++],v=o.getAttribute(p).split(z),_=/([.?@])?(.*)/.exec(g);a.push({type:1,index:i,name:_[2],strings:v,ctor:_[1]==="."?ce:_[1]==="?"?de:_[1]==="@"?pe:M}),o.removeAttribute(p)}else p.startsWith(z)&&(a.push({type:6,index:i}),o.removeAttribute(p));if(Ve.test(o.tagName)){let p=o.textContent.split(z),g=p.length-1;if(g>0){o.textContent=W?W.emptyScript:"";for(let v=0;v<g;v++)o.append(p[v],U()),N.nextNode(),a.push({type:2,index:++i});o.append(p[g],U())}}}else if(o.nodeType===8)if(o.data===Me)a.push({type:2,index:i});else{let p=-1;for(;(p=o.data.indexOf(z,p+1))!==-1;)a.push({type:7,index:i}),p+=z.length-1}i++}}static createElement(e,t){let r=C.createElement("template");return r.innerHTML=e,r}};function q(n,e,t=n,r){if(e===R)return e;let o=r!==void 0?t._$Co?.[r]:t._$Cl,i=B(e)?void 0:e._$litDirective$;return o?.constructor!==i&&(o?._$AO?.(!1),i===void 0?o=void 0:(o=new i(n),o._$AT(n,t,r)),r!==void 0?(t._$Co??=[])[r]=o:t._$Cl=o),o!==void 0&&(e=q(n,o._$AS(n,e.values),o,r)),e}var le=class{constructor(e,t){this._$AV=[],this._$AN=void 0,this._$AD=e,this._$AM=t}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(e){let{el:{content:t},parts:r}=this._$AD,o=(e?.creationScope??C).importNode(t,!0);N.currentNode=o;let i=N.nextNode(),s=0,l=0,a=r[0];for(;a!==void 0;){if(s===a.index){let d;a.type===2?d=new G(i,i.nextSibling,this,e):a.type===1?d=new a.ctor(i,a.name,a.strings,this,e):a.type===6&&(d=new ue(i,this,e)),this._$AV.push(d),a=r[++l]}s!==a?.index&&(i=N.nextNode(),s++)}return N.currentNode=C,o}p(e){let t=0;for(let r of this._$AV)r!==void 0&&(r.strings!==void 0?(r._$AI(e,r,t),t+=r.strings.length-2):r._$AI(e[t])),t++}},G=class n{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(e,t,r,o){this.type=2,this._$AH=u,this._$AN=void 0,this._$AA=e,this._$AB=t,this._$AM=r,this.options=o,this._$Cv=o?.isConnected??!0}get parentNode(){let e=this._$AA.parentNode,t=this._$AM;return t!==void 0&&e?.nodeType===11&&(e=t.parentNode),e}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(e,t=this){e=q(this,e,t),B(e)?e===u||e==null||e===""?(this._$AH!==u&&this._$AR(),this._$AH=u):e!==this._$AH&&e!==R&&this._(e):e._$litType$!==void 0?this.$(e):e.nodeType!==void 0?this.T(e):ft(e)?this.k(e):this._(e)}O(e){return this._$AA.parentNode.insertBefore(e,this._$AB)}T(e){this._$AH!==e&&(this._$AR(),this._$AH=this.O(e))}_(e){this._$AH!==u&&B(this._$AH)?this._$AA.nextSibling.data=e:this.T(C.createTextNode(e)),this._$AH=e}$(e){let{values:t,_$litType$:r}=e,o=typeof r=="number"?this._$AC(e):(r.el===void 0&&(r.el=J.createElement(Ie(r.h,r.h[0]),this.options)),r);if(this._$AH?._$AD===o)this._$AH.p(t);else{let i=new le(o,this),s=i.u(this.options);i.p(t),this.T(s),this._$AH=i}}_$AC(e){let t=Re.get(e.strings);return t===void 0&&Re.set(e.strings,t=new J(e)),t}k(e){ge(this._$AH)||(this._$AH=[],this._$AR());let t=this._$AH,r,o=0;for(let i of e)o===t.length?t.push(r=new n(this.O(U()),this.O(U()),this,this.options)):r=t[o],r._$AI(i),o++;o<t.length&&(this._$AR(r&&r._$AB.nextSibling,o),t.length=o)}_$AR(e=this._$AA.nextSibling,t){for(this._$AP?.(!1,!0,t);e!==this._$AB;){let r=Te(e).nextSibling;Te(e).remove(),e=r}}setConnected(e){this._$AM===void 0&&(this._$Cv=e,this._$AP?.(e))}},M=class{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(e,t,r,o,i){this.type=1,this._$AH=u,this._$AN=void 0,this.element=e,this.name=t,this._$AM=o,this.options=i,r.length>2||r[0]!==""||r[1]!==""?(this._$AH=Array(r.length-1).fill(new String),this.strings=r):this._$AH=u}_$AI(e,t=this,r,o){let i=this.strings,s=!1;if(i===void 0)e=q(this,e,t,0),s=!B(e)||e!==this._$AH&&e!==R,s&&(this._$AH=e);else{let l=e,a,d;for(e=i[0],a=0;a<i.length-1;a++)d=q(this,l[r+a],t,a),d===R&&(d=this._$AH[a]),s||=!B(d)||d!==this._$AH[a],d===u?e=u:e!==u&&(e+=(d??"")+i[a+1]),this._$AH[a]=d}s&&!o&&this.j(e)}j(e){e===u?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,e??"")}},ce=class extends M{constructor(){super(...arguments),this.type=3}j(e){this.element[this.name]=e===u?void 0:e}},de=class extends M{constructor(){super(...arguments),this.type=4}j(e){this.element.toggleAttribute(this.name,!!e&&e!==u)}},pe=class extends M{constructor(e,t,r,o,i){super(e,t,r,o,i),this.type=5}_$AI(e,t=this){if((e=q(this,e,t,0)??u)===R)return;let r=this._$AH,o=e===u&&r!==u||e.capture!==r.capture||e.once!==r.once||e.passive!==r.passive,i=e!==u&&(r===u||o);o&&this.element.removeEventListener(this.name,this,r),i&&this.element.addEventListener(this.name,this,e),this._$AH=e}handleEvent(e){typeof this._$AH=="function"?this._$AH.call(this.options?.host??this.element,e):this._$AH.handleEvent(e)}},ue=class{constructor(e,t,r){this.element=e,this.type=6,this._$AN=void 0,this._$AM=t,this.options=r}get _$AU(){return this._$AM._$AU}_$AI(e){q(this,e)}};var yt=me.litHtmlPolyfillSupport;yt?.(J,G),(me.litHtmlVersions??=[]).push("3.3.2");var De=(n,e,t)=>{let r=t?.renderBefore??e,o=r._$litPart$;if(o===void 0){let i=t?.renderBefore??null;r._$litPart$=o=new G(e.insertBefore(U(),i),i,void 0,t??{})}return o._$AI(n),o};var he=globalThis,$=class extends P{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){let e=super.createRenderRoot();return this.renderOptions.renderBefore??=e.firstChild,e}update(e){let t=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(e),this._$Do=De(t,this.renderRoot,this.renderOptions)}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0)}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1)}render(){return R}};$._$litElement$=!0,$.finalized=!0,he.litElementHydrateSupport?.({LitElement:$});var bt=he.litElementPolyfillSupport;bt?.({LitElement:$});(he.litElementVersions??=[]).push("4.2.2");var V=n=>(e,t)=>{t!==void 0?t.addInitializer(()=>{customElements.define(n,e)}):customElements.define(n,e)};var xt={attribute:!0,type:String,converter:L,reflect:!1,hasChanged:X},$t=(n=xt,e,t)=>{let{kind:r,metadata:o}=t,i=globalThis.litPropertyMetadata.get(o);if(i===void 0&&globalThis.litPropertyMetadata.set(o,i=new Map),r==="setter"&&((n=Object.create(n)).wrapped=!0),i.set(t.name,n),r==="accessor"){let{name:s}=t;return{set(l){let a=e.get.call(this);e.set.call(this,l),this.requestUpdate(s,a,n,!0,l)},init(l){return l!==void 0&&this.C(s,void 0,n,l),l}}}if(r==="setter"){let{name:s}=t;return function(l){let a=this[s];e.call(this,l),this.requestUpdate(s,a,n,!0,l)}}throw Error("Unsupported decorator location: "+r)};function He(n){return(e,t)=>typeof t=="object"?$t(n,e,t):((r,o,i)=>{let s=o.hasOwnProperty(i);return o.constructor.createProperty(i,r),s?Object.getOwnPropertyDescriptor(o,i):void 0})(n,e,t)}function f(n){return He({...n,state:!0,attribute:!1})}var Ze={"status.idle":"Idle","status.running":"Running","status.error":"Error","status.disabled":"Disabled",stop_all:"Stop All",next:"Next",last:"Last",no_programs:"No programs found",loading:"Loading...","time.just_now":"just now","time.minutes_ago":"{count}m ago","time.hours_ago":"{count}h ago","time.days_ago":"{count}d ago","time.today_at":"today at {time}","time.tomorrow_at":"tomorrow at {time}","time.in_days":"in {count}d","time.never":"Never","time.no_schedule":"No active program","status.running_program":"Running: {name}",stop_confirm:"Stop all watering?","recap.total_duration":"Total duration: {duration} min","days.mon":"Mon","days.tue":"Tue","days.wed":"Wed","days.thu":"Thu","days.fri":"Fri","days.sat":"Sat","days.sun":"Sun","running.progress":"Valve {done} of {total}","error.program":"Error \u2014 {name}","error.auto_stopped":"All valves have been automatically closed.","config.tab_valves":"Valves","config.tab_zones":"Zones","config.tab_programs":"Programs","config.no_valves":"No valves configured","config.no_zones":"No zones created","config.no_programs":"No programs created","config.new_zone":"New zone","config.new_program":"New program","config.name":"Name","config.save":"Save","config.cancel":"Cancel","config.delete":"Delete","config.edit":"Edit","config.confirm_delete_zone":"Delete this zone?","config.confirm_delete_program":"Delete this program?","config.trigger_time":"Trigger time","config.select_valves":"Select valves","config.select_zones":"Select zones","config.valve_entity":"Entity","config.total_duration":"Total: {duration} min","config.dry_run":"Test mode","config.dry_run_hint":"Runs the sequence without activating valves","running.dry_run":"Test mode","config.frequency":"Frequency","config.follows_program":"Every day","config.frequency_every_n":"Every {n} days","config.frequency_weekdays":"Specific days","recap.frequency_every_n":"every {n}d","config.title":"WateringHub Config","config.editor_valves":"Valves","config.add_valve":"Add valve","config.select_entity":"Switch entity","config.valve_name":"Valve name","config.confirm_delete_valve":"Delete this valve?"};var Fe={"status.idle":"En attente","status.running":"Arrosage en cours","status.error":"Erreur","status.disabled":"D\xE9sactiv\xE9",stop_all:"Tout arr\xEAter",next:"Prochain",last:"Dernier",no_programs:"Aucun programme trouv\xE9",loading:"Chargement...","time.just_now":"\xE0 l'instant","time.minutes_ago":"il y a {count} min","time.hours_ago":"il y a {count}h","time.days_ago":"il y a {count}j","time.today_at":"aujourd'hui \xE0 {time}","time.tomorrow_at":"demain \xE0 {time}","time.in_days":"dans {count}j","time.never":"Jamais","time.no_schedule":"Aucun programme actif","status.running_program":"En cours : {name}",stop_confirm:"Arr\xEAter tout l'arrosage ?","recap.total_duration":"Dur\xE9e totale : {duration} min","days.mon":"Lun","days.tue":"Mar","days.wed":"Mer","days.thu":"Jeu","days.fri":"Ven","days.sat":"Sam","days.sun":"Dim","running.progress":"Vanne {done} sur {total}","error.program":"Erreur \u2014 {name}","error.auto_stopped":"Toutes les vannes ont \xE9t\xE9 ferm\xE9es automatiquement.","config.tab_valves":"Vannes","config.tab_zones":"Zones","config.tab_programs":"Programmes","config.no_valves":"Aucune vanne configur\xE9e","config.no_zones":"Aucune zone cr\xE9\xE9e","config.no_programs":"Aucun programme cr\xE9\xE9","config.new_zone":"Nouvelle zone","config.new_program":"Nouveau programme","config.name":"Nom","config.save":"Sauvegarder","config.cancel":"Annuler","config.delete":"Supprimer","config.edit":"Modifier","config.confirm_delete_zone":"Supprimer cette zone ?","config.confirm_delete_program":"Supprimer ce programme ?","config.trigger_time":"Heure de d\xE9clenchement","config.select_valves":"S\xE9lectionner les vannes","config.select_zones":"S\xE9lectionner les zones","config.valve_entity":"Entit\xE9","config.total_duration":"Total : {duration} min","config.dry_run":"Mode test","config.dry_run_hint":"Ex\xE9cute la s\xE9quence sans activer les vannes","running.dry_run":"Mode test","config.frequency":"Fr\xE9quence","config.follows_program":"Tous les jours","config.frequency_every_n":"Tous les {n} jours","config.frequency_weekdays":"Jours sp\xE9cifiques","recap.frequency_every_n":"tous les {n}j","config.title":"WateringHub Config","config.editor_valves":"Vannes","config.add_valve":"Ajouter une vanne","config.select_entity":"Entit\xE9 switch","config.valve_name":"Nom de la vanne","config.confirm_delete_valve":"Supprimer cette vanne ?"};var fe={en:Ze,fr:Fe};function I(n){let e=n?.toLowerCase().startsWith("fr")?"fr":"en",t=fe[e]??fe.en;return(r,o)=>{let i=t[r]??fe.en[r]??r;return o&&(i=i.replace(/\{(\w+)\}/g,(s,l)=>String(o[l]??s))),i}}var D=T`
   ha-card {
     padding: 20px;
   }
@@ -25,7 +25,7 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
     color: var(--secondary-text-color);
     font-size: 14px;
   }
-`;var Fe=P`
+`;var Oe=T`
   /* Program status line */
   .program-status {
     display: flex;
@@ -99,8 +99,8 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
   }
   .running-stop-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 16px;
+    right: 16px;
     background: var(--error-color);
     color: white;
     border: none;
@@ -363,35 +363,35 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
     --mdc-icon-size: 18px;
     color: var(--secondary-text-color);
   }
-`;function X(o){return Object.keys(o.states).filter(e=>e.startsWith("switch.wateringhub_"))}function M(o,e){return typeof o?.attributes.friendly_name=="string"?o.attributes.friendly_name:e}function ee(o){return o.states["sensor.wateringhub_status"]?.state??"idle"}function Oe(o){let e=o.states["sensor.wateringhub_status"];if(e?.state!=="error")return null;let t=e.attributes,r=t.current_program,n=r?o.states[`switch.wateringhub_${r}`]:void 0;return{programName:M(n,r??""),errorMessage:t.error_message??""}}function Le(o){let e=o.states["sensor.wateringhub_status"];if(e?.state!=="running")return null;let t=e.attributes,r=t.current_valve_start,n=t.current_valve_duration??0,i=t.valves_done??0,s=t.valves_total??1,l=r?Math.max(0,(Date.now()-new Date(r).getTime())/1e3):0,a=Math.max(0,n-l),c=n>0?Math.min(100,l/n*100):0,m=(i+c/100)/s*100,p=(i+1)/s*100,g=Array.isArray(t.valves_sequence)?t.valves_sequence:[],h=g.filter(y=>y.status==="pending").reduce((y,_)=>y+_.duration,0),v=a+h,oe=g.length>0?g.reduce((y,_)=>y+_.duration,0):n*s,A=g.filter(y=>y.status==="done").reduce((y,_)=>y+_.duration,0)+l;return{programName:t.current_program??"",zoneName:t.current_zone_name??"",valveName:t.current_valve_name??"",valveStart:r??"",valveDuration:n,valvesDone:i,valvesTotal:s,progressPercent:t.progress_percent??0,remaining:a,totalRemaining:v,totalDuration:oe,totalElapsed:A,valvePercent:c,finePercent:m,globalEndPercent:p,valveSequence:g,dryRun:t.dry_run===!0}}function fe(o){if(o<=0)return"0:00";let e=Math.floor(o/3600),t=Math.floor(o%3600/60),r=Math.floor(o%60);return e>0?`${e}:${t.toString().padStart(2,"0")}:${r.toString().padStart(2,"0")}`:`${t}:${r.toString().padStart(2,"0")}`}function te(o,e){return o?o.time:""}function je(o){return!o||o.state==="None"||o.state==="unknown"||o.state==="unavailable"}function _e(o,e,t,r){let n=o.states[e];if(je(n))return t("time.never");let i=new Date(n.state);if(Number.isNaN(i.getTime()))return n.state;let s=new Date,l=s.getTime()-i.getTime();if(l<0){let p=new Date(s.getFullYear(),s.getMonth(),s.getDate()),g=new Date(i.getFullYear(),i.getMonth(),i.getDate()),h=Math.round((g.getTime()-p.getTime())/(1e3*60*60*24)),v=i.toLocaleTimeString(r??[],{hour:"2-digit",minute:"2-digit"});return h===0?t("time.today_at",{time:v}):h===1?t("time.tomorrow_at",{time:v}):t("time.in_days",{count:h})}let a=Math.floor(l/(1e3*60));if(a<1)return t("time.just_now");if(a<60)return t("time.minutes_ago",{count:a});let c=Math.floor(a/60);if(c<24)return t("time.hours_ago",{count:c});let m=Math.floor(c/24);return t("time.days_ago",{count:m})}function Ue(o,e,t){let r=o.states["sensor.wateringhub_next_run"];return je(r)?e("time.no_schedule"):_e(o,"sensor.wateringhub_next_run",e,t)}function Be(o){return d`
+`;function te(n){return Object.keys(n.states).filter(e=>e.startsWith("switch.wateringhub_"))}function H(n,e){return typeof n?.attributes.friendly_name=="string"?n.attributes.friendly_name:e}function re(n){return n.states["sensor.wateringhub_status"]?.state??"idle"}function Le(n){let e=n.states["sensor.wateringhub_status"];if(e?.state!=="error")return null;let t=e.attributes,r=t.current_program,o=r?n.states[`switch.wateringhub_${r}`]:void 0;return{programName:H(o,r??""),errorMessage:t.error_message??""}}function je(n){let e=n.states["sensor.wateringhub_status"];if(e?.state!=="running")return null;let t=e.attributes,r=t.current_valve_start,o=t.current_valve_duration??0,i=t.valves_done??0,s=t.valves_total??1,l=r?Math.max(0,(Date.now()-new Date(r).getTime())/1e3):0,a=Math.max(0,o-l),d=o>0?Math.min(100,l/o*100):0,m=(i+d/100)/s*100,p=(i+1)/s*100,g=Array.isArray(t.valves_sequence)?t.valves_sequence:[],v=g.filter(x=>x.status==="pending").reduce((x,b)=>x+b.duration,0),_=a+v,oe=g.length>0?g.reduce((x,b)=>x+b.duration,0):o*s,E=g.filter(x=>x.status==="done").reduce((x,b)=>x+b.duration,0)+l;return{programName:t.current_program??"",zoneName:t.current_zone_name??"",valveName:t.current_valve_name??"",valveStart:r??"",valveDuration:o,valvesDone:i,valvesTotal:s,progressPercent:t.progress_percent??0,remaining:a,totalRemaining:_,totalDuration:oe,totalElapsed:E,valvePercent:d,finePercent:m,globalEndPercent:p,valveSequence:g,dryRun:t.dry_run===!0}}function _e(n){if(n<=0)return"0:00";let e=Math.floor(n/3600),t=Math.floor(n%3600/60),r=Math.floor(n%60);return e>0?`${e}:${t.toString().padStart(2,"0")}:${r.toString().padStart(2,"0")}`:`${t}:${r.toString().padStart(2,"0")}`}function ne(n,e){return n?n.time:""}function Ue(n){return!n||n.state==="None"||n.state==="unknown"||n.state==="unavailable"}function ye(n,e,t,r){let o=n.states[e];if(Ue(o))return t("time.never");let i=new Date(o.state);if(Number.isNaN(i.getTime()))return o.state;let s=new Date,l=s.getTime()-i.getTime();if(l<0){let p=new Date(s.getFullYear(),s.getMonth(),s.getDate()),g=new Date(i.getFullYear(),i.getMonth(),i.getDate()),v=Math.round((g.getTime()-p.getTime())/(1e3*60*60*24)),_=i.toLocaleTimeString(r??[],{hour:"2-digit",minute:"2-digit"});return v===0?t("time.today_at",{time:_}):v===1?t("time.tomorrow_at",{time:_}):t("time.in_days",{count:v})}let a=Math.floor(l/(1e3*60));if(a<1)return t("time.just_now");if(a<60)return t("time.minutes_ago",{count:a});let d=Math.floor(a/60);if(d<24)return t("time.hours_ago",{count:d});let m=Math.floor(d/24);return t("time.days_ago",{count:m})}function Be(n,e,t){let r=n.states["sensor.wateringhub_next_run"];return Ue(r)?e("time.no_schedule"):ye(n,"sensor.wateringhub_next_run",e,t)}function Je(n){return c`
     <div class="header">
-      <span class="title">${o}</span>
+      <span class="title">${n}</span>
     </div>
-  `}function wt(o,e,t){return e?ee(o)==="running"?d``:d`
+  `}function At(n,e,t){return e?re(n)==="running"?c``:c`
     <div class="program-status">
       <span class="badge-sm badge-idle">${t("status.idle")}</span>
-      <span class="info-sm">${t("next")}: ${Ue(o,t,o.language)}</span>
+      <span class="info-sm">${t("next")}: ${Be(n,t,n.language)}</span>
       <span class="info-sm">
-        ${t("last")}: ${_e(o,"sensor.wateringhub_last_run",t,o.language)}
+        ${t("last")}: ${ye(n,"sensor.wateringhub_last_run",t,n.language)}
       </span>
     </div>
-  `:d`
+  `:c`
       <div class="program-status">
         <span class="badge-sm badge-disabled">${t("status.disabled")}</span>
       </div>
-    `}function Je(o,e){let t=Oe(o);return t?d`
+    `}function Ge(n,e){let t=Le(n);return t?c`
     <div class="error-view">
       <div class="error-title">
         <ha-icon icon="mdi:alert-circle"></ha-icon>
         ${e("error.program",{name:t.programName})}
       </div>
-      ${t.errorMessage?d`<div class="error-message">${t.errorMessage}</div>`:u}
+      ${t.errorMessage?c`<div class="error-message">${t.errorMessage}</div>`:u}
       <div class="error-auto-stopped">${e("error.auto_stopped")}</div>
     </div>
-  `:d``}function Ge(o,e,t){let r=Le(o);if(!r)return d``;let n=2*Math.PI*30,i=r.totalDuration>0?r.totalElapsed/r.totalDuration:0,s=n*(1-Math.min(1,i));return d`
+  `:c``}function Ke(n,e,t){let r=je(n);if(!r)return c``;let o=2*Math.PI*30,i=r.totalDuration>0?r.totalElapsed/r.totalDuration:0,s=o*(1-Math.min(1,i));return c`
     <div class="running-block">
       <button class="running-stop-btn" @click=${e}>${t("stop_all")}</button>
-      ${r.dryRun?d`<span class="badge-dry-run">${t("running.dry_run")}</span>`:u}
+      ${r.dryRun?c`<span class="badge-dry-run">${t("running.dry_run")}</span>`:u}
 
       <div class="global-hero">
         <div class="circular-progress">
@@ -402,16 +402,16 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
               cx="34"
               cy="34"
               r="30"
-              style="stroke-dasharray: ${n}; stroke-dashoffset: ${s}"
+              style="stroke-dasharray: ${o}; stroke-dashoffset: ${s}"
             />
           </svg>
           <div class="cp-center">
-            <span class="cp-time">${fe(r.totalRemaining)}</span>
+            <span class="cp-time">${_e(r.totalRemaining)}</span>
           </div>
         </div>
         <div class="global-info">
           <div class="global-program-name">
-            ${M(o.states[`switch.wateringhub_${r.programName}`],r.programName)}
+            ${H(n.states[`switch.wateringhub_${r.programName}`],r.programName)}
           </div>
           <div class="global-sub">
             ${t("running.progress",{done:r.valvesDone+1,total:r.valvesTotal})}
@@ -419,76 +419,76 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
         </div>
       </div>
 
-      ${r.valveSequence.length>0?St(r.valveSequence,r.remaining,t):u}
+      ${r.valveSequence.length>0?Et(r.valveSequence,r.remaining,t):u}
     </div>
-  `}function St(o,e,t){let r=[];for(let a of o){let c=r[r.length-1];c?.zoneName===a.zone_name?c.valves.push(a):r.push({zoneName:a.zone_name,valves:[a]})}let n=d`<svg viewBox="0 0 24 24">
+  `}function Et(n,e,t){let r=[];for(let a of n){let d=r[r.length-1];d?.zoneName===a.zone_name?d.valves.push(a):r.push({zoneName:a.zone_name,valves:[a]})}let o=c`<svg viewBox="0 0 24 24">
     <path
       fill="currentColor"
       d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9Z"
     />
-  </svg>`,i=d`<svg viewBox="0 0 24 24">
+  </svg>`,i=c`<svg viewBox="0 0 24 24">
     <circle fill="currentColor" cx="12" cy="12" r="6" />
-  </svg>`,s=d`<svg viewBox="0 0 24 24">
+  </svg>`,s=c`<svg viewBox="0 0 24 24">
     <circle fill="none" stroke="currentColor" stroke-width="2" cx="12" cy="12" r="6" />
-  </svg>`,l={done:n,running:i,pending:s};return d`
+  </svg>`,l={done:o,running:i,pending:s};return c`
     <div class="valve-timeline">
-      ${r.map(a=>d`
+      ${r.map(a=>c`
           <div class="tl-zone">${a.zoneName}</div>
-          ${a.valves.map(c=>{let m=Math.ceil(c.duration/60);return d`
-              <div class="tl-step tl-${c.status}">
-                <span class="tl-dot">${l[c.status]}</span>
-                <span class="tl-step-name">${c.valve_name}</span>
+          ${a.valves.map(d=>{let m=Math.ceil(d.duration/60);return c`
+              <div class="tl-step tl-${d.status}">
+                <span class="tl-dot">${l[d.status]}</span>
+                <span class="tl-step-name">${d.valve_name}</span>
                 <span class="tl-step-time">
-                  ${c.status==="running"?fe(e):`${m} min`}
+                  ${d.status==="running"?_e(e):`${m} min`}
                 </span>
               </div>
             `})}
         `)}
     </div>
-  `}function Ke(o,e,t,r,n,i){return e.length===0?d`<div class="empty-state">${i("no_programs")}</div>`:d`${e.map(s=>{let l=o.states[s];if(!l)return u;let a=l.state==="on",c=t===s,m=M(l,s);return d`
+  `}function Ye(n,e,t,r,o,i){return e.length===0?c`<div class="empty-state">${i("no_programs")}</div>`:c`${e.map(s=>{let l=n.states[s];if(!l)return u;let a=l.state==="on",d=t===s,m=H(l,s);return c`
       <div class="program-wrapper">
         <div class="program">
           <div class="program-header" @click=${()=>r(s)}>
-            <ha-icon class="chevron ${c?"open":""}" icon="mdi:chevron-down"></ha-icon>
-            ${a?d`<div class="active-dot"></div>`:u}
+            <ha-icon class="chevron ${d?"open":""}" icon="mdi:chevron-down"></ha-icon>
+            ${a?c`<div class="active-dot"></div>`:u}
             <span class="program-name ${a?"active":""}">${m}</span>
           </div>
-          <ha-switch .checked=${a} @change=${()=>n(s)}></ha-switch>
+          <ha-switch .checked=${a} @change=${()=>o(s)}></ha-switch>
         </div>
-        ${wt(o,a,i)}
-        ${At(l.attributes,c,i)}
+        ${At(n,a,i)}
+        ${Tt(l.attributes,d,i)}
       </div>
-    `})}`}function At(o,e,t){let r=o.schedule,n=o.zones??[],i=o.total_duration;return d`
+    `})}`}function Tt(n,e,t){let r=n.schedule,o=n.zones??[],i=n.total_duration;return c`
     <div class="program-recap ${e?"open":""}">
-      ${r?d`<div class="recap-schedule">
+      ${r?c`<div class="recap-schedule">
             <ha-icon icon="mdi:calendar-clock"></ha-icon>
-            ${te(r,t)}
+            ${ne(r,t)}
           </div>`:u}
-      ${n.map(s=>d`
+      ${o.map(s=>c`
           <div class="recap-zone">
             <ha-icon icon="mdi:map-marker"></ha-icon>
             ${s.zone_name}
           </div>
-          ${s.valves.map(l=>d`
+          ${s.valves.map(l=>c`
               <div class="recap-valve">
                 <ha-icon icon="mdi:water"></ha-icon>
                 ${l.valve_name} — ${l.duration}
-                min${Et(l.frequency,t)}
+                min${Pt(l.frequency,t)}
               </div>
             `)}
         `)}
-      ${i?d`<div class="recap-total">
+      ${i?c`<div class="recap-total">
             <ha-icon icon="mdi:timer-outline"></ha-icon>
             ${t("recap.total_duration",{duration:i})}
           </div>`:u}
     </div>
-  `}function Et(o,e){return o?o.type==="every_n_days"?` \xB7 ${e("recap.frequency_every_n",{n:o.n??2})}`:o.type==="weekdays"&&o.days?.length?` \xB7 ${o.days.map(r=>e(`days.${r}`)).join(", ")}`:"":""}var w=class extends ${constructor(){super(...arguments);this._programEntities=[];this._expandedProgram=null;this._tick=0;this._t=t=>t;this._timerInterval=null}setConfig(t){this._config=t}set hass(t){let r=this._hass;this._hass=t,this._t=W(t.language),r?.states!==t.states&&(this._programEntities=X(t)),this._updateTimer(ee(t))}disconnectedCallback(){super.disconnectedCallback(),this._clearTimer()}_updateTimer(t){t==="running"&&!this._timerInterval?this._timerInterval=setInterval(()=>{this._tick++},1e3):t!=="running"&&this._timerInterval&&this._clearTimer()}_clearTimer(){this._timerInterval&&(clearInterval(this._timerInterval),this._timerInterval=null)}getCardSize(){return 3}_toggleExpand(t){this._expandedProgram=this._expandedProgram===t?null:t}_toggleProgram(t){let r=this._hass.states[t];if(!r)return;let n=r.state==="on"?"turn_off":"turn_on";this._hass.callService("switch",n,{entity_id:t})}_stopAll(){confirm(this._t("stop_confirm"))&&this._hass.callService("wateringhub","stop_all",{})}render(){if(!this._hass||!this._config)return d`<ha-card>${this._t("loading")}</ha-card>`;let t=this._config.title??"WateringHub";return d`
+  `}function Pt(n,e){return n?n.type==="every_n_days"?` \xB7 ${e("recap.frequency_every_n",{n:n.n??2})}`:n.type==="weekdays"&&n.days?.length?` \xB7 ${n.days.map(r=>e(`days.${r}`)).join(", ")}`:"":""}var w=class extends ${constructor(){super(...arguments);this._programEntities=[];this._expandedProgram=null;this._tick=0;this._t=t=>t;this._timerInterval=null}setConfig(t){this._config=t}set hass(t){let r=this._hass;this._hass=t,this._t=I(t.language),r?.states!==t.states&&(this._programEntities=te(t)),this._updateTimer(re(t))}disconnectedCallback(){super.disconnectedCallback(),this._clearTimer()}_updateTimer(t){t==="running"&&!this._timerInterval?this._timerInterval=setInterval(()=>{this._tick++},1e3):t!=="running"&&this._timerInterval&&this._clearTimer()}_clearTimer(){this._timerInterval&&(clearInterval(this._timerInterval),this._timerInterval=null)}getCardSize(){return 3}_toggleExpand(t){this._expandedProgram=this._expandedProgram===t?null:t}_toggleProgram(t){let r=this._hass.states[t];if(!r)return;let o=r.state==="on"?"turn_off":"turn_on";this._hass.callService("switch",o,{entity_id:t})}_stopAll(){confirm(this._t("stop_confirm"))&&this._hass.callService("wateringhub","stop_all",{})}render(){if(!this._hass||!this._config)return c`<ha-card>${this._t("loading")}</ha-card>`;let t=this._config.title??"WateringHub";return c`
       <ha-card>
-        ${Be(t)} ${Je(this._hass,this._t)}
-        ${Ge(this._hass,()=>this._stopAll(),this._t)}
-        ${Ke(this._hass,this._programEntities,this._expandedProgram,r=>this._toggleExpand(r),r=>this._toggleProgram(r),this._t)}
+        ${Je(t)} ${Ge(this._hass,this._t)}
+        ${Ke(this._hass,()=>this._stopAll(),this._t)}
+        ${Ye(this._hass,this._programEntities,this._expandedProgram,r=>this._toggleExpand(r),r=>this._toggleProgram(r),this._t)}
       </ha-card>
-    `}};w.styles=[Q,Fe],b([x()],w.prototype,"_config",2),b([x()],w.prototype,"_hass",2),b([x()],w.prototype,"_programEntities",2),b([x()],w.prototype,"_expandedProgram",2),b([x()],w.prototype,"_tick",2),w=b([K("wateringhub-card")],w);globalThis.customCards=globalThis.customCards||[];globalThis.customCards.push({type:"wateringhub-card",name:"WateringHub Card",description:"Watering management card for WateringHub"});var Ye=P`
+    `}};w.styles=[D,Oe],h([f()],w.prototype,"_config",2),h([f()],w.prototype,"_hass",2),h([f()],w.prototype,"_programEntities",2),h([f()],w.prototype,"_expandedProgram",2),h([f()],w.prototype,"_tick",2),w=h([V("wateringhub-card")],w);globalThis.customCards=globalThis.customCards||[];globalThis.customCards.push({type:"wateringhub-card",name:"WateringHub Card",description:"Watering management card for WateringHub"});var Qe=T`
   /* Tabs */
   .tabs {
     display: flex;
@@ -643,7 +643,7 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 0 4px 24px;
+    padding: 4px 0;
     font-size: 13px;
   }
   .valve-duration-row label {
@@ -781,19 +781,19 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
     margin-top: 8px;
     text-align: right;
   }
-`;function re(o){return o.states["sensor.wateringhub_status"]?.attributes.available_valves??[]}function ye(o){return o.states["sensor.wateringhub_status"]?.attributes.zones??[]}function be(o){return o.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"")}function Xe(o,e,t){let r=[{id:"programs",label:t("config.tab_programs")},{id:"zones",label:t("config.tab_zones")},{id:"valves",label:t("config.tab_valves")}];return d`
+`;function Z(n){return n.states["sensor.wateringhub_status"]?.attributes.available_valves??[]}function be(n){return n.states["sensor.wateringhub_status"]?.attributes.zones??[]}function xe(n){return n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"")}function et(n,e,t){let r=[{id:"programs",label:t("config.tab_programs")},{id:"zones",label:t("config.tab_zones")},{id:"valves",label:t("config.tab_valves")}];return c`
     <div class="tabs">
-      ${r.map(n=>d`
+      ${r.map(o=>c`
           <div
-            class="tab ${o===n.id?"active":""}"
-            @click=${()=>e(n.id)}
+            class="tab ${n===o.id?"active":""}"
+            @click=${()=>e(o.id)}
           >
-            ${n.label}
+            ${o.label}
           </div>
         `)}
     </div>
-  `}function et(o,e){let t=re(o);return t.length===0?d`<div class="empty-state">${e("config.no_valves")}</div>`:d`
-    ${t.map(r=>d`
+  `}function tt(n,e){let t=Z(n);return t.length===0?c`<div class="empty-state">${e("config.no_valves")}</div>`:c`
+    ${t.map(r=>c`
         <div class="list-item">
           <div class="list-item-header">
             <div>
@@ -803,51 +803,51 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
           </div>
         </div>
       `)}
-  `}function tt(o,e,t,r,n,i,s,l,a){let c=ye(o),m=re(o);return d`
-    ${c.map(p=>e&&e.id===p.id?We(e,m,i,s,l,a):Tt(p,m,t,r,a))}
-    ${e?.isNew?We(e,m,i,s,l,a):u}
-    ${e?u:d`<button class="add-btn" @click=${n}>+ ${a("config.new_zone")}</button>`}
-    ${c.length===0&&!e?d`<div class="empty-state">${a("config.no_zones")}</div>`:u}
-  `}function Tt(o,e,t,r,n){let i=o.valves.map(s=>e.find(l=>l.id===s)?.name??s).join(", ");return d`
+  `}function rt(n,e,t,r,o,i,s,l,a){let d=be(n),m=Z(n);return c`
+    ${d.map(p=>e&&e.id===p.id?Xe(e,m,i,s,l,a):zt(p,m,t,r,a))}
+    ${e?.isNew?Xe(e,m,i,s,l,a):u}
+    ${e?u:c`<button class="add-btn" @click=${o}>+ ${a("config.new_zone")}</button>`}
+    ${d.length===0&&!e?c`<div class="empty-state">${a("config.no_zones")}</div>`:u}
+  `}function zt(n,e,t,r,o){let i=n.valves.map(s=>e.find(l=>l.id===s)?.name??s).join(", ");return c`
     <div class="list-item">
       <div class="list-item-header">
         <div>
-          <div class="list-item-name">${o.name}</div>
+          <div class="list-item-name">${n.name}</div>
           <div class="list-item-sub">${i}</div>
         </div>
         <div class="list-item-actions">
-          <button class="action-btn" @click=${()=>t(o)} title="${n("config.edit")}">
+          <button class="action-btn" @click=${()=>t(n)} title="${o("config.edit")}">
             <ha-icon icon="mdi:pencil"></ha-icon>
           </button>
           <button
             class="action-btn delete"
-            @click=${()=>r(o.id)}
-            title="${n("config.delete")}"
+            @click=${()=>r(n.id)}
+            title="${o("config.delete")}"
           >
             <ha-icon icon="mdi:delete"></ha-icon>
           </button>
         </div>
       </div>
     </div>
-  `}function We(o,e,t,r,n,i){return d`
+  `}function Xe(n,e,t,r,o,i){return c`
     <div class="inline-form">
       <div class="form-row">
         <label class="form-label">${i("config.name")}</label>
         <input
           class="form-input"
-          .value=${o.name}
-          @input=${s=>n({...o,name:s.target.value})}
+          .value=${n.name}
+          @input=${s=>o({...n,name:s.target.value})}
         />
       </div>
       <div class="form-row">
         <label class="form-label">${i("config.select_valves")}</label>
         <div class="checkbox-list">
-          ${e.map(s=>{let l=o.valves.includes(s.id);return d`
+          ${e.map(s=>{let l=n.valves.includes(s.id);return c`
               <label class="checkbox-item">
                 <input
                   type="checkbox"
                   .checked=${l}
-                  @change=${()=>{let a=l?o.valves.filter(c=>c!==s.id):[...o.valves,s.id];n({...o,valves:a})}}
+                  @change=${()=>{let a=l?n.valves.filter(d=>d!==s.id):[...n.valves,s.id];o({...n,valves:a})}}
                 />
                 ${s.name}
               </label>
@@ -856,49 +856,49 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
       </div>
       <div class="form-actions">
         <button class="btn btn-cancel" @click=${r}>${i("config.cancel")}</button>
-        <button class="btn btn-primary" @click=${()=>t(o)}>${i("config.save")}</button>
+        <button class="btn btn-primary" @click=${()=>t(n)}>${i("config.save")}</button>
       </div>
     </div>
-  `}function rt(o,e,t,r,n,i,s,l,a){let c=X(o),m=ye(o),p=re(o);return d`
-    ${c.map(g=>{let h=o.states[g];if(!h)return u;let v=h.attributes.program_id??"";return e&&e.id===v?Qe(e,m,p,i,s,l,a):Pt(h,g,t,r,a)})}
-    ${e?.isNew?Qe(e,m,p,i,s,l,a):u}
-    ${e?u:d`<button class="add-btn" @click=${n}>+ ${a("config.new_program")}</button>`}
-    ${c.length===0&&!e?d`<div class="empty-state">${a("config.no_programs")}</div>`:u}
-  `}function Pt(o,e,t,r,n){let i=M(o,e),s=o.attributes.schedule,l=o.attributes.total_duration,a=o.attributes.dry_run===!0,c=te(s,n);return d`
+  `}function nt(n,e,t,r,o,i,s,l,a){let d=te(n),m=be(n),p=Z(n);return c`
+    ${d.map(g=>{let v=n.states[g];if(!v)return u;let _=v.attributes.program_id??"";return e&&e.id===_?We(e,m,p,i,s,l,a):kt(v,g,t,r,a)})}
+    ${e?.isNew?We(e,m,p,i,s,l,a):u}
+    ${e?u:c`<button class="add-btn" @click=${o}>+ ${a("config.new_program")}</button>`}
+    ${d.length===0&&!e?c`<div class="empty-state">${a("config.no_programs")}</div>`:u}
+  `}function kt(n,e,t,r,o){let i=H(n,e),s=n.attributes.schedule,l=n.attributes.total_duration,a=n.attributes.dry_run===!0,d=ne(s,o);return c`
     <div class="list-item">
       <div class="list-item-header">
         <div>
           <div class="list-item-name">
             ${i}
-            ${a?d`<span class="dry-run-tag">${n("config.dry_run")}</span>`:u}
+            ${a?c`<span class="dry-run-tag">${o("config.dry_run")}</span>`:u}
           </div>
           <div class="list-item-sub">
-            ${c}${l?` \u2014 ${l} min`:""}
+            ${d}${l?` \u2014 ${l} min`:""}
           </div>
         </div>
         <div class="list-item-actions">
-          <button class="action-btn" @click=${()=>t(e)} title="${n("config.edit")}">
+          <button class="action-btn" @click=${()=>t(e)} title="${o("config.edit")}">
             <ha-icon icon="mdi:pencil"></ha-icon>
           </button>
           <button
             class="action-btn delete"
             @click=${()=>r(e)}
-            title="${n("config.delete")}"
+            title="${o("config.delete")}"
           >
             <ha-icon icon="mdi:delete"></ha-icon>
           </button>
         </div>
       </div>
     </div>
-  `}function Qe(o,e,t,r,n,i,s){let l=o.zones.reduce((a,c)=>a+c.valves.reduce((m,p)=>m+(p.duration||0),0),0);return d`
+  `}function We(n,e,t,r,o,i,s){let l=n.zones.reduce((a,d)=>a+d.valves.reduce((m,p)=>m+(p.duration||0),0),0);return c`
     <div class="inline-form">
       <!-- Name -->
       <div class="form-row">
         <label class="form-label">${s("config.name")}</label>
         <input
           class="form-input"
-          .value=${o.name}
-          @input=${a=>i({...o,name:a.target.value})}
+          .value=${n.name}
+          @input=${a=>i({...n,name:a.target.value})}
         />
       </div>
 
@@ -908,26 +908,26 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
         <input
           class="form-input"
           type="time"
-          .value=${o.schedule.time}
-          @input=${a=>i({...o,schedule:{time:a.target.value}})}
+          .value=${n.schedule.time}
+          @input=${a=>i({...n,schedule:{time:a.target.value}})}
         />
       </div>
 
       <!-- Zones + valves with durations -->
       <div class="form-row">
         <label class="form-label">${s("config.select_zones")}</label>
-        ${e.map(a=>{let c=o.zones.find(p=>p.zone_id===a.id),m=!!c;return d`
+        ${e.map(a=>{let d=n.zones.find(p=>p.zone_id===a.id),m=!!d;return c`
             <div class="form-zone-section">
               <label class="checkbox-item">
                 <input
                   type="checkbox"
                   .checked=${m}
-                  @change=${()=>{let p=m?o.zones.filter(g=>g.zone_id!==a.id):[...o.zones,{zone_id:a.id,valves:a.valves.map(g=>({valve_id:g,duration:10}))}];i({...o,zones:p})}}
+                  @change=${()=>{let p=m?n.zones.filter(g=>g.zone_id!==a.id):[...n.zones,{zone_id:a.id,valves:a.valves.map(g=>({valve_id:g,duration:10}))}];i({...n,zones:p})}}
                 />
                 <span class="form-zone-name">${a.name}</span>
               </label>
-              ${m&&c?d`
-                    ${c.valves.map(p=>{let g=t.find(f=>f.id===p.valve_id)?.name??p.valve_id,h=f=>{let A=c.valves.map(_=>_.valve_id===p.valve_id?{..._,...f}:_),y=o.zones.map(_=>_.zone_id===a.id?{..._,valves:A}:_);i({...o,zones:y})},v=p.frequency?.type??"",oe=new Date().toISOString().slice(0,10);return d`
+              ${m&&d?c`
+                    ${d.valves.map(p=>{let g=t.find(y=>y.id===p.valve_id)?.name??p.valve_id,v=y=>{let E=d.valves.map(b=>b.valve_id===p.valve_id?{...b,...y}:b),x=n.zones.map(b=>b.zone_id===a.id?{...b,valves:E}:b);i({...n,zones:x})},_=p.frequency?.type??"",oe=new Date().toISOString().slice(0,10);return c`
                         <div class="valve-config-block">
                           <div class="valve-duration-row">
                             <label>${g}</label>
@@ -936,15 +936,15 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
                               type="number"
                               min="1"
                               .value=${String(p.duration)}
-                              @input=${f=>h({duration:parseInt(f.target.value)||1})}
+                              @input=${y=>v({duration:parseInt(y.target.value)||1})}
                             />
                             <span>min</span>
                           </div>
                           <div class="valve-frequency-row">
                             <select
                               class="valve-freq-select"
-                              .value=${v}
-                              @change=${f=>{let A=f.target.value;h(A?A==="every_n_days"?{frequency:{type:"every_n_days",n:2,start_date:oe}}:{frequency:{type:"weekdays",days:[]}}:{frequency:void 0})}}
+                              .value=${_}
+                              @change=${y=>{let E=y.target.value;v(E?E==="every_n_days"?{frequency:{type:"every_n_days",n:2,start_date:oe}}:{frequency:{type:"weekdays",days:[]}}:{frequency:void 0})}}
                             >
                               <option value="">${s("config.follows_program")}</option>
                               <option value="every_n_days">
@@ -952,26 +952,26 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
                               </option>
                               <option value="weekdays">${s("config.frequency_weekdays")}</option>
                             </select>
-                            ${v==="every_n_days"?d`
+                            ${_==="every_n_days"?c`
                                   <input
                                     class="valve-freq-n-input"
                                     type="number"
                                     min="2"
                                     .value=${String(p.frequency?.n??2)}
-                                    @input=${f=>h({frequency:{...p.frequency,n:parseInt(f.target.value)||2}})}
+                                    @input=${y=>v({frequency:{...p.frequency,n:parseInt(y.target.value)||2}})}
                                   />
                                   <span>j</span>
                                 `:u}
-                            ${v==="weekdays"?d`
+                            ${_==="weekdays"?c`
                                   <div class="valve-freq-days">
-                                    ${["mon","tue","wed","thu","fri","sat","sun"].map(f=>{let A=p.frequency?.days?.includes(f)??!1;return d`
+                                    ${["mon","tue","wed","thu","fri","sat","sun"].map(y=>{let E=p.frequency?.days?.includes(y)??!1;return c`
                                           <label class="valve-freq-day">
                                             <input
                                               type="checkbox"
-                                              .checked=${A}
-                                              @change=${()=>{let y=p.frequency?.days??[],_=A?y.filter(ot=>ot!==f):[...y,f];h({frequency:{...p.frequency,days:_}})}}
+                                              .checked=${E}
+                                              @change=${()=>{let x=p.frequency?.days??[],b=E?x.filter(it=>it!==y):[...x,y];v({frequency:{...p.frequency,days:b}})}}
                                             />
-                                            ${s(`days.${f}`)}
+                                            ${s(`days.${y}`)}
                                           </label>
                                         `})}
                                   </div>
@@ -984,7 +984,7 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
           `})}
       </div>
 
-      ${l>0?d`<div class="total-duration">
+      ${l>0?c`<div class="total-duration">
             ${s("config.total_duration",{duration:l})}
           </div>`:u}
 
@@ -993,8 +993,8 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
         <label class="checkbox-item">
           <input
             type="checkbox"
-            .checked=${o.dry_run}
-            @change=${()=>i({...o,dry_run:!o.dry_run})}
+            .checked=${n.dry_run}
+            @change=${()=>i({...n,dry_run:!n.dry_run})}
           />
           ${s("config.dry_run")}
         </label>
@@ -1002,19 +1002,170 @@ var nt=Object.defineProperty;var it=Object.getOwnPropertyDescriptor;var b=(o,e,t
       </div>
 
       <div class="form-actions">
-        <button class="btn btn-cancel" @click=${n}>${s("config.cancel")}</button>
-        <button class="btn btn-primary" @click=${()=>r(o)}>${s("config.save")}</button>
+        <button class="btn btn-cancel" @click=${o}>${s("config.cancel")}</button>
+        <button class="btn btn-primary" @click=${()=>r(n)}>${s("config.save")}</button>
       </div>
     </div>
-  `}var S=class extends ${constructor(){super(...arguments);this._activeTab="programs";this._editingZone=null;this._editingProgram=null;this._t=t=>t}setConfig(t){this._config=t}set hass(t){this._hass=t,this._t=W(t.language)}getCardSize(){return 5}_setTab(t){this._activeTab=t,this._editingZone=null,this._editingProgram=null}_newZone(){this._editingZone={id:"",name:"",valves:[],isNew:!0}}_editZone(t){this._editingZone={id:t.id,name:t.name,valves:[...t.valves],isNew:!1}}_cancelZone(){this._editingZone=null}_updateZoneForm(t){this._editingZone=t}async _saveZone(t){let r=t.isNew?be(t.name):t.id,n=t.isNew?"create_zone":"update_zone";await this._hass.callService("wateringhub",n,{id:r,name:t.name,valves:t.valves}),this._editingZone=null}async _deleteZone(t){confirm(this._t("config.confirm_delete_zone"))&&await this._hass.callService("wateringhub","delete_zone",{id:t})}_newProgram(){this._editingProgram={id:"",name:"",schedule:{time:"22:00"},zones:[],dry_run:!1,isNew:!0}}_editProgram(t){let r=this._hass.states[t];if(!r)return;let n=r.attributes,i=n.program_id??"",s=n.schedule??{time:"22:00"},l=(n.zones??[]).map(a=>({zone_id:a.zone_id,valves:a.valves.map(c=>({valve_id:c.valve_id,duration:c.duration,frequency:c.frequency}))}));this._editingProgram={id:i,name:typeof n.friendly_name=="string"?n.friendly_name:i,schedule:s,zones:l,dry_run:n.dry_run===!0,isNew:!1}}_cancelProgram(){this._editingProgram=null}_updateProgramForm(t){this._editingProgram=t}async _saveProgram(t){let r=t.isNew?be(t.name):t.id,n=t.isNew?"create_program":"update_program";await this._hass.callService("wateringhub",n,{id:r,name:t.name,schedule:t.schedule,dry_run:t.dry_run,zones:t.zones.map(i=>({zone_id:i.zone_id,valves:i.valves.map(s=>({valve_id:s.valve_id,duration:s.duration,...s.frequency?{frequency:s.frequency}:{}}))}))}),this._editingProgram=null}async _deleteProgram(t){if(confirm(this._t("config.confirm_delete_program"))){let n=this._hass.states[t]?.attributes.program_id??"";await this._hass.callService("wateringhub","delete_program",{id:n})}}render(){return!this._hass||!this._config?d`<ha-card>${this._t("loading")}</ha-card>`:d`
+  `}var ot=T`
+  .editor-section {
+    margin-bottom: 16px;
+  }
+  .editor-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-text-color);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .valve-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--divider-color);
+  }
+  .valve-item:last-child {
+    border-bottom: none;
+  }
+  .valve-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .valve-item-name {
+    font-size: 14px;
+    color: var(--primary-text-color);
+  }
+  .valve-item-entity {
+    font-size: 12px;
+    color: var(--secondary-text-color);
+  }
+  .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: var(--secondary-text-color);
+  }
+  .delete-btn:hover {
+    color: var(--error-color);
+  }
+  .add-form {
+    border: 1px dashed var(--divider-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+  }
+  .add-form select,
+  .add-form input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    border: 1px solid var(--divider-color);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--primary-text-color);
+    background: var(--card-background-color);
+    margin-bottom: 8px;
+  }
+  .add-form-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  .btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--primary-color);
+    color: var(--text-primary-color);
+  }
+  .btn-cancel {
+    background: transparent;
+    color: var(--secondary-text-color);
+  }
+  .add-btn {
+    width: 100%;
+    padding: 10px;
+    border: 1px dashed var(--divider-color);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--secondary-text-color);
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .add-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+`;var S=class extends ${constructor(){super(...arguments);this._adding=!1;this._newEntityId="";this._newName="";this._t=t=>t}set hass(t){this._hass=t,this._t=I(t.language)}setConfig(t){this._config=t}_getValves(){return this._hass?Z(this._hass):[]}_getAvailableSwitches(){if(!this._hass)return[];let t=new Set(this._getValves().map(r=>r.entity_id));return Object.keys(this._hass.states).filter(r=>r.startsWith("switch.")&&!r.startsWith("switch.wateringhub_")&&!t.has(r)).map(r=>({entity_id:r,name:typeof this._hass.states[r].attributes.friendly_name=="string"?this._hass.states[r].attributes.friendly_name:r})).sort((r,o)=>r.name.localeCompare(o.name))}async _setValves(t){await this._hass.callService("wateringhub","set_valves",{valves:t})}async _deleteValve(t){if(!confirm(this._t("config.confirm_delete_valve")))return;let r=this._getValves().filter(o=>o.entity_id!==t).map(o=>({entity_id:o.entity_id,name:o.name}));await this._setValves(r)}_startAdd(){let t=this._getAvailableSwitches();this._adding=!0,this._newEntityId=t[0]?.entity_id??"",this._newName=t[0]?.name??""}async _confirmAdd(){if(!this._newEntityId||!this._newName)return;let t=[...this._getValves().map(r=>({entity_id:r.entity_id,name:r.name})),{entity_id:this._newEntityId,name:this._newName}];await this._setValves(t),this._adding=!1,this._newEntityId="",this._newName=""}_cancelAdd(){this._adding=!1}render(){let t=this._getValves(),r=this._getAvailableSwitches();return c`
+      <div class="editor-section">
+        <span class="editor-label">${this._t("config.editor_valves")}</span>
+
+        ${t.length===0&&!this._adding?c`<div class="empty-state">${this._t("config.no_valves")}</div>`:u}
+
+        ${t.map(o=>c`
+            <div class="valve-item">
+              <div class="valve-item-info">
+                <div class="valve-item-name">${o.name}</div>
+                <div class="valve-item-entity">${o.entity_id}</div>
+              </div>
+              <button
+                class="delete-btn"
+                @click=${()=>this._deleteValve(o.entity_id)}
+                title="${this._t("config.delete")}"
+              >
+                <ha-icon icon="mdi:delete"></ha-icon>
+              </button>
+            </div>
+          `)}
+
+        ${this._adding?c`
+              <div class="add-form">
+                <select
+                  @change=${o=>{let i=o.target.value;this._newEntityId=i;let s=r.find(l=>l.entity_id===i);s&&(this._newName=s.name)}}
+                >
+                  ${r.map(o=>c`
+                      <option value="${o.entity_id}" ?selected=${o.entity_id===this._newEntityId}>
+                        ${o.name} (${o.entity_id})
+                      </option>
+                    `)}
+                </select>
+                <input
+                  type="text"
+                  .value=${this._newName}
+                  placeholder="${this._t("config.valve_name")}"
+                  @input=${o=>{this._newName=o.target.value}}
+                />
+                <div class="add-form-actions">
+                  <button class="btn btn-cancel" @click=${()=>this._cancelAdd()}>
+                    ${this._t("config.cancel")}
+                  </button>
+                  <button class="btn btn-primary" @click=${()=>this._confirmAdd()}>
+                    ${this._t("config.save")}
+                  </button>
+                </div>
+              </div>
+            `:c`
+              <button class="add-btn" @click=${()=>this._startAdd()}>
+                + ${this._t("config.add_valve")}
+              </button>
+            `}
+      </div>
+    `}};S.styles=[D,ot],h([f()],S.prototype,"_config",2),h([f()],S.prototype,"_hass",2),h([f()],S.prototype,"_adding",2),h([f()],S.prototype,"_newEntityId",2),h([f()],S.prototype,"_newName",2),S=h([V("wateringhub-config-editor")],S);var A=class extends ${constructor(){super(...arguments);this._activeTab="programs";this._editingZone=null;this._editingProgram=null;this._t=t=>t}static getConfigElement(){return"wateringhub-config-editor"}setConfig(t){this._config=t}set hass(t){this._hass=t,this._t=I(t.language)}getCardSize(){return 5}_setTab(t){this._activeTab=t,this._editingZone=null,this._editingProgram=null}_newZone(){this._editingZone={id:"",name:"",valves:[],isNew:!0}}_editZone(t){this._editingZone={id:t.id,name:t.name,valves:[...t.valves],isNew:!1}}_cancelZone(){this._editingZone=null}_updateZoneForm(t){this._editingZone=t}async _saveZone(t){let r=t.isNew?xe(t.name):t.id,o=t.isNew?"create_zone":"update_zone";await this._hass.callService("wateringhub",o,{id:r,name:t.name,valves:t.valves}),this._editingZone=null}async _deleteZone(t){confirm(this._t("config.confirm_delete_zone"))&&await this._hass.callService("wateringhub","delete_zone",{id:t})}_newProgram(){this._editingProgram={id:"",name:"",schedule:{time:"06:00"},zones:[],dry_run:!1,isNew:!0}}_editProgram(t){let r=this._hass.states[t];if(!r)return;let o=r.attributes,i=o.program_id??"",s=o.schedule??{time:"06:00"},l=(o.zones??[]).map(a=>({zone_id:a.zone_id,valves:a.valves.map(d=>({valve_id:d.valve_id,duration:d.duration,frequency:d.frequency}))}));this._editingProgram={id:i,name:typeof o.friendly_name=="string"?o.friendly_name:i,schedule:s,zones:l,dry_run:o.dry_run===!0,isNew:!1}}_cancelProgram(){this._editingProgram=null}_updateProgramForm(t){this._editingProgram=t}async _saveProgram(t){let r=t.isNew?xe(t.name):t.id,o=t.isNew?"create_program":"update_program";await this._hass.callService("wateringhub",o,{id:r,name:t.name,schedule:t.schedule,dry_run:t.dry_run,zones:t.zones.map(i=>({zone_id:i.zone_id,valves:i.valves.map(s=>({valve_id:s.valve_id,duration:s.duration,...s.frequency?{frequency:s.frequency}:{}}))}))}),this._editingProgram=null}async _deleteProgram(t){if(confirm(this._t("config.confirm_delete_program"))){let o=this._hass.states[t]?.attributes.program_id??"";await this._hass.callService("wateringhub","delete_program",{id:o})}}render(){return!this._hass||!this._config?c`<ha-card>${this._t("loading")}</ha-card>`:c`
       <ha-card>
         <div class="header"><span class="title">${this._t("config.title")}</span></div>
-        ${Xe(this._activeTab,t=>this._setTab(t),this._t)}
-        ${this._activeTab==="valves"?et(this._hass,this._t):""}
-        ${this._activeTab==="zones"?tt(this._hass,this._editingZone,t=>this._editZone(t),t=>this._deleteZone(t),()=>this._newZone(),t=>this._saveZone(t),()=>this._cancelZone(),t=>this._updateZoneForm(t),this._t):""}
-        ${this._activeTab==="programs"?rt(this._hass,this._editingProgram,t=>this._editProgram(t),t=>this._deleteProgram(t),()=>this._newProgram(),t=>this._saveProgram(t),()=>this._cancelProgram(),t=>this._updateProgramForm(t),this._t):""}
+        ${et(this._activeTab,t=>this._setTab(t),this._t)}
+        ${this._activeTab==="valves"?tt(this._hass,this._t):""}
+        ${this._activeTab==="zones"?rt(this._hass,this._editingZone,t=>this._editZone(t),t=>this._deleteZone(t),()=>this._newZone(),t=>this._saveZone(t),()=>this._cancelZone(),t=>this._updateZoneForm(t),this._t):""}
+        ${this._activeTab==="programs"?nt(this._hass,this._editingProgram,t=>this._editProgram(t),t=>this._deleteProgram(t),()=>this._newProgram(),t=>this._saveProgram(t),()=>this._cancelProgram(),t=>this._updateProgramForm(t),this._t):""}
       </ha-card>
-    `}};S.styles=[Q,Ye],b([x()],S.prototype,"_config",2),b([x()],S.prototype,"_hass",2),b([x()],S.prototype,"_activeTab",2),b([x()],S.prototype,"_editingZone",2),b([x()],S.prototype,"_editingProgram",2),S=b([K("wateringhub-config-card")],S);globalThis.customCards=globalThis.customCards||[];globalThis.customCards.push({type:"wateringhub-config-card",name:"WateringHub Config Card",description:"Configuration card for WateringHub zones and programs"});
+    `}};A.styles=[D,Qe],h([f()],A.prototype,"_config",2),h([f()],A.prototype,"_hass",2),h([f()],A.prototype,"_activeTab",2),h([f()],A.prototype,"_editingZone",2),h([f()],A.prototype,"_editingProgram",2),A=h([V("wateringhub-config-card")],A);globalThis.customCards=globalThis.customCards||[];globalThis.customCards.push({type:"wateringhub-config-card",name:"WateringHub Config Card",description:"Configuration card for WateringHub zones and programs"});
 /*! Bundled license information:
 
 @lit/reactive-element/css-tag.js:

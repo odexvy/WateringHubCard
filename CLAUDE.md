@@ -40,8 +40,10 @@ src/
 ├── styles.ts             # Dashboard CSS (HA native variables only)
 ├── config-card/
 │   ├── wateringhub-config-card.ts  # Config card (state, tabs, CRUD)
+│   ├── config-editor.ts            # Visual editor (valve picker via set_valves)
 │   ├── config-templates.ts         # Config templates (valves, zones, programs, inline forms)
 │   ├── config-styles.ts            # Config CSS
+│   ├── editor-styles.ts            # Editor CSS
 │   └── config-helpers.ts           # Config helpers (getAvailableValves, getZones, generateId)
 └── i18n/
     ├── index.ts          # Translation loader

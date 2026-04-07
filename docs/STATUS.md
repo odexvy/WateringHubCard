@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.19
+**Version :** 0.0.21
 **Branche :** master
 
 ---
@@ -60,11 +60,15 @@ Le repo contient **deux custom cards** dans un seul bundle :
 
 ### Fonctionnalités
 
+- **Éditeur visuel** — `getConfigElement()` pour configurer les vannes depuis le card picker HA :
+  - Sélection d'entités `switch.*` de HA (exclut les `switch.wateringhub_*`)
+  - Nommage personnalisé de chaque vanne (pré-rempli avec friendly_name)
+  - Appelle `wateringhub.set_valves` à chaque ajout/suppression (pas de reboot)
 - **Titre** — header "WateringHub Config"
 - **3 onglets** : Programmes | Zones | Vannes (vannes en dernier, lecture seule)
 - **Onglet Programmes** (défaut) — CRUD inline :
-  - Créer : nom + schedule (type/heure/options) + sélection zones + durée et fréquence par vanne
-  - Fréquence par vanne : "Suit le programme" (défaut) / "Tous les N jours" / "Jours spécifiques"
+  - Créer : nom + heure de déclenchement + sélection zones + durée et fréquence par vanne
+  - Fréquence par vanne : "Tous les jours" (défaut) / "Tous les N jours" / "Jours spécifiques"
   - Modifier : formulaire inline pré-rempli
   - Supprimer : confirmation → `wateringhub.delete_program`
 - **Onglet Zones** — CRUD inline :
@@ -91,6 +95,7 @@ Le repo contient **deux custom cards** dans un seul bundle :
 | `wateringhub.create_program` | `{ id, name, schedule, zones, dry_run? }` | Créer un programme (zones[].valves[].frequency optionnel) |
 | `wateringhub.update_program` | `{ id, name?, schedule?, zones?, dry_run? }` | Modifier un programme (zones[].valves[].frequency optionnel) |
 | `wateringhub.delete_program` | `{ id }`                           | Supprimer un programme |
+| `wateringhub.set_valves`     | `{ valves: [{ entity_id, name }] }`       | Configurer les vannes (remplace la liste complète) |
 | `wateringhub.stop_all`       | `{}`                               | Arrêt d'urgence        |
 
 ---
@@ -123,8 +128,10 @@ WateringHubCard/
 │   ├── types.ts                       # Types partagés (Hass, CardConfig, Schedule, Zone, Valve, ValveFrequency, ValveStep)
 │   ├── config-card/
 │   │   ├── wateringhub-config-card.ts # Config card (state, tabs, CRUD)
+│   │   ├── config-editor.ts            # Éditeur visuel HA (picker vannes, set_valves)
 │   │   ├── config-templates.ts        # Templates config (valves, zones, programmes, formulaires inline)
 │   │   ├── config-styles.ts           # CSS config card
+│   │   ├── editor-styles.ts           # CSS éditeur visuel
 │   │   └── config-helpers.ts          # Helpers config (getAvailableValves, getZones, generateId)
 │   ├── i18n/
 │   │   ├── index.ts                   # Chargeur de traductions
@@ -134,7 +141,7 @@ WateringHubCard/
 │       ├── helpers.test.ts            # Tests helpers dashboard
 │       └── config-helpers.test.ts     # Tests helpers config
 ├── dist/
-│   └── wateringhub-card.js            # Bundle unique (59.8kb minifié, les 2 cards)
+│   └── wateringhub-card.js            # Bundle unique (63.0kb minifié, les 2 cards + éditeur)
 ├── .github/workflows/ci.yml           # CI : typecheck + tests
 ├── .husky/pre-commit                  # lint-staged (eslint --fix + prettier --write)
 ├── package.json                       # esbuild pointe vers src/index.ts
@@ -185,7 +192,7 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 - [x] **Running view** — vanne active, countdown, barres de progression
 - [x] **Error view** — message d'erreur, auto-stop
 - [x] **Config card** — CRUD zones + programmes via services HA
-- [ ] **Editeur visuel** — implémenter `getConfigElement()` pour les deux cards
+- [x] **Editeur visuel** — `getConfigElement()` sur la config card (picker vannes via set_valves)
 - [ ] Tests pour i18n (`getTranslator`)
 - [x] Tests pour config-helpers (`getAvailableValves`, `getZones`, `generateId`)
 
@@ -228,3 +235,5 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 19. **Dry run** — flag `dry_run` par programme, badge "Mode test" dans running block et liste config
 20. **Un seul programme actif** — les sensors next_run/last_run globaux sont affichés sous le programme actif uniquement
 21. **Fréquence par vanne** — chaque vanne peut overrider la fréquence du programme (every_n_days ou weekdays), l'heure reste globale, les vannes non éligibles sont skippées côté backend
+22. **Éditeur visuel HA** — `getConfigElement()` sur la config card, picker d'entités switch HA pour configurer les vannes via `set_valves` (pas de config.yaml, pas de reboot)
+23. **Schedule simplifié** — le programme n'a plus que `{ time }`, la fréquence est 100% par vanne

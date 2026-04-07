@@ -155,7 +155,7 @@ export const configStyles = css`
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 0 4px 24px;
+    padding: 4px 0;
     font-size: 13px;
   }
   .valve-duration-row label {

@@ -26,10 +26,10 @@ Auto-discovers watering programs and provides a management UI.
 
 ### Config Card (`wateringhub-config-card`)
 
-- Manage programs: create, edit, delete (schedule, zones, per-valve durations and frequency override, dry run toggle)
+- **Visual editor**: configure valves by picking switch entities from HA (no YAML, no reboot)
+- Manage programs: create, edit, delete (trigger time, zones, per-valve durations and frequency override, dry run toggle)
 - Manage zones: create, edit, delete (name, valve selection)
-- View available valves (read-only, auto-discovered from backend)
-- Translated schedule type selector (daily / every N days / weekdays)
+- View available valves (read-only tab)
 - Inline forms with live validation
 
 ### Shared

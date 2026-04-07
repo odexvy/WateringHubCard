@@ -58,5 +58,10 @@
   "config.frequency_every_n": "Every {n} days",
   "config.frequency_weekdays": "Specific days",
   "recap.frequency_every_n": "every {n}d",
-  "config.title": "WateringHub Config"
+  "config.title": "WateringHub Config",
+  "config.editor_valves": "Valves",
+  "config.add_valve": "Add valve",
+  "config.select_entity": "Switch entity",
+  "config.valve_name": "Valve name",
+  "config.confirm_delete_valve": "Delete this valve?"
 }
