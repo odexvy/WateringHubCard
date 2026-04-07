@@ -334,29 +334,58 @@ function renderProgramForm(
       <div class="form-row">
         <label class="form-label">${t('config.select_zones')}</label>
         ${zones.map((zone) => {
-          const formZone = form.zones.find((fz) => fz.zone_id === zone.id);
+          const formZoneIdx = form.zones.findIndex((fz) => fz.zone_id === zone.id);
+          const formZone = formZoneIdx >= 0 ? form.zones[formZoneIdx] : null;
           const isSelected = !!formZone;
+          const moveZone = (dir: -1 | 1) => {
+            const arr = [...form.zones];
+            const newIdx = formZoneIdx + dir;
+            [arr[formZoneIdx], arr[newIdx]] = [arr[newIdx], arr[formZoneIdx]];
+            onFormUpdate({ ...form, zones: arr });
+          };
           return html`
             <div class="form-zone-section">
-              <label class="checkbox-item">
-                <input
-                  type="checkbox"
-                  .checked=${isSelected}
-                  @change=${() => {
-                    const newZones = isSelected
-                      ? form.zones.filter((fz) => fz.zone_id !== zone.id)
-                      : [
-                          ...form.zones,
-                          {
-                            zone_id: zone.id,
-                            valves: zone.valves.map((vid) => ({ valve_id: vid, duration: 10 })),
-                          },
-                        ];
-                    onFormUpdate({ ...form, zones: newZones });
-                  }}
-                />
-                <span class="form-zone-name">${zone.name}</span>
-              </label>
+              <div class="zone-header-row">
+                <label class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    .checked=${isSelected}
+                    @change=${() => {
+                      const newZones = isSelected
+                        ? form.zones.filter((fz) => fz.zone_id !== zone.id)
+                        : [
+                            ...form.zones,
+                            {
+                              zone_id: zone.id,
+                              valves: zone.valves.map((vid) => ({ valve_id: vid, duration: 10 })),
+                            },
+                          ];
+                      onFormUpdate({ ...form, zones: newZones });
+                    }}
+                  />
+                  <span class="form-zone-name">${zone.name}</span>
+                </label>
+                ${isSelected && form.zones.length > 1
+                  ? html`
+                      <div class="reorder-btns">
+                        <button
+                          class="reorder-btn"
+                          ?disabled=${formZoneIdx === 0}
+                          @click=${() => moveZone(-1)}
+                        >
+                          <ha-icon icon="mdi:chevron-up"></ha-icon>
+                        </button>
+                        <button
+                          class="reorder-btn"
+                          ?disabled=${formZoneIdx === form.zones.length - 1}
+                          @click=${() => moveZone(1)}
+                        >
+                          <ha-icon icon="mdi:chevron-down"></ha-icon>
+                        </button>
+                      </div>
+                    `
+                  : nothing}
+              </div>
               ${isSelected && formZone
                 ? html`
                     ${formZone.valves.map((fv, valveIdx) => {
@@ -373,33 +402,36 @@ function renderProgramForm(
                       };
                       const freqType = fv.frequency?.type ?? '';
                       const today = new Date().toISOString().slice(0, 10);
-                      const reorderValves = (fromIdx: number, toIdx: number) => {
+                      const moveValve = (dir: -1 | 1) => {
                         const arr = [...formZone.valves];
-                        const [moved] = arr.splice(fromIdx, 1);
-                        arr.splice(toIdx, 0, moved);
+                        const newIdx = valveIdx + dir;
+                        [arr[valveIdx], arr[newIdx]] = [arr[newIdx], arr[valveIdx]];
                         const newZones = form.zones.map((fz) =>
                           fz.zone_id === zone.id ? { ...fz, valves: arr } : fz,
                         );
                         onFormUpdate({ ...form, zones: newZones });
                       };
+                      const isFirst = valveIdx === 0;
+                      const isLast = valveIdx === formZone.valves.length - 1;
                       return html`
-                        <div
-                          class="valve-config-block"
-                          draggable="true"
-                          @dragstart=${(e: DragEvent) => {
-                            e.dataTransfer?.setData('text/plain', String(valveIdx));
-                          }}
-                          @dragover=${(e: DragEvent) => e.preventDefault()}
-                          @drop=${(e: DragEvent) => {
-                            e.preventDefault();
-                            const fromIdx = parseInt(e.dataTransfer?.getData('text/plain') ?? '');
-                            if (!isNaN(fromIdx) && fromIdx !== valveIdx) {
-                              reorderValves(fromIdx, valveIdx);
-                            }
-                          }}
-                        >
+                        <div class="valve-config-block">
                           <div class="valve-duration-row">
-                            <ha-icon class="drag-handle" icon="mdi:drag"></ha-icon>
+                            <div class="reorder-btns">
+                              <button
+                                class="reorder-btn"
+                                ?disabled=${isFirst}
+                                @click=${() => moveValve(-1)}
+                              >
+                                <ha-icon icon="mdi:chevron-up"></ha-icon>
+                              </button>
+                              <button
+                                class="reorder-btn"
+                                ?disabled=${isLast}
+                                @click=${() => moveValve(1)}
+                              >
+                                <ha-icon icon="mdi:chevron-down"></ha-icon>
+                              </button>
+                            </div>
                             <label>${valveName}</label>
                             <input
                               class="valve-duration-input"

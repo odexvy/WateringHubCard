@@ -154,20 +154,39 @@ export const configStyles = css`
     background: var(--card-background-color);
   }
 
-  /* Drag handle */
-  .drag-handle {
-    --mdc-icon-size: 18px;
-    color: var(--disabled-text-color);
-    cursor: grab;
+  /* Reorder buttons */
+  .reorder-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
     flex-shrink: 0;
   }
-  .drag-handle:active {
-    cursor: grabbing;
+  .reorder-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--secondary-text-color);
+    line-height: 0;
+  }
+  .reorder-btn ha-icon {
+    --mdc-icon-size: 16px;
+  }
+  .reorder-btn:disabled {
+    color: var(--disabled-text-color);
+    cursor: default;
+  }
+  .reorder-btn:not(:disabled):hover {
+    color: var(--primary-color);
+  }
+  .zone-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   /* Valve config block (duration + frequency) */
   .valve-config-block {
-    cursor: default;
     padding: 4px 0 8px 24px;
     border-bottom: 1px solid var(--divider-color);
     margin-bottom: 4px;
