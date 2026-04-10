@@ -21,11 +21,13 @@ export class WateringHubCard extends LitElement {
   @state() private _hass!: Hass;
   @state() private _programEntities: string[] = [];
   @state() private _expandedProgram: string | null = null;
+  @state() private _skipDropdownOpen: string | null = null;
   @state() private _tick = 0;
 
   private _t: Translator = (key: string) => key;
   private _timerInterval: ReturnType<typeof setInterval> | null = null;
   private _unsubEvents: (() => void) | null = null;
+  private _boundCloseDropdown = this._closeSkipDropdown.bind(this);
 
   static readonly styles = [sharedStyles, cardStyles];
 
@@ -44,10 +46,16 @@ export class WateringHubCard extends LitElement {
     this._subscribeEvents();
   }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    document.addEventListener('click', this._boundCloseDropdown);
+  }
+
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this._clearTimer();
     this._unsubscribeEvents();
+    document.removeEventListener('click', this._boundCloseDropdown);
   }
 
   private _subscribeEvents(): void {
@@ -107,6 +115,31 @@ export class WateringHubCard extends LitElement {
     }
   }
 
+  private _toggleSkipDropdown(entityId: string): void {
+    this._skipDropdownOpen = this._skipDropdownOpen === entityId ? null : entityId;
+  }
+
+  private _handleSkip(entityId: string, days: number): void {
+    const programId = entityId.replace('switch.wateringhub_', '');
+    this._hass.callService('wateringhub', 'skip_program', { id: programId, days });
+    this._skipDropdownOpen = null;
+  }
+
+  private _handleCancelSkip(entityId: string): void {
+    this._handleSkip(entityId, 0);
+  }
+
+  private _closeSkipDropdown(e: Event): void {
+    if (!this._skipDropdownOpen) return;
+    const path = e.composedPath();
+    const isInside = path.some(
+      (el) => el instanceof HTMLElement && el.classList?.contains('skip-dropdown-wrapper'),
+    );
+    if (!isInside) {
+      this._skipDropdownOpen = null;
+    }
+  }
+
   render() {
     if (!this._hass || !this._config) {
       return html`<ha-card>${this._t('loading')}</ha-card>`;
@@ -122,8 +155,12 @@ export class WateringHubCard extends LitElement {
           this._hass,
           this._programEntities,
           this._expandedProgram,
+          this._skipDropdownOpen,
           (id) => this._toggleExpand(id),
           (id) => this._toggleProgram(id),
+          (id) => this._toggleSkipDropdown(id),
+          (id, days) => this._handleSkip(id, days),
+          (id) => this._handleCancelSkip(id),
           this._t,
         )}
       </ha-card>

@@ -64,5 +64,11 @@
   "config.select_entity": "Entité switch",
   "config.confirm_delete_valve": "Supprimer cette vanne ?",
   "config.saved": "Enregistré",
-  "config.deleted": "Supprimé"
+  "config.deleted": "Supprimé",
+
+  "skip.button": "Skip",
+  "skip.days_1": "1 jour",
+  "skip.days_n": "{count} jours",
+  "skip.active": "Skippé ({count}j)",
+  "skip.cancel": "Annuler le skip"
 }

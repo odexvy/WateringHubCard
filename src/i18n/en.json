@@ -64,5 +64,11 @@
   "config.select_entity": "Switch entity",
   "config.confirm_delete_valve": "Delete this valve?",
   "config.saved": "Saved",
-  "config.deleted": "Deleted"
+  "config.deleted": "Deleted",
+
+  "skip.button": "Skip",
+  "skip.days_1": "1 day",
+  "skip.days_n": "{count} days",
+  "skip.active": "Skipped ({count}d)",
+  "skip.cancel": "Cancel skip"
 }

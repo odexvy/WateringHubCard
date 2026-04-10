@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.29
+**Version :** 0.0.30
 **Branche :** master
 
 ---
@@ -48,11 +48,11 @@ Le repo contient **deux custom cards** dans un seul bundle :
 
 ### Les 3 états
 
-| Status  | Affichage                                                                      |
-| ------- | ------------------------------------------------------------------------------ |
-| idle    | Par programme : badge vert + next/last (actif) ou badge gris (inactif)         |
-| running | Running block : cercle SVG, timeline vannes, bouton stop, badge dry run        |
-| error   | Error view : nom programme, message erreur, auto-stopped                       |
+| Status  | Affichage                                                               |
+| ------- | ----------------------------------------------------------------------- |
+| idle    | Par programme : badge vert + next/last (actif) ou badge gris (inactif)  |
+| running | Running block : cercle SVG, timeline vannes, bouton stop, badge dry run |
+| error   | Error view : nom programme, message erreur, auto-stopped                |
 
 ---
 
@@ -89,30 +89,31 @@ Le repo contient **deux custom cards** dans un seul bundle :
 
 ### Services backend utilisés
 
-| Service                      | Params                             | Usage                  |
-| ---------------------------- | ---------------------------------- | ---------------------- |
-| `wateringhub.create_zone`    | `{ id, name, valves }`             | Créer une zone         |
-| `wateringhub.update_zone`    | `{ id, name?, valves? }`           | Modifier une zone      |
-| `wateringhub.delete_zone`    | `{ id }`                           | Supprimer une zone     |
-| `wateringhub.create_program` | `{ id, name, schedule, zones, dry_run? }` | Créer un programme (zones[].valves[].frequency optionnel) |
+| Service                      | Params                                       | Usage                                                        |
+| ---------------------------- | -------------------------------------------- | ------------------------------------------------------------ |
+| `wateringhub.create_zone`    | `{ id, name, valves }`                       | Créer une zone                                               |
+| `wateringhub.update_zone`    | `{ id, name?, valves? }`                     | Modifier une zone                                            |
+| `wateringhub.delete_zone`    | `{ id }`                                     | Supprimer une zone                                           |
+| `wateringhub.create_program` | `{ id, name, schedule, zones, dry_run? }`    | Créer un programme (zones[].valves[].frequency optionnel)    |
 | `wateringhub.update_program` | `{ id, name?, schedule?, zones?, dry_run? }` | Modifier un programme (zones[].valves[].frequency optionnel) |
-| `wateringhub.delete_program` | `{ id }`                           | Supprimer un programme |
-| `wateringhub.set_valves`     | `{ valves: [{ entity_id, name }] }`       | Configurer les vannes (remplace la liste complète) |
-| `wateringhub.stop_all`       | `{}`                               | Arrêt d'urgence        |
+| `wateringhub.delete_program` | `{ id }`                                     | Supprimer un programme                                       |
+| `wateringhub.set_valves`     | `{ valves: [{ entity_id, name }] }`          | Configurer les vannes (remplace la liste complète)           |
+| `wateringhub.stop_all`       | `{}`                                         | Arrêt d'urgence                                              |
+| `wateringhub.skip_program`   | `{ id, days }`                               | Skip N jours (days=0 annule). Attribut `skip_until` sur switch |
 
 ---
 
 ## Entités backend
 
-| Entité                                             | Usage                                                                                                                                            |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `switch.wateringhub_*`                             | Toggles programmes (attributs : schedule, zones avec frequency par vanne, total_duration, dry_run)                                               |
-| `sensor.wateringhub_status`                        | Statut global : idle / running / error                                                                                                           |
-| `sensor.wateringhub_status` (attributs permanents) | available_valves, zones                                                                                                                          |
+| Entité                                             | Usage                                                                                                                                                                      |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `switch.wateringhub_*`                             | Toggles programmes (attributs : schedule, zones avec frequency par vanne, total_duration, dry_run, skip_until)                                                             |
+| `sensor.wateringhub_status`                        | Statut global : idle / running / error                                                                                                                                     |
+| `sensor.wateringhub_status` (attributs permanents) | available_valves, zones                                                                                                                                                    |
 | `sensor.wateringhub_status` (attributs running)    | current_program, current_zone_name, current_valve_name, current_valve_start, current_valve_duration, valves_done, valves_total, progress_percent, valves_sequence, dry_run |
-| `sensor.wateringhub_status` (attributs error)      | current_program, error_message                                                                                                                   |
-| `sensor.wateringhub_next_run`                      | Prochain arrosage prévu (datetime ISO)                                                                                                           |
-| `sensor.wateringhub_last_run`                      | Dernier arrosage (datetime ISO)                                                                                                                  |
+| `sensor.wateringhub_status` (attributs error)      | current_program, error_message                                                                                                                                             |
+| `sensor.wateringhub_next_run`                      | Prochain arrosage prévu (datetime ISO)                                                                                                                                     |
+| `sensor.wateringhub_last_run`                      | Dernier arrosage (datetime ISO)                                                                                                                                            |
 
 ---
 
@@ -203,6 +204,7 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 
 - [x] **Progression vannes améliorée** — timeline verticale des vannes avec icônes (done/running/pending)
 - [x] **Listener d'événements** — `hass.connection.subscribeEvents('wateringhub_event')` pour updates instantanés
+- [ ] **Skip programme** — bouton skip 1-7j avec dropdown, badge orange "Skippé (Xj)", service `skip_program` backend
 - [ ] **Débit** — afficher le débit en L/min dans la running view
 
 ### Long terme
@@ -240,3 +242,4 @@ Mise à jour : HACS affiche "mise à jour disponible" → installer → Ctrl+Shi
 21. **Fréquence par vanne** — chaque vanne peut overrider la fréquence du programme (every_n_days ou weekdays), l'heure reste globale, les vannes non éligibles sont skippées côté backend
 22. **Éditeur visuel HA** — `getConfigElement()` sur la config card, picker d'entités switch HA pour configurer les vannes via `set_valves` (pas de config.yaml, pas de reboot)
 23. **Schedule simplifié** — le programme n'a plus que `{ time }`, la fréquence est 100% par vanne
+24. **Skip = état temporaire** — le skip est géré via un service dédié `skip_program` (pas via `update_program`), car c'est du contrôle runtime, pas de la configuration

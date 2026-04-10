@@ -16,6 +16,8 @@ import {
   getErrorInfo,
   formatRemainingTime,
   getFriendlyName,
+  getSkipInfo,
+  formatSkipBadge,
 } from './helpers';
 
 export function renderHeader(title: string): TemplateResult {
@@ -26,11 +28,29 @@ export function renderHeader(title: string): TemplateResult {
   `;
 }
 
-function renderProgramStatus(hass: Hass, isOn: boolean, t: Translator): TemplateResult {
+function renderProgramStatus(
+  hass: Hass,
+  entity: { state: string; attributes: Record<string, unknown> },
+  isOn: boolean,
+  t: Translator,
+  onCancelSkip: () => void,
+): TemplateResult {
   if (!isOn) {
     return html`
       <div class="program-status">
         <span class="badge-sm badge-disabled">${t('status.disabled')}</span>
+      </div>
+    `;
+  }
+
+  const skipInfo = getSkipInfo(entity as import('./types').HassEntity);
+  if (skipInfo) {
+    return html`
+      <div class="program-status">
+        <span class="badge-sm badge-skipped">${formatSkipBadge(skipInfo.daysRemaining, t)}</span>
+        <button class="skip-cancel-btn" @click=${onCancelSkip} title=${t('skip.cancel')}>
+          <ha-icon icon="mdi:close"></ha-icon>
+        </button>
       </div>
     `;
   }
@@ -172,8 +192,12 @@ export function renderProgramList(
   hass: Hass,
   programEntities: string[],
   expandedProgram: string | null,
+  skipDropdownOpen: string | null,
   onToggleExpand: (entityId: string) => void,
   onToggleProgram: (entityId: string) => void,
+  onToggleSkipDropdown: (entityId: string) => void,
+  onSkip: (entityId: string, days: number) => void,
+  onCancelSkip: (entityId: string) => void,
   t: Translator,
 ): TemplateResult {
   if (programEntities.length === 0) {
@@ -187,6 +211,9 @@ export function renderProgramList(
     const isOn = entity.state === 'on';
     const isExpanded = expandedProgram === entityId;
     const name = getFriendlyName(entity, entityId);
+    const skipInfo = getSkipInfo(entity);
+    const status = getGlobalStatus(hass);
+    const showSkipBtn = isOn && status !== 'running' && !skipInfo;
 
     return html`
       <div class="program-wrapper">
@@ -196,13 +223,48 @@ export function renderProgramList(
             ${isOn ? html`<div class="active-dot"></div>` : nothing}
             <span class="program-name ${isOn ? 'active' : ''}">${name}</span>
           </div>
+          ${showSkipBtn
+            ? html`
+                <div class="skip-dropdown-wrapper">
+                  <button
+                    class="skip-btn"
+                    @click=${() => onToggleSkipDropdown(entityId)}
+                    title=${t('skip.button')}
+                  >
+                    <ha-icon icon="mdi:debug-step-over"></ha-icon>
+                  </button>
+                  ${skipDropdownOpen === entityId
+                    ? renderSkipDropdown(entityId, onSkip, t)
+                    : nothing}
+                </div>
+              `
+            : nothing}
           <ha-switch .checked=${isOn} @change=${() => onToggleProgram(entityId)}></ha-switch>
         </div>
-        ${renderProgramStatus(hass, isOn, t)}
+        ${renderProgramStatus(hass, entity, isOn, t, () => onCancelSkip(entityId))}
         ${renderProgramRecap(entity.attributes, isExpanded, t)}
       </div>
     `;
   })}`;
+}
+
+function renderSkipDropdown(
+  entityId: string,
+  onSkip: (entityId: string, days: number) => void,
+  t: Translator,
+): TemplateResult {
+  const options = [1, 2, 3, 7];
+  return html`
+    <div class="skip-dropdown">
+      ${options.map(
+        (days) => html`
+          <button class="skip-dropdown-option" @click=${() => onSkip(entityId, days)}>
+            ${days === 1 ? t('skip.days_1') : t('skip.days_n', { count: days })}
+          </button>
+        `,
+      )}
+    </div>
+  `;
 }
 
 function renderProgramRecap(

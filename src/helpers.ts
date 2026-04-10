@@ -216,3 +216,35 @@ export function formatNextRun(hass: Hass, t: Translator, locale?: string): strin
   if (isInvalidState(entity)) return t('time.no_schedule');
   return formatRelative(hass, 'sensor.wateringhub_next_run', t, locale);
 }
+
+// ── Skip info ───────────────────────────────────────────
+
+export interface SkipInfo {
+  isSkipped: boolean;
+  daysRemaining: number;
+  skipUntil: string;
+}
+
+export function getSkipInfo(entity: HassEntity): SkipInfo | null {
+  const skipUntil = entity.attributes.skip_until;
+  if (typeof skipUntil !== 'string') return null;
+
+  const target = new Date(skipUntil + 'T23:59:59');
+  if (Number.isNaN(target.getTime())) return null;
+
+  const now = new Date();
+  if (now > target) return null;
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetDay = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+  const daysRemaining = Math.max(
+    1,
+    Math.ceil((targetDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)),
+  );
+
+  return { isSkipped: true, daysRemaining, skipUntil };
+}
+
+export function formatSkipBadge(daysRemaining: number, t: Translator): string {
+  return t('skip.active', { count: daysRemaining });
+}

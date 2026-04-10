@@ -24,6 +24,9 @@ export const cardStyles = css`
   .badge-disabled {
     background: var(--disabled-text-color);
   }
+  .badge-skipped {
+    background: var(--warning-color);
+  }
   .info-sm {
     font-size: 12px;
     color: var(--secondary-text-color);
@@ -360,5 +363,83 @@ export const cardStyles = css`
   .recap-total ha-icon {
     --mdc-icon-size: 18px;
     color: var(--secondary-text-color);
+  }
+
+  /* Skip button */
+  .skip-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    color: var(--secondary-text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      color 0.2s,
+      background 0.2s;
+    flex-shrink: 0;
+  }
+  .skip-btn:hover {
+    color: var(--warning-color);
+    background: var(--secondary-background-color);
+  }
+  .skip-btn ha-icon {
+    --mdc-icon-size: 20px;
+  }
+
+  /* Skip cancel button */
+  .skip-cancel-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 50%;
+    color: var(--secondary-text-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+  .skip-cancel-btn:hover {
+    color: var(--warning-color);
+  }
+  .skip-cancel-btn ha-icon {
+    --mdc-icon-size: 16px;
+  }
+
+  /* Skip dropdown */
+  .skip-dropdown-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+  .skip-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 10;
+    background: var(--card-background-color);
+    border: 1px solid var(--divider-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    min-width: 120px;
+    padding: 4px 0;
+    margin-top: 4px;
+  }
+  .skip-dropdown-option {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 13px;
+    color: var(--primary-text-color);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .skip-dropdown-option:hover {
+    background: var(--secondary-background-color);
   }
 `;

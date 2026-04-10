@@ -10,6 +10,8 @@ import {
   formatSchedule,
   formatRelative,
   formatNextRun,
+  getSkipInfo,
+  formatSkipBadge,
 } from '../helpers';
 
 // ── Mock helpers ─────────────────────────────────────────
@@ -379,5 +381,79 @@ describe('getErrorInfo', () => {
     expect(info).not.toBeNull();
     expect(info!.programName).toBe('');
     expect(info!.errorMessage).toBe('');
+  });
+});
+
+// ── getSkipInfo ─────────────────────────────────────────
+
+describe('getSkipInfo', () => {
+  function makeEntity(skipUntil: unknown) {
+    return {
+      entity_id: 'switch.wateringhub_test',
+      state: 'on',
+      attributes: { skip_until: skipUntil },
+    };
+  }
+
+  it('returns null when skip_until is not set', () => {
+    const entity = { entity_id: 'switch.wateringhub_test', state: 'on', attributes: {} };
+    expect(getSkipInfo(entity)).toBeNull();
+  });
+
+  it('returns null when skip_until is null', () => {
+    expect(getSkipInfo(makeEntity(null))).toBeNull();
+  });
+
+  it('returns null when skip_until is an invalid date', () => {
+    expect(getSkipInfo(makeEntity('not-a-date'))).toBeNull();
+  });
+
+  it('returns null when skip_until is in the past', () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 2);
+    const dateStr = yesterday.toISOString().split('T')[0];
+    expect(getSkipInfo(makeEntity(dateStr))).toBeNull();
+  });
+
+  it('returns skip info for a future date', () => {
+    const future = new Date();
+    future.setDate(future.getDate() + 3);
+    const dateStr = future.toISOString().split('T')[0];
+    const info = getSkipInfo(makeEntity(dateStr));
+    expect(info).not.toBeNull();
+    expect(info!.isSkipped).toBe(true);
+    expect(info!.daysRemaining).toBe(3);
+    expect(info!.skipUntil).toBe(dateStr);
+  });
+
+  it('returns daysRemaining=1 for tomorrow', () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dateStr = tomorrow.toISOString().split('T')[0];
+    const info = getSkipInfo(makeEntity(dateStr));
+    expect(info).not.toBeNull();
+    expect(info!.daysRemaining).toBe(1);
+  });
+
+  it('returns skip info for today (skip_until = today, still valid until end of day)', () => {
+    const today = new Date();
+    const dateStr = today.toISOString().split('T')[0];
+    const info = getSkipInfo(makeEntity(dateStr));
+    // Today's skip_until is valid (program resumes at scheduled time today)
+    // The backend cleans it up, so we treat it as active
+    expect(info).not.toBeNull();
+    expect(info!.daysRemaining).toBeGreaterThanOrEqual(1);
+  });
+});
+
+// ── formatSkipBadge ─────────────────────────────────────
+
+describe('formatSkipBadge', () => {
+  it('formats 1 day', () => {
+    expect(formatSkipBadge(1, mockT)).toBe('skip.active');
+  });
+
+  it('formats multiple days', () => {
+    expect(formatSkipBadge(3, mockT)).toBe('skip.active');
   });
 });
