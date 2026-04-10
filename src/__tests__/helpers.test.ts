@@ -395,6 +395,13 @@ describe('getSkipInfo', () => {
     };
   }
 
+  function toLocalDateStr(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
   it('returns null when skip_until is not set', () => {
     const entity = { entity_id: 'switch.wateringhub_test', state: 'on', attributes: {} };
     expect(getSkipInfo(entity)).toBeNull();
@@ -409,16 +416,15 @@ describe('getSkipInfo', () => {
   });
 
   it('returns null when skip_until is in the past', () => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 2);
-    const dateStr = yesterday.toISOString().split('T')[0];
-    expect(getSkipInfo(makeEntity(dateStr))).toBeNull();
+    const past = new Date();
+    past.setDate(past.getDate() - 2);
+    expect(getSkipInfo(makeEntity(toLocalDateStr(past)))).toBeNull();
   });
 
   it('returns skip info for a future date', () => {
     const future = new Date();
     future.setDate(future.getDate() + 3);
-    const dateStr = future.toISOString().split('T')[0];
+    const dateStr = toLocalDateStr(future);
     const info = getSkipInfo(makeEntity(dateStr));
     expect(info).not.toBeNull();
     expect(info!.isSkipped).toBe(true);
@@ -429,18 +435,14 @@ describe('getSkipInfo', () => {
   it('returns daysRemaining=1 for tomorrow', () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const dateStr = tomorrow.toISOString().split('T')[0];
-    const info = getSkipInfo(makeEntity(dateStr));
+    const info = getSkipInfo(makeEntity(toLocalDateStr(tomorrow)));
     expect(info).not.toBeNull();
     expect(info!.daysRemaining).toBe(1);
   });
 
-  it('returns skip info for today (skip_until = today, still valid until end of day)', () => {
+  it('returns skip info for today (valid until end of day)', () => {
     const today = new Date();
-    const dateStr = today.toISOString().split('T')[0];
-    const info = getSkipInfo(makeEntity(dateStr));
-    // Today's skip_until is valid (program resumes at scheduled time today)
-    // The backend cleans it up, so we treat it as active
+    const info = getSkipInfo(makeEntity(toLocalDateStr(today)));
     expect(info).not.toBeNull();
     expect(info!.daysRemaining).toBeGreaterThanOrEqual(1);
   });

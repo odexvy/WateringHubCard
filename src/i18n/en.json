@@ -66,9 +66,9 @@
   "config.saved": "Saved",
   "config.deleted": "Deleted",
 
-  "skip.button": "Skip",
+  "skip.button": "Pause",
   "skip.days_1": "1 day",
   "skip.days_n": "{count} days",
-  "skip.active": "Skipped ({count}d)",
-  "skip.cancel": "Cancel skip"
+  "skip.active": "Paused ({count}d)",
+  "skip.cancel": "Resume"
 }

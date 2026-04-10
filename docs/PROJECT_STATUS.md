@@ -1,7 +1,7 @@
 # WateringHub Card — Statut du projet
 
 **Date :** 2026-04-07
-**Version :** 0.0.31
+**Version :** 0.0.32
 **Branche :** master
 
 ---

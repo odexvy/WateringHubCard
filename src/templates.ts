@@ -43,24 +43,23 @@ function renderProgramStatus(
     `;
   }
 
-  const skipInfo = getSkipInfo(entity as import('./types').HassEntity);
-  if (skipInfo) {
-    return html`
-      <div class="program-status">
-        <span class="badge-sm badge-skipped">${formatSkipBadge(skipInfo.daysRemaining, t)}</span>
-        <button class="skip-cancel-btn" @click=${onCancelSkip} title=${t('skip.cancel')}>
-          <ha-icon icon="mdi:close"></ha-icon>
-        </button>
-      </div>
-    `;
-  }
-
   const status = getGlobalStatus(hass);
   if (status === 'running') return html``;
 
+  const skipInfo = getSkipInfo(entity as import('./types').HassEntity);
+
   return html`
     <div class="program-status">
-      <span class="badge-sm badge-idle">${t('status.idle')}</span>
+      ${skipInfo
+        ? html`
+            <span class="badge-sm badge-skipped"
+              >${formatSkipBadge(skipInfo.daysRemaining, t)}</span
+            >
+            <button class="skip-cancel-btn" @click=${onCancelSkip} title=${t('skip.cancel')}>
+              <ha-icon icon="mdi:close"></ha-icon>
+            </button>
+          `
+        : html`<span class="badge-sm badge-idle">${t('status.idle')}</span>`}
       <span class="info-sm">${t('next')}: ${formatNextRun(hass, t, hass.language)}</span>
       <span class="info-sm">
         ${t('last')}: ${formatRelative(hass, 'sensor.wateringhub_last_run', t, hass.language)}
