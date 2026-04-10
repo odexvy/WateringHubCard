@@ -11,10 +11,10 @@
   "time.just_now": "à l'instant",
   "time.minutes_ago": "il y a {count} min",
   "time.hours_ago": "il y a {count}h",
-  "time.days_ago": "il y a {count}j",
+  "time.days_ago": "il y a {count} j",
   "time.today_at": "aujourd'hui à {time}",
   "time.tomorrow_at": "demain à {time}",
-  "time.in_days": "dans {count}j",
+  "time.in_days": "dans {count} j",
   "time.never": "Jamais",
   "time.no_schedule": "Aucun programme actif",
   "status.running_program": "En cours : {name}",
@@ -69,6 +69,6 @@
   "skip.button": "Pause",
   "skip.days_1": "1 jour",
   "skip.days_n": "{count} jours",
-  "skip.active": "En pause ({count}j)",
+  "skip.active": "En pause {count} j",
   "skip.cancel": "Reprendre"
 }

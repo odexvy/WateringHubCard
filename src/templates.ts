@@ -256,7 +256,7 @@ export function renderProgramList(
 }
 
 function renderSkipDropdown(onSkip: (days: number) => void, t: Translator): TemplateResult {
-  const options = [1, 2, 3, 7];
+  const options = [1, 2, 3, 5];
   return html`
     <div class="skip-dropdown">
       ${options.map(

@@ -142,6 +142,7 @@ export const sharedStyles = css`
     background: var(--secondary-background-color);
     color: var(--secondary-text-color);
     border: 1px dashed var(--divider-color);
+    margin-bottom: 12px;
   }
 
   /* Action buttons */
