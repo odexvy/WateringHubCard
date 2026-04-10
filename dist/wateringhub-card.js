@@ -426,7 +426,9 @@ var vt=Object.defineProperty;var ht=Object.getOwnPropertyDescriptor;var f=(o,t,e
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.2s, background 0.2s;
+    transition:
+      color 0.2s,
+      background 0.2s;
     flex-shrink: 0;
   }
   .skip-btn:hover {
@@ -461,6 +463,7 @@ var vt=Object.defineProperty;var ht=Object.getOwnPropertyDescriptor;var f=(o,t,e
   .skip-dropdown-wrapper {
     position: relative;
     display: inline-flex;
+    flex-shrink: 0;
   }
   .skip-dropdown {
     position: absolute;
@@ -501,11 +504,7 @@ var vt=Object.defineProperty;var ht=Object.getOwnPropertyDescriptor;var f=(o,t,e
     `;let i=Ae(t);return i?c`
       <div class="program-status">
         <span class="badge-sm badge-skipped">${et(i.daysRemaining,r)}</span>
-        <button
-          class="skip-cancel-btn"
-          @click=${n}
-          title=${r("skip.cancel")}
-        >
+        <button class="skip-cancel-btn" @click=${n} title=${r("skip.cancel")}>
           <ha-icon icon="mdi:close"></ha-icon>
         </button>
       </div>

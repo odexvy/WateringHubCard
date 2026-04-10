@@ -413,6 +413,7 @@ export const cardStyles = css`
   .skip-dropdown-wrapper {
     position: relative;
     display: inline-flex;
+    flex-shrink: 0;
   }
   .skip-dropdown {
     position: absolute;
