@@ -1,4 +1,14 @@
-import type { Hass, HassEntity, Translator, ProgramSchedule, ValveStep } from './types';
+import type {
+  Hass,
+  HassEntity,
+  Translator,
+  ProgramSchedule,
+  ValveStep,
+  ErrorInfo,
+  SkipInfo,
+} from './types';
+
+export type { ErrorInfo, SkipInfo } from './types';
 
 // ── Entity discovery ─────────────────────────────────────
 
@@ -44,11 +54,6 @@ export function statusLabel(
 }
 
 // ── Error info ───────────────────────────────────────────
-
-export interface ErrorInfo {
-  programName: string;
-  errorMessage: string;
-}
 
 export function getErrorInfo(hass: Hass): ErrorInfo | null {
   const entity = hass.states['sensor.wateringhub_status'];
@@ -218,12 +223,6 @@ export function formatNextRun(hass: Hass, t: Translator, locale?: string): strin
 }
 
 // ── Skip info ───────────────────────────────────────────
-
-export interface SkipInfo {
-  isSkipped: boolean;
-  daysRemaining: number;
-  skipUntil: string;
-}
 
 export function getSkipInfo(entity: HassEntity): SkipInfo | null {
   const skipUntil = entity.attributes.skip_until;

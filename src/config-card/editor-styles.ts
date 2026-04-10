@@ -61,40 +61,4 @@ export const editorStyles = css`
     background: var(--card-background-color);
     margin-bottom: 8px;
   }
-  .add-form-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-  }
-  .btn {
-    padding: 6px 14px;
-    border: none;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-  .btn-primary {
-    background: var(--primary-color);
-    color: var(--text-primary-color);
-  }
-  .btn-cancel {
-    background: transparent;
-    color: var(--secondary-text-color);
-  }
-  .add-btn {
-    width: 100%;
-    padding: 10px;
-    border: 1px dashed var(--divider-color);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--secondary-text-color);
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 8px;
-  }
-  .add-btn:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-  }
 `;

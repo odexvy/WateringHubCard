@@ -19,6 +19,7 @@ import {
   getSkipInfo,
   formatSkipBadge,
 } from './helpers';
+import { renderBadge } from './shared-templates';
 
 export function renderHeader(title: string): TemplateResult {
   return html`
@@ -30,40 +31,57 @@ export function renderHeader(title: string): TemplateResult {
 
 function renderProgramStatus(
   hass: Hass,
-  entity: { state: string; attributes: Record<string, unknown> },
+  entity: { entity_id: string; state: string; attributes: Record<string, unknown> },
   isOn: boolean,
+  skipDropdownOpen: boolean,
   t: Translator,
+  onToggleSkipDropdown: () => void,
+  onSkip: (days: number) => void,
   onCancelSkip: () => void,
 ): TemplateResult {
   if (!isOn) {
     return html`
-      <div class="program-status">
-        <span class="badge-sm badge-disabled">${t('status.disabled')}</span>
-      </div>
+      <div class="program-status">${renderBadge('disabled', t('status.disabled'))}</div>
     `;
   }
 
   const status = getGlobalStatus(hass);
-  if (status === 'running') return html``;
+
+  if (status === 'running') {
+    const statusEntity = hass.states['sensor.wateringhub_status'];
+    const currentProgram = statusEntity?.attributes.current_program as string | undefined;
+    const entityProgramId = entity.entity_id?.replace('switch.wateringhub_', '');
+    const isThisRunning = currentProgram === entityProgramId;
+
+    return html`
+      <div class="program-status">
+        ${isThisRunning ? renderBadge('running', t('status.running')) : nothing}
+      </div>
+    `;
+  }
 
   const skipInfo = getSkipInfo(entity as import('./types').HassEntity);
+  const skipDropdown = skipDropdownOpen ? renderSkipDropdown(onSkip, t) : nothing;
 
   return html`
     <div class="program-status">
       ${skipInfo
         ? html`
-            <span class="badge-sm badge-skipped"
-              >${formatSkipBadge(skipInfo.daysRemaining, t)}</span
-            >
+            ${renderBadge('skipped', formatSkipBadge(skipInfo.daysRemaining, t))}
             <button class="skip-cancel-btn" @click=${onCancelSkip} title=${t('skip.cancel')}>
-              <ha-icon icon="mdi:close"></ha-icon>
+              <ha-icon icon="mdi:close-circle-outline"></ha-icon>
             </button>
           `
-        : html`<span class="badge-sm badge-idle">${t('status.idle')}</span>`}
+        : html`
+            ${renderBadge('idle', t('status.idle'))}
+            <div class="skip-dropdown-wrapper">
+              <button class="skip-btn" @click=${onToggleSkipDropdown} title=${t('skip.button')}>
+                <ha-icon icon="mdi:pause-circle-outline"></ha-icon>
+              </button>
+              ${skipDropdown}
+            </div>
+          `}
       <span class="info-sm">${t('next')}: ${formatNextRun(hass, t, hass.language)}</span>
-      <span class="info-sm">
-        ${t('last')}: ${formatRelative(hass, 'sensor.wateringhub_last_run', t, hass.language)}
-      </span>
     </div>
   `;
 }
@@ -99,7 +117,7 @@ export function renderRunningView(
   return html`
     <div class="running-block">
       <button class="running-stop-btn" @click=${onStopAll}>${t('stop_all')}</button>
-      ${info.dryRun ? html`<span class="badge-dry-run">${t('running.dry_run')}</span>` : nothing}
+      ${info.dryRun ? renderBadge('dry-run', t('running.dry_run')) : nothing}
 
       <div class="global-hero">
         <div class="circular-progress">
@@ -210,9 +228,6 @@ export function renderProgramList(
     const isOn = entity.state === 'on';
     const isExpanded = expandedProgram === entityId;
     const name = getFriendlyName(entity, entityId);
-    const skipInfo = getSkipInfo(entity);
-    const status = getGlobalStatus(hass);
-    const showSkipBtn = isOn && status !== 'running' && !skipInfo;
 
     return html`
       <div class="program-wrapper">
@@ -222,42 +237,31 @@ export function renderProgramList(
             ${isOn ? html`<div class="active-dot"></div>` : nothing}
             <span class="program-name ${isOn ? 'active' : ''}">${name}</span>
           </div>
-          ${showSkipBtn
-            ? html`
-                <div class="skip-dropdown-wrapper">
-                  <button
-                    class="skip-btn"
-                    @click=${() => onToggleSkipDropdown(entityId)}
-                    title=${t('skip.button')}
-                  >
-                    <ha-icon icon="mdi:debug-step-over"></ha-icon>
-                  </button>
-                  ${skipDropdownOpen === entityId
-                    ? renderSkipDropdown(entityId, onSkip, t)
-                    : nothing}
-                </div>
-              `
-            : nothing}
           <ha-switch .checked=${isOn} @change=${() => onToggleProgram(entityId)}></ha-switch>
         </div>
-        ${renderProgramStatus(hass, entity, isOn, t, () => onCancelSkip(entityId))}
-        ${renderProgramRecap(entity.attributes, isExpanded, t)}
+        ${renderProgramStatus(
+          hass,
+          entity,
+          isOn,
+          skipDropdownOpen === entityId,
+          t,
+          () => onToggleSkipDropdown(entityId),
+          (days) => onSkip(entityId, days),
+          () => onCancelSkip(entityId),
+        )}
+        ${renderProgramRecap(hass, entity.attributes, isExpanded, t)}
       </div>
     `;
   })}`;
 }
 
-function renderSkipDropdown(
-  entityId: string,
-  onSkip: (entityId: string, days: number) => void,
-  t: Translator,
-): TemplateResult {
+function renderSkipDropdown(onSkip: (days: number) => void, t: Translator): TemplateResult {
   const options = [1, 2, 3, 7];
   return html`
     <div class="skip-dropdown">
       ${options.map(
         (days) => html`
-          <button class="skip-dropdown-option" @click=${() => onSkip(entityId, days)}>
+          <button class="skip-dropdown-option" @click=${() => onSkip(days)}>
             ${days === 1 ? t('skip.days_1') : t('skip.days_n', { count: days })}
           </button>
         `,
@@ -267,6 +271,7 @@ function renderSkipDropdown(
 }
 
 function renderProgramRecap(
+  hass: Hass,
   attributes: Record<string, unknown>,
   isExpanded: boolean,
   t: Translator,
@@ -283,6 +288,10 @@ function renderProgramRecap(
             ${formatSchedule(schedule, t)}
           </div>`
         : nothing}
+      <div class="recap-schedule">
+        <ha-icon icon="mdi:history"></ha-icon>
+        ${t('last')}: ${formatRelative(hass, 'sensor.wateringhub_last_run', t, hass.language)}
+      </div>
       ${zones.map(
         (zone) => html`
           <div class="recap-zone">

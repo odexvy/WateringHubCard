@@ -9,15 +9,6 @@ export const cardStyles = css`
     padding: 2px 0 8px 32px;
     flex-wrap: wrap;
   }
-  .badge-sm {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 10px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 500;
-    color: white;
-  }
   .badge-idle {
     background: var(--success-color);
   }
@@ -25,7 +16,12 @@ export const cardStyles = css`
     background: var(--disabled-text-color);
   }
   .badge-skipped {
-    background: var(--warning-color);
+    background: none;
+    border: 1px solid var(--warning-color);
+    color: var(--warning-color);
+  }
+  .badge-running {
+    background: var(--primary-color);
   }
   .info-sm {
     font-size: 12px;
@@ -97,20 +93,6 @@ export const cardStyles = css`
     outline-offset: 2px;
   }
 
-  /* Dry run badge */
-  .badge-dry-run {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    background: var(--secondary-background-color);
-    color: var(--secondary-text-color);
-    border: 1px dashed var(--divider-color);
-    margin-bottom: 12px;
-  }
-
   /* Global hero (circle + program info) */
   .global-hero {
     display: flex;
@@ -136,7 +118,7 @@ export const cardStyles = css`
   }
   .cp-fill {
     fill: none;
-    stroke: var(--warning-color);
+    stroke: var(--primary-color);
     stroke-width: 4;
     stroke-linecap: round;
   }
@@ -370,7 +352,7 @@ export const cardStyles = css`
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px;
+    padding: 8px;
     border-radius: 50%;
     color: var(--secondary-text-color);
     display: flex;
@@ -394,7 +376,7 @@ export const cardStyles = css`
     background: none;
     border: none;
     cursor: pointer;
-    padding: 2px;
+    padding: 8px;
     border-radius: 50%;
     color: var(--secondary-text-color);
     display: inline-flex;
@@ -406,7 +388,7 @@ export const cardStyles = css`
     color: var(--warning-color);
   }
   .skip-cancel-btn ha-icon {
-    --mdc-icon-size: 16px;
+    --mdc-icon-size: 20px;
   }
 
   /* Skip dropdown */

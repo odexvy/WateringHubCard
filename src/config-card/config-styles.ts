@@ -29,80 +29,17 @@ export const configStyles = css`
     outline-offset: -2px;
   }
 
-  /* List items */
-  .list-item {
-    border: 1px solid var(--divider-color);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 8px;
-  }
-  .list-item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .list-item-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--primary-text-color);
-  }
-  .list-item-sub {
-    font-size: 12px;
-    color: var(--secondary-text-color);
-    margin-top: 2px;
-  }
-  .dry-run-tag {
-    font-size: 10px;
-    font-weight: 500;
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: var(--secondary-background-color);
-    color: var(--secondary-text-color);
-    border: 1px dashed var(--divider-color);
-    margin-left: 8px;
-    vertical-align: middle;
-  }
   .form-hint {
     font-size: 11px;
     color: var(--secondary-text-color);
     margin-top: 4px;
   }
-  .list-item-actions {
-    display: flex;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-  .action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    color: var(--secondary-text-color);
-    transition: color 0.2s;
-  }
-  .action-btn:hover {
-    color: var(--primary-text-color);
-  }
-  .action-btn.delete:hover {
-    color: var(--error-color);
-  }
-
   /* Inline form */
   .inline-form {
     border: 2px solid var(--primary-color);
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 8px;
-  }
-  .form-select {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px 12px;
-    border: 1px solid var(--divider-color);
-    border-radius: 6px;
-    font-size: 14px;
-    color: var(--primary-text-color);
-    background: var(--card-background-color);
   }
   .form-row-inline {
     display: flex;
@@ -249,65 +186,6 @@ export const configStyles = css`
     font-weight: 500;
     color: var(--primary-text-color);
     margin-bottom: 6px;
-  }
-
-  /* Form buttons */
-  .form-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin-top: 12px;
-  }
-  .btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-  .btn:hover {
-    opacity: 0.85;
-  }
-  .btn:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-  }
-  .btn-primary {
-    background: var(--primary-color);
-    color: var(--text-primary-color);
-  }
-  .btn-cancel {
-    background: transparent;
-    color: var(--secondary-text-color);
-  }
-
-  /* Add button */
-  .add-btn {
-    width: 100%;
-    padding: 10px;
-    border: 1px dashed var(--divider-color);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--secondary-text-color);
-    font-size: 14px;
-    cursor: pointer;
-    transition:
-      border-color 0.2s,
-      color 0.2s;
-  }
-  .add-btn:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-  }
-  .add-btn:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-  }
-  .action-btn:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
   }
 
   /* Total duration */

@@ -4,6 +4,7 @@ import { customElement, state } from 'lit/decorators.js';
 import type { Hass, CardConfig, Translator } from './types';
 import { getTranslator } from './i18n/index';
 import { sharedStyles } from './shared-styles';
+import { renderFormRow } from './shared-templates';
 
 @customElement('wateringhub-card-editor')
 export class WateringHubCardEditor extends LitElement {
@@ -31,14 +32,14 @@ export class WateringHubCardEditor extends LitElement {
 
   render() {
     return html`
-      <div class="form-row">
-        <label class="form-label">${this._t('config.name')}</label>
-        <input
+      ${renderFormRow(
+        this._t('config.name'),
+        html`<input
           class="form-input"
           .value=${this._config?.title ?? ''}
           @input=${this._titleChanged}
-        />
-      </div>
+        />`,
+      )}
     `;
   }
 }

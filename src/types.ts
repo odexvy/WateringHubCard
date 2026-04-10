@@ -79,3 +79,45 @@ export interface ProgramZone {
   zone_name: string;
   valves: ProgramValve[];
 }
+
+// Error / Skip info (from helpers.ts)
+
+export interface ErrorInfo {
+  programName: string;
+  errorMessage: string;
+}
+
+export interface SkipInfo {
+  isSkipped: boolean;
+  daysRemaining: number;
+  skipUntil: string;
+}
+
+// Config form state (from config-templates.ts)
+
+export interface ProgramValveForm {
+  valve_id: string;
+  duration: number;
+  frequency?: ValveFrequency;
+}
+
+export interface ProgramZoneForm {
+  zone_id: string;
+  valves: ProgramValveForm[];
+}
+
+export interface ProgramFormState {
+  id: string;
+  name: string;
+  schedule: ProgramSchedule;
+  zones: ProgramZoneForm[];
+  dry_run: boolean;
+  isNew: boolean;
+}
+
+export interface ZoneFormState {
+  id: string;
+  name: string;
+  valves: string[];
+  isNew: boolean;
+}

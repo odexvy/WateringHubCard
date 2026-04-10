@@ -23,9 +23,10 @@ WateringHub Card provides two custom Lovelace cards for managing your irrigation
 
 - **Visual editor** — configure card title from HA card picker
 - **Auto-discovery** — finds all `switch.wateringhub_*` programs automatically
-- **Per-program status** — idle badge + next/last run, disabled badge for inactive programs
-- **Program recap** — accordion with trigger time, zone badges, valves, per-valve frequency, total duration
-- **Running block** — SVG circular progress, valve timeline grouped by zone (done / running / pending)
+- **Per-program status** — idle badge + next run, disabled badge, running badge for active program
+- **Pause program** — skip 1-7 days without disabling (orange outline badge with countdown, cancel button)
+- **Program recap** — accordion with trigger time, last run, zone badges, valves, per-valve frequency, total duration
+- **Running block** — SVG circular progress (blue), valve timeline grouped by zone (done / running / pending)
 - **Dry run mode** — "Test mode" badge when running without activating physical valves
 - **Error view** — program name, error message, auto-stop notice
 - **Emergency stop** — button inside the running block
@@ -78,7 +79,7 @@ No entity configuration needed — both cards auto-discover all `wateringhub_*` 
 
 | Entity                            | Description                                                                  |
 | --------------------------------- | ---------------------------------------------------------------------------- |
-| `switch.wateringhub_{program_id}` | Toggle program on/off (attributes: schedule, zones, total_duration, dry_run) |
+| `switch.wateringhub_{program_id}` | Toggle program on/off (attributes: schedule, zones, total_duration, dry_run, skip_until) |
 | `sensor.wateringhub_status`       | Global status: `idle` / `running` / `error`                                  |
 | `sensor.wateringhub_next_run`     | Next scheduled run (ISO datetime)                                            |
 | `sensor.wateringhub_last_run`     | Last run (ISO datetime)                                                      |

@@ -6,6 +6,7 @@ import { getTranslator } from '../i18n/index';
 import { sharedStyles } from '../shared-styles';
 import { editorStyles } from './editor-styles';
 import { getAvailableValves } from './config-helpers';
+import { renderButton, renderAddButton } from '../shared-templates';
 
 interface ValveFormEntry {
   entity_id: string;
@@ -117,21 +118,13 @@ export class WateringHubConfigEditor extends LitElement {
                   @value-changed=${this._onEntityPicked}
                   allow-custom-entity
                 ></ha-entity-picker>
-                <div class="add-form-actions">
-                  <button class="btn btn-cancel" @click=${() => this._cancelAdd()}>
-                    ${this._t('config.cancel')}
-                  </button>
-                  <button class="btn btn-primary" @click=${() => this._confirmAdd()}>
-                    ${this._t('config.save')}
-                  </button>
+                <div class="form-actions">
+                  ${renderButton(this._t('config.cancel'), () => this._cancelAdd(), 'cancel')}
+                  ${renderButton(this._t('config.save'), () => this._confirmAdd(), 'primary')}
                 </div>
               </div>
             `
-          : html`
-              <button class="add-btn" @click=${() => this._startAdd()}>
-                + ${this._t('config.add_valve')}
-              </button>
-            `}
+          : html` ${renderAddButton(`+ ${this._t('config.add_valve')}`, () => this._startAdd())} `}
       </div>
     `;
   }
