@@ -112,6 +112,7 @@ export function renderListItem(
 export function renderConfirmDialog(
   open: boolean,
   message: string,
+  confirmLabel: string,
   onConfirm: () => void,
   onCancel: () => void,
   t: Translator,
@@ -123,7 +124,7 @@ export function renderConfirmDialog(
         <div class="confirm-message">${message}</div>
         <div class="confirm-actions">
           <button class="btn btn-cancel" @click=${onCancel}>${t('config.cancel')}</button>
-          <button class="btn btn-danger" @click=${onConfirm}>${t('config.delete')}</button>
+          <button class="btn btn-danger" @click=${onConfirm}>${confirmLabel}</button>
         </div>
       </div>
     </div>

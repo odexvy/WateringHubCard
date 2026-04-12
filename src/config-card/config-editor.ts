@@ -25,6 +25,7 @@ export class WateringHubConfigEditor extends LitElement {
   @state() private _adding = false;
   @state() private _newEntityId = '';
   @state() private _confirmMessage = '';
+  @state() private _confirmLabel = '';
   @state() private _confirmAction: (() => void) | null = null;
 
   private _t: Translator = (key: string) => key;
@@ -49,8 +50,9 @@ export class WateringHubConfigEditor extends LitElement {
     await this._hass.callService('wateringhub', 'set_valves', { valves });
   }
 
-  private _requestConfirm(message: string, action: () => void): void {
+  private _requestConfirm(message: string, label: string, action: () => void): void {
     this._confirmMessage = message;
+    this._confirmLabel = label;
     this._confirmAction = action;
   }
 
@@ -58,20 +60,26 @@ export class WateringHubConfigEditor extends LitElement {
     this._confirmAction?.();
     this._confirmAction = null;
     this._confirmMessage = '';
+    this._confirmLabel = '';
   }
 
   private _cancelConfirm(): void {
     this._confirmAction = null;
     this._confirmMessage = '';
+    this._confirmLabel = '';
   }
 
   private _deleteValve(entityId: string): void {
-    this._requestConfirm(this._t('config.confirm_delete_valve'), async () => {
-      const valves = this._getValves()
-        .filter((v) => v.entity_id !== entityId)
-        .map((v) => ({ entity_id: v.entity_id, name: v.name }));
-      await this._setValves(valves);
-    });
+    this._requestConfirm(
+      this._t('config.confirm_delete_valve'),
+      this._t('config.delete'),
+      async () => {
+        const valves = this._getValves()
+          .filter((v) => v.entity_id !== entityId)
+          .map((v) => ({ entity_id: v.entity_id, name: v.name }));
+        await this._setValves(valves);
+      },
+    );
   }
 
   private _startAdd(): void {
@@ -149,6 +157,7 @@ export class WateringHubConfigEditor extends LitElement {
         ${renderConfirmDialog(
           !!this._confirmAction,
           this._confirmMessage,
+          this._confirmLabel,
           () => this._executeConfirm(),
           () => this._cancelConfirm(),
           this._t,

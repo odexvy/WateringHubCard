@@ -35,6 +35,7 @@ export class WateringHubConfigCard extends LitElement {
   @state() private _editingZone: ZoneFormState | null = null;
   @state() private _toast = '';
   @state() private _confirmMessage = '';
+  @state() private _confirmLabel = '';
   @state() private _confirmAction: (() => void) | null = null;
   @state() private _editingProgram: ProgramFormState | null = null;
 
@@ -62,8 +63,9 @@ export class WateringHubConfigCard extends LitElement {
     }, 3000);
   }
 
-  private _requestConfirm(message: string, action: () => void): void {
+  private _requestConfirm(message: string, label: string, action: () => void): void {
     this._confirmMessage = message;
+    this._confirmLabel = label;
     this._confirmAction = action;
   }
 
@@ -71,11 +73,13 @@ export class WateringHubConfigCard extends LitElement {
     this._confirmAction?.();
     this._confirmAction = null;
     this._confirmMessage = '';
+    this._confirmLabel = '';
   }
 
   private _cancelConfirm(): void {
     this._confirmAction = null;
     this._confirmMessage = '';
+    this._confirmLabel = '';
   }
 
   // ── Tab ────────────────────────────────────────────────
@@ -117,10 +121,14 @@ export class WateringHubConfigCard extends LitElement {
   }
 
   private _deleteZone(zoneId: string): void {
-    this._requestConfirm(this._t('config.confirm_delete_zone'), async () => {
-      await this._hass.callService('wateringhub', 'delete_zone', { id: zoneId });
-      this._showToast(this._t('config.deleted'));
-    });
+    this._requestConfirm(
+      this._t('config.confirm_delete_zone'),
+      this._t('config.delete'),
+      async () => {
+        await this._hass.callService('wateringhub', 'delete_zone', { id: zoneId });
+        this._showToast(this._t('config.deleted'));
+      },
+    );
   }
 
   // ── Program CRUD ───────────────────────────────────────
@@ -196,12 +204,16 @@ export class WateringHubConfigCard extends LitElement {
   }
 
   private _deleteProgram(entityId: string): void {
-    this._requestConfirm(this._t('config.confirm_delete_program'), async () => {
-      const entity = this._hass.states[entityId];
-      const programId = (entity?.attributes.program_id as string) ?? '';
-      await this._hass.callService('wateringhub', 'delete_program', { id: programId });
-      this._showToast(this._t('config.deleted'));
-    });
+    this._requestConfirm(
+      this._t('config.confirm_delete_program'),
+      this._t('config.delete'),
+      async () => {
+        const entity = this._hass.states[entityId];
+        const programId = (entity?.attributes.program_id as string) ?? '';
+        await this._hass.callService('wateringhub', 'delete_program', { id: programId });
+        this._showToast(this._t('config.deleted'));
+      },
+    );
   }
 
   // ── Render ─────────────────────────────────────────────
@@ -246,6 +258,7 @@ export class WateringHubConfigCard extends LitElement {
         ${renderConfirmDialog(
           !!this._confirmAction,
           this._confirmMessage,
+          this._confirmLabel,
           () => this._executeConfirm(),
           () => this._cancelConfirm(),
           this._t,

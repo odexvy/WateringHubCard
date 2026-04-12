@@ -25,6 +25,7 @@ export class WateringHubCard extends LitElement {
   @state() private _skipDropdownOpen: string | null = null;
   @state() private _toast = '';
   @state() private _confirmMessage = '';
+  @state() private _confirmLabel = '';
   @state() private _confirmAction: (() => void) | null = null;
   @state() private _tick = 0;
 
@@ -113,8 +114,9 @@ export class WateringHubCard extends LitElement {
     this._hass.callService('switch', service, { entity_id: entityId });
   }
 
-  private _requestConfirm(message: string, action: () => void): void {
+  private _requestConfirm(message: string, label: string, action: () => void): void {
     this._confirmMessage = message;
+    this._confirmLabel = label;
     this._confirmAction = action;
   }
 
@@ -122,15 +124,17 @@ export class WateringHubCard extends LitElement {
     this._confirmAction?.();
     this._confirmAction = null;
     this._confirmMessage = '';
+    this._confirmLabel = '';
   }
 
   private _cancelConfirm(): void {
     this._confirmAction = null;
     this._confirmMessage = '';
+    this._confirmLabel = '';
   }
 
   private _stopAll(): void {
-    this._requestConfirm(this._t('stop_confirm'), () => {
+    this._requestConfirm(this._t('stop_confirm'), this._t('confirm.stop'), () => {
       this._hass.callService('wateringhub', 'stop_all', {});
     });
   }
@@ -197,6 +201,7 @@ export class WateringHubCard extends LitElement {
         ${renderConfirmDialog(
           !!this._confirmAction,
           this._confirmMessage,
+          this._confirmLabel,
           () => this._executeConfirm(),
           () => this._cancelConfirm(),
           this._t,
