@@ -250,4 +250,37 @@ export const sharedStyles = css`
       transform: translateX(-50%) translateY(0);
     }
   }
+
+  /* Confirm dialog */
+  .confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+  }
+  .confirm-dialog {
+    background: var(--card-background-color);
+    border-radius: 12px;
+    padding: 24px;
+    min-width: 280px;
+    max-width: 400px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+  .confirm-message {
+    font-size: 15px;
+    color: var(--primary-text-color);
+    margin-bottom: 20px;
+  }
+  .confirm-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  .btn-danger {
+    background: var(--error-color);
+    color: white;
+  }
 `;

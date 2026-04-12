@@ -116,10 +116,16 @@ export function renderConfirmDialog(
   onCancel: () => void,
   t: Translator,
 ): TemplateResult {
+  if (!open) return html``;
   return html`
-    <ha-dialog .open=${open} @closed=${onCancel} .heading=${message}>
-      <mwc-button slot="secondaryAction" @click=${onCancel}> ${t('config.cancel')} </mwc-button>
-      <mwc-button slot="primaryAction" @click=${onConfirm}> ${t('config.delete')} </mwc-button>
-    </ha-dialog>
+    <div class="confirm-overlay" @click=${onCancel}>
+      <div class="confirm-dialog" @click=${(e: Event) => e.stopPropagation()}>
+        <div class="confirm-message">${message}</div>
+        <div class="confirm-actions">
+          <button class="btn btn-cancel" @click=${onCancel}>${t('config.cancel')}</button>
+          <button class="btn btn-danger" @click=${onConfirm}>${t('config.delete')}</button>
+        </div>
+      </div>
+    </div>
   `;
 }
