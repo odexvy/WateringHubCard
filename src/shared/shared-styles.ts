@@ -131,7 +131,7 @@ export const sharedStyles = css`
     color: white;
   }
 
-  /* Badge dry-run */
+  /* Badge dry-run (running block) */
   .badge-dry-run {
     display: inline-flex;
     align-items: center;
@@ -143,6 +143,20 @@ export const sharedStyles = css`
     color: var(--secondary-text-color);
     border: 1px dashed var(--divider-color);
     margin-bottom: 12px;
+  }
+  /* Badge dry-run inline (config list item) */
+  .badge-dry-run-sm {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    background: var(--secondary-background-color);
+    color: var(--secondary-text-color);
+    border: 1px dashed var(--divider-color);
+    margin-left: 8px;
+    vertical-align: middle;
   }
 
   /* Action buttons */

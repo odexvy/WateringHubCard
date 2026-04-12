@@ -16,7 +16,6 @@ import {
   renderFormRow,
   renderFormActions,
   renderAddButton,
-  renderBadge,
 } from '../shared/shared-templates';
 
 export function renderProgramsTab(
@@ -67,9 +66,12 @@ function renderProgramItem(
   const dryRun = entity.attributes.dry_run === true;
   const scheduleStr = formatSchedule(schedule, t);
   const sub = totalDuration ? `${scheduleStr} — ${totalDuration} min` : scheduleStr;
+  const dryRunBadge = dryRun
+    ? html`<span class="badge-dry-run-sm">${t('config.dry_run')}</span>`
+    : nothing;
 
   return renderListItem(
-    html`${name} ${dryRun ? renderBadge('dry-run', t('config.dry_run')) : nothing}`,
+    html`${name} ${dryRunBadge}`,
     sub,
     () => onEdit(entityId),
     () => onDelete(entityId),
@@ -270,7 +272,10 @@ function renderValveConfig(
             .value=${String(freq.n ?? 2)}
             @input=${(e: InputEvent) =>
               updateValve({
-                frequency: { ...freq, n: parseInt((e.target as HTMLInputElement).value) || 2 },
+                frequency: {
+                  ...freq,
+                  n: Number.parseInt((e.target as HTMLInputElement).value) || 2,
+                },
               })}
           />
           <span>j</span>
@@ -320,7 +325,7 @@ function renderValveConfig(
           min="1"
           .value=${String(fv.duration)}
           @input=${(e: InputEvent) =>
-            updateValve({ duration: parseInt((e.target as HTMLInputElement).value) || 1 })}
+            updateValve({ duration: Number.parseInt((e.target as HTMLInputElement).value) || 1 })}
         />
         <span>min</span>
       </div>
