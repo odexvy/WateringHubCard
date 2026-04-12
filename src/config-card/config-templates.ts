@@ -1,10 +1,10 @@
 import { html, TemplateResult } from 'lit';
-import type { Translator } from '../types';
+import type { Translator } from '../shared/types';
 
 export { renderValvesTab } from './config-valves-tab';
 export { renderZonesTab } from './config-zones-tab';
 export { renderProgramsTab } from './config-programs-tab';
-export type { ProgramFormState, ZoneFormState } from '../types';
+export type { ProgramFormState, ZoneFormState } from '../shared/types';
 
 export function renderTabs(
   activeTab: string,

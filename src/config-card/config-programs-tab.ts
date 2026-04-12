@@ -8,8 +8,8 @@ import type {
   ProgramValveForm,
   ProgramZoneForm,
   ProgramSchedule,
-} from '../types';
-import { discoverPrograms, getFriendlyName, formatSchedule } from '../helpers';
+} from '../shared/types';
+import { discoverPrograms, getFriendlyName, formatSchedule } from '../shared/helpers';
 import { getZones, getAvailableValves } from './config-helpers';
 import {
   renderListItem,
@@ -17,7 +17,7 @@ import {
   renderFormActions,
   renderAddButton,
   renderBadge,
-} from '../shared-templates';
+} from '../shared/shared-templates';
 
 export function renderProgramsTab(
   hass: Hass,

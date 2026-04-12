@@ -6,7 +6,7 @@ import type {
   ProgramZone,
   ValveStep,
   ValveFrequency,
-} from './types';
+} from '../shared/types';
 import {
   getGlobalStatus,
   formatRelative,
@@ -18,8 +18,8 @@ import {
   getFriendlyName,
   getSkipInfo,
   formatSkipBadge,
-} from './helpers';
-import { renderBadge } from './shared-templates';
+} from '../shared/helpers';
+import { renderBadge } from '../shared/shared-templates';
 
 export function renderHeader(title: string): TemplateResult {
   return html`
@@ -60,7 +60,7 @@ function renderProgramStatus(
     `;
   }
 
-  const skipInfo = getSkipInfo(entity as import('./types').HassEntity);
+  const skipInfo = getSkipInfo(entity as import('../shared/types').HassEntity);
   const skipDropdown = skipDropdownOpen ? renderSkipDropdown(onSkip, t) : nothing;
 
   return html`

@@ -1,4 +1,4 @@
-import type { Hass, Translator, ProgramSchedule } from '../types';
+import type { Hass, Translator, ProgramSchedule } from '../shared/types';
 import {
   discoverPrograms,
   getActiveProgramName,
@@ -12,7 +12,7 @@ import {
   formatNextRun,
   getSkipInfo,
   formatSkipBadge,
-} from '../helpers';
+} from '../shared/helpers';
 
 // ── Mock helpers ─────────────────────────────────────────
 

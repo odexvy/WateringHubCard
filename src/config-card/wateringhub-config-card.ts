@@ -8,9 +8,9 @@ import type {
   ZoneConfig,
   ProgramSchedule,
   ValveFrequency,
-} from '../types';
-import { getTranslator } from '../i18n/index';
-import { sharedStyles } from '../shared-styles';
+} from '../shared/types';
+import { getTranslator } from '../shared/i18n/index';
+import { sharedStyles } from '../shared/shared-styles';
 import { configStyles } from './config-styles';
 import { generateId } from './config-helpers';
 import {

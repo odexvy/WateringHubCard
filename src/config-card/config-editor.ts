@@ -1,12 +1,12 @@
 import { LitElement, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
-import type { Hass, CardConfig, Translator, AvailableValve } from '../types';
-import { getTranslator } from '../i18n/index';
-import { sharedStyles } from '../shared-styles';
+import type { Hass, CardConfig, Translator, AvailableValve } from '../shared/types';
+import { getTranslator } from '../shared/i18n/index';
+import { sharedStyles } from '../shared/shared-styles';
 import { editorStyles } from './editor-styles';
 import { getAvailableValves } from './config-helpers';
-import { renderButton, renderAddButton } from '../shared-templates';
+import { renderButton, renderAddButton, renderIconButton } from '../shared/shared-templates';
 
 interface ValveFormEntry {
   entity_id: string;
@@ -98,13 +98,10 @@ export class WateringHubConfigEditor extends LitElement {
                 <div class="valve-item-name">${v.name}</div>
                 <div class="valve-item-entity">${v.entity_id}</div>
               </div>
-              <button
-                class="delete-btn"
-                @click=${() => this._deleteValve(v.entity_id)}
-                title="${this._t('config.delete')}"
-              >
-                <ha-icon icon="mdi:delete"></ha-icon>
-              </button>
+              ${renderIconButton('mdi:delete', () => this._deleteValve(v.entity_id), {
+                title: this._t('config.delete'),
+                className: 'action-btn delete',
+              })}
             </div>
           `,
         )}

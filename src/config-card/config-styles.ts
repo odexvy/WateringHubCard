@@ -41,32 +41,6 @@ export const configStyles = css`
     padding: 16px;
     margin-bottom: 8px;
   }
-  .form-row-inline {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .form-row-inline > div {
-    flex: 1;
-  }
-
-  /* Checkboxes */
-  .checkbox-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 8px 0;
-  }
-  .checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--primary-text-color);
-  }
-  .checkbox-item input[type='checkbox'] {
-    accent-color: var(--primary-color);
-  }
 
   /* Valve duration row (inside program form) */
   .valve-duration-row {

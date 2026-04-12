@@ -33,14 +33,21 @@ Custom Home Assistant card (LitElement + TypeScript) for the `wateringhub` integ
 
 ```
 src/
-├── wateringhub-card.ts   # Main LitElement component (state + lifecycle)
-├── card-editor.ts        # Visual editor for dashboard card (title)
-├── templates.ts          # HTML render functions (header, running block, programs, recap)
-├── shared-templates.ts   # Shared components (renderBadge, renderButton, renderListItem, renderFormRow)
-├── types.ts              # All interfaces (Hass, CardConfig, Schedule, Zone, Valve, ErrorInfo, SkipInfo, FormState)
-├── helpers.ts            # Shared helpers (discovery, status, friendly name, running/error/skip info, formatting)
-├── shared-styles.ts      # Shared CSS (ha-card, header, badges, buttons, list-items, form)
-├── styles.ts             # Dashboard CSS (HA native variables only)
+├── index.ts                # Entry point (imports both cards)
+├── shared/
+│   ├── types.ts            # All interfaces (Hass, CardConfig, Zone, Valve, ErrorInfo, SkipInfo, FormState)
+│   ├── helpers.ts          # Shared helpers (discovery, status, friendly name, running/error/skip info)
+│   ├── shared-styles.ts    # Shared CSS (ha-card, badges, buttons, list-items, form, checkboxes)
+│   ├── shared-templates.ts # Shared components (renderBadge, renderButton, renderListItem, renderFormRow)
+│   └── i18n/
+│       ├── index.ts        # Translation loader
+│       ├── en.json         # English (fallback)
+│       └── fr.json         # French
+├── dashboard-card/
+│   ├── wateringhub-card.ts # Main component (state, lifecycle)
+│   ├── card-editor.ts      # Visual editor (title)
+│   ├── templates.ts        # Dashboard templates (header, status, running, error, programs, recap)
+│   └── styles.ts           # Dashboard CSS
 ├── config-card/
 │   ├── wateringhub-config-card.ts  # Config card (state, tabs, CRUD)
 │   ├── config-editor.ts            # Visual editor (valve picker via set_valves)
@@ -51,10 +58,9 @@ src/
 │   ├── config-styles.ts            # Config CSS
 │   ├── editor-styles.ts            # Editor CSS
 │   └── config-helpers.ts           # Config helpers (getAvailableValves, getZones, generateId)
-└── i18n/
-    ├── index.ts          # Translation loader
-    ├── en.json           # English (fallback)
-    └── fr.json           # French
+└── __tests__/
+    ├── helpers.test.ts     # Dashboard helper tests
+    └── config-helpers.test.ts  # Config helper tests
 ```
 
 ## Code Rules

@@ -1,7 +1,7 @@
 # WateringHub Card — Project Status
 
 **Date:** 2026-04-11
-**Version:** 0.0.34
+**Version:** 0.0.35
 **Branch:** master
 
 ---
@@ -129,14 +129,20 @@ The repo contains **two custom cards** in a single bundle:
 WateringHubCard/
 ├── src/
 │   ├── index.ts                       # Entry point (imports both cards)
-│   ├── wateringhub-card.ts            # Dashboard card (state, lifecycle)
-│   ├── card-editor.ts                 # Dashboard visual editor (title)
-│   ├── templates.ts                   # Dashboard templates (header, status, error, running, programs, recap)
-│   ├── shared-templates.ts            # Shared components (renderBadge, renderButton, renderListItem, renderFormRow)
-│   ├── helpers.ts                     # Shared helpers (discovery, status, friendly name, error/running info, formatting)
-│   ├── shared-styles.ts               # Shared CSS (ha-card, header, badges, buttons, list-items, form)
-│   ├── styles.ts                      # Dashboard CSS
-│   ├── types.ts                       # Shared types (Hass, CardConfig, Schedule, Zone, Valve, ErrorInfo, SkipInfo, FormState)
+│   ├── shared/
+│   │   ├── types.ts                   # All shared interfaces
+│   │   ├── helpers.ts                 # Shared helpers (discovery, status, formatting, skip)
+│   │   ├── shared-styles.ts           # Shared CSS (badges, buttons, list-items, form, checkboxes)
+│   │   ├── shared-templates.ts        # Shared components (renderBadge, renderButton, renderListItem, renderFormRow)
+│   │   └── i18n/
+│   │       ├── index.ts               # Translation loader
+│   │       ├── en.json                # English (fallback)
+│   │       └── fr.json                # French
+│   ├── dashboard-card/
+│   │   ├── wateringhub-card.ts        # Dashboard card (state, lifecycle)
+│   │   ├── card-editor.ts             # Visual editor (title)
+│   │   ├── templates.ts              # Dashboard templates (header, status, running, error, programs, recap)
+│   │   └── styles.ts                  # Dashboard CSS
 │   ├── config-card/
 │   │   ├── wateringhub-config-card.ts # Config card (state, tabs, CRUD)
 │   │   ├── config-editor.ts           # HA visual editor (valve picker via set_valves)
@@ -147,15 +153,11 @@ WateringHubCard/
 │   │   ├── config-styles.ts           # Config CSS
 │   │   ├── editor-styles.ts           # Editor CSS
 │   │   └── config-helpers.ts          # Config helpers (getAvailableValves, getZones, generateId)
-│   ├── i18n/
-│   │   ├── index.ts                   # Translation loader
-│   │   ├── en.json                    # English (fallback) — dashboard + config
-│   │   └── fr.json                    # French — dashboard + config
 │   └── __tests__/
 │       ├── helpers.test.ts            # Dashboard helper tests
 │       └── config-helpers.test.ts     # Config helper tests
 ├── dist/
-│   └── wateringhub-card.js            # Single bundle (68.5kb minified, both cards + editors)
+│   └── wateringhub-card.js            # Single bundle (68.0kb minified, both cards + editors)
 ├── .github/workflows/ci.yml           # CI: typecheck + tests
 ├── .husky/pre-commit                  # lint-staged (eslint --fix + prettier --write)
 ├── package.json                       # esbuild points to src/index.ts
@@ -254,3 +256,4 @@ Update: HACS shows "update available" → install → Ctrl+Shift+R (hard refresh
 23. **Simplified schedule** — program only has `{ time }`, frequency is 100% per-valve
 24. **Skip = temporary state** — skip is managed via a dedicated `skip_program` service (not via `update_program`), because it's runtime control, not configuration
 25. **Shared components** — `shared-templates.ts` (renderBadge, renderButton, renderListItem, renderFormRow) and `shared-styles.ts` mutualize CSS + HTML between dashboard and config cards
+26. **Folder structure** — `src/shared/` (types, helpers, styles, templates, i18n) + `src/dashboard-card/` + `src/config-card/` for symmetric organization

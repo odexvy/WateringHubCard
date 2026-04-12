@@ -1,12 +1,12 @@
 import { html, nothing, TemplateResult } from 'lit';
-import type { Hass, Translator, AvailableValve, ZoneConfig, ZoneFormState } from '../types';
+import type { Hass, Translator, AvailableValve, ZoneConfig, ZoneFormState } from '../shared/types';
 import { getAvailableValves, getZones } from './config-helpers';
 import {
   renderListItem,
   renderFormRow,
   renderFormActions,
   renderAddButton,
-} from '../shared-templates';
+} from '../shared/shared-templates';
 
 export function renderZonesTab(
   hass: Hass,

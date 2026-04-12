@@ -1,4 +1,4 @@
-import type { Hass } from '../types';
+import type { Hass } from '../shared/types';
 import { getAvailableValves, getZones, generateId } from '../config-card/config-helpers';
 
 function makeHass(

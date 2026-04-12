@@ -1,10 +1,10 @@
 import { LitElement, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
-import type { Hass, CardConfig, Translator } from './types';
-import { getTranslator } from './i18n/index';
-import { sharedStyles } from './shared-styles';
-import { renderFormRow } from './shared-templates';
+import type { Hass, CardConfig, Translator } from '../shared/types';
+import { getTranslator } from '../shared/i18n/index';
+import { sharedStyles } from '../shared/shared-styles';
+import { renderFormRow } from '../shared/shared-templates';
 
 @customElement('wateringhub-card-editor')
 export class WateringHubCardEditor extends LitElement {

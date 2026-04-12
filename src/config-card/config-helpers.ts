@@ -1,4 +1,4 @@
-import type { Hass, AvailableValve, ZoneConfig } from '../types';
+import type { Hass, AvailableValve, ZoneConfig } from '../shared/types';
 
 export function getAvailableValves(hass: Hass): AvailableValve[] {
   const entity = hass.states['sensor.wateringhub_status'];

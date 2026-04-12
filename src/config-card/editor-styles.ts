@@ -33,16 +33,6 @@ export const editorStyles = css`
     font-size: 12px;
     color: var(--secondary-text-color);
   }
-  .delete-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    color: var(--secondary-text-color);
-  }
-  .delete-btn:hover {
-    color: var(--error-color);
-  }
   .add-form {
     border: 1px dashed var(--divider-color);
     border-radius: 8px;

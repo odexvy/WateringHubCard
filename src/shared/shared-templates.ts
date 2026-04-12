@@ -65,6 +65,22 @@ export function renderFormRow(label: string, input: TemplateResult): TemplateRes
 
 // ── List Item Component ─────────────────────────────────
 
+export function renderReadOnlyListItem(
+  name: string | TemplateResult,
+  sub: string | TemplateResult,
+): TemplateResult {
+  return html`
+    <div class="list-item">
+      <div class="list-item-header">
+        <div>
+          <div class="list-item-name">${name}</div>
+          <div class="list-item-sub">${sub}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 export function renderListItem(
   name: string | TemplateResult,
   sub: string | TemplateResult,

@@ -4,11 +4,11 @@
 import { LitElement, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
-import type { Hass, CardConfig, Translator } from './types';
-import { getTranslator } from './i18n/index';
-import { sharedStyles } from './shared-styles';
+import type { Hass, CardConfig, Translator } from '../shared/types';
+import { getTranslator } from '../shared/i18n/index';
+import { sharedStyles } from '../shared/shared-styles';
 import { cardStyles } from './styles';
-import { discoverPrograms, getGlobalStatus } from './helpers';
+import { discoverPrograms, getGlobalStatus } from '../shared/helpers';
 import { renderHeader, renderErrorView, renderRunningView, renderProgramList } from './templates';
 import './card-editor';
 
