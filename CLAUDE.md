@@ -59,8 +59,9 @@ src/
 │   ├── editor-styles.ts            # Editor CSS
 │   └── config-helpers.ts           # Config helpers (getAvailableValves, getZones, generateId)
 └── __tests__/
-    ├── helpers.test.ts     # Dashboard helper tests
-    └── config-helpers.test.ts  # Config helper tests
+    ├── helpers.test.ts        # Dashboard helper tests
+    ├── config-helpers.test.ts # Config helper tests
+    └── i18n.test.ts           # i18n tests (getTranslator)
 ```
 
 ## Code Rules

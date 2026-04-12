@@ -72,5 +72,6 @@
   "skip.active": "En pause {count} j",
   "skip.cancel": "Reprendre",
   "skip.toast_paused": "Programme en pause {count} j",
-  "skip.toast_resumed": "Programme repris"
+  "skip.toast_resumed": "Programme repris",
+  "confirm.stop": "Arrêter"
 }

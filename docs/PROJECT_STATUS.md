@@ -1,7 +1,7 @@
 # WateringHub Card — Project Status
 
 **Date:** 2026-04-11
-**Version:** 0.0.37
+**Version:** 0.0.38
 **Branch:** master
 
 ---
@@ -85,6 +85,7 @@ The repo contains **two custom cards** in a single bundle:
 - **Inline forms**: open in place within the list, only one open at a time
 - **Reorder**: reorder valves in a program via arrow buttons
 - **Toast notifications**: visual confirmation after each save/delete (zone, program)
+- **HA native confirm dialog** — `ha-dialog` replaces native browser `confirm()` for all destructive actions
 - **i18n**: FR + EN, same files as the dashboard card
 
 ### Data Model
@@ -155,7 +156,8 @@ WateringHubCard/
 │   │   └── config-helpers.ts          # Config helpers (getAvailableValves, getZones, generateId)
 │   └── __tests__/
 │       ├── helpers.test.ts            # Dashboard helper tests
-│       └── config-helpers.test.ts     # Config helper tests
+│       ├── config-helpers.test.ts     # Config helper tests
+│       └── i18n.test.ts              # i18n tests (getTranslator)
 ├── dist/
 │   └── wateringhub-card.js            # Single bundle (68.0kb minified, both cards + editors)
 ├── .github/workflows/ci.yml           # CI: typecheck + tests
@@ -180,7 +182,7 @@ WateringHubCard/
 | ---------- | ------------------- | ----------------------------------------------------- |
 | Build      | `yarn build`        | esbuild → dist/wateringhub-card.js (minified, 2 cards)|
 | Watch      | `yarn watch`        | Dev mode with auto-rebuild                            |
-| Tests      | `yarn test`         | 63 Jest tests on helpers                              |
+| Tests      | `yarn test`         | 74 Jest tests (helpers + config-helpers + i18n)        |
 | Typecheck  | `yarn typecheck`    | tsc --noEmit                                          |
 | Format     | `yarn format`       | Prettier on src/**/*.ts                               |
 | CI         | Push/PR on master   | Typecheck + tests (GitHub Actions)                    |
@@ -209,7 +211,7 @@ Update: HACS shows "update available" → install → Ctrl+Shift+R (hard refresh
 - [x] **Error view** — error message, auto-stop
 - [x] **Config card** — CRUD zones + programs via HA services
 - [x] **Visual editor** — `getConfigElement()` on both cards (config: valve picker via set_valves, dashboard: title)
-- [ ] Tests for i18n (`getTranslator`)
+- [x] Tests for i18n (`getTranslator`) — 11 tests (language detection, fallback, params, key parity)
 - [x] Tests for config-helpers (`getAvailableValves`, `getZones`, `generateId`)
 
 ### Medium term (requires backend)
@@ -257,3 +259,4 @@ Update: HACS shows "update available" → install → Ctrl+Shift+R (hard refresh
 24. **Skip = temporary state** — skip is managed via a dedicated `skip_program` service (not via `update_program`), because it's runtime control, not configuration
 25. **Shared components** — `shared-templates.ts` (renderBadge, renderButton, renderListItem, renderFormRow) and `shared-styles.ts` mutualize CSS + HTML between dashboard and config cards
 26. **Folder structure** — `src/shared/` (types, helpers, styles, templates, i18n) + `src/dashboard-card/` + `src/config-card/` for symmetric organization
+27. **HA native dialogs** — `ha-dialog` + `mwc-button` for all destructive confirmations, replacing native browser `confirm()`

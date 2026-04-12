@@ -10,6 +10,7 @@ import { sharedStyles } from '../shared/shared-styles';
 import { cardStyles } from './styles';
 import { discoverPrograms, getGlobalStatus } from '../shared/helpers';
 import { renderHeader, renderErrorView, renderRunningView, renderProgramList } from './templates';
+import { renderConfirmDialog } from '../shared/shared-templates';
 import './card-editor';
 
 @customElement('wateringhub-card')
@@ -23,6 +24,8 @@ export class WateringHubCard extends LitElement {
   @state() private _expandedProgram: string | null = null;
   @state() private _skipDropdownOpen: string | null = null;
   @state() private _toast = '';
+  @state() private _confirmMessage = '';
+  @state() private _confirmAction: (() => void) | null = null;
   @state() private _tick = 0;
 
   private _t: Translator = (key: string) => key;
@@ -110,10 +113,26 @@ export class WateringHubCard extends LitElement {
     this._hass.callService('switch', service, { entity_id: entityId });
   }
 
+  private _requestConfirm(message: string, action: () => void): void {
+    this._confirmMessage = message;
+    this._confirmAction = action;
+  }
+
+  private _executeConfirm(): void {
+    this._confirmAction?.();
+    this._confirmAction = null;
+    this._confirmMessage = '';
+  }
+
+  private _cancelConfirm(): void {
+    this._confirmAction = null;
+    this._confirmMessage = '';
+  }
+
   private _stopAll(): void {
-    if (confirm(this._t('stop_confirm'))) {
+    this._requestConfirm(this._t('stop_confirm'), () => {
       this._hass.callService('wateringhub', 'stop_all', {});
-    }
+    });
   }
 
   private _toggleSkipDropdown(entityId: string): void {
@@ -175,6 +194,13 @@ export class WateringHubCard extends LitElement {
           this._t,
         )}
         ${this._toast ? html`<div class="toast">${this._toast}</div>` : nothing}
+        ${renderConfirmDialog(
+          !!this._confirmAction,
+          this._confirmMessage,
+          () => this._executeConfirm(),
+          () => this._cancelConfirm(),
+          this._t,
+        )}
       </ha-card>
     `;
   }

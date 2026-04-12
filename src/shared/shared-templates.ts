@@ -106,3 +106,20 @@ export function renderListItem(
     </div>
   `;
 }
+
+// ── Confirm Dialog Component ────────────────────────────
+
+export function renderConfirmDialog(
+  open: boolean,
+  message: string,
+  onConfirm: () => void,
+  onCancel: () => void,
+  t: Translator,
+): TemplateResult {
+  return html`
+    <ha-dialog .open=${open} @closed=${onCancel} .heading=${message}>
+      <mwc-button slot="secondaryAction" @click=${onCancel}> ${t('config.cancel')} </mwc-button>
+      <mwc-button slot="primaryAction" @click=${onConfirm}> ${t('config.delete')} </mwc-button>
+    </ha-dialog>
+  `;
+}

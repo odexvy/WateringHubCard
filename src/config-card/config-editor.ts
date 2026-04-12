@@ -6,7 +6,12 @@ import { getTranslator } from '../shared/i18n/index';
 import { sharedStyles } from '../shared/shared-styles';
 import { editorStyles } from './editor-styles';
 import { getAvailableValves } from './config-helpers';
-import { renderButton, renderAddButton, renderIconButton } from '../shared/shared-templates';
+import {
+  renderButton,
+  renderAddButton,
+  renderIconButton,
+  renderConfirmDialog,
+} from '../shared/shared-templates';
 
 interface ValveFormEntry {
   entity_id: string;
@@ -19,6 +24,8 @@ export class WateringHubConfigEditor extends LitElement {
   @state() private _hass!: Hass;
   @state() private _adding = false;
   @state() private _newEntityId = '';
+  @state() private _confirmMessage = '';
+  @state() private _confirmAction: (() => void) | null = null;
 
   private _t: Translator = (key: string) => key;
 
@@ -42,12 +49,29 @@ export class WateringHubConfigEditor extends LitElement {
     await this._hass.callService('wateringhub', 'set_valves', { valves });
   }
 
-  private async _deleteValve(entityId: string): Promise<void> {
-    if (!confirm(this._t('config.confirm_delete_valve'))) return;
-    const valves = this._getValves()
-      .filter((v) => v.entity_id !== entityId)
-      .map((v) => ({ entity_id: v.entity_id, name: v.name }));
-    await this._setValves(valves);
+  private _requestConfirm(message: string, action: () => void): void {
+    this._confirmMessage = message;
+    this._confirmAction = action;
+  }
+
+  private _executeConfirm(): void {
+    this._confirmAction?.();
+    this._confirmAction = null;
+    this._confirmMessage = '';
+  }
+
+  private _cancelConfirm(): void {
+    this._confirmAction = null;
+    this._confirmMessage = '';
+  }
+
+  private _deleteValve(entityId: string): void {
+    this._requestConfirm(this._t('config.confirm_delete_valve'), async () => {
+      const valves = this._getValves()
+        .filter((v) => v.entity_id !== entityId)
+        .map((v) => ({ entity_id: v.entity_id, name: v.name }));
+      await this._setValves(valves);
+    });
   }
 
   private _startAdd(): void {
@@ -121,7 +145,14 @@ export class WateringHubConfigEditor extends LitElement {
                 </div>
               </div>
             `
-          : html` ${renderAddButton(`+ ${this._t('config.add_valve')}`, () => this._startAdd())} `}
+          : renderAddButton(`+ ${this._t('config.add_valve')}`, () => this._startAdd())}
+        ${renderConfirmDialog(
+          !!this._confirmAction,
+          this._confirmMessage,
+          () => this._executeConfirm(),
+          () => this._cancelConfirm(),
+          this._t,
+        )}
       </div>
     `;
   }
