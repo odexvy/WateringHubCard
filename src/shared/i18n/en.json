@@ -70,5 +70,7 @@
   "skip.days_1": "1 day",
   "skip.days_n": "{count} days",
   "skip.active": "Paused {count} d",
-  "skip.cancel": "Resume"
+  "skip.cancel": "Resume",
+  "skip.toast_paused": "Program paused {count} d",
+  "skip.toast_resumed": "Program resumed"
 }

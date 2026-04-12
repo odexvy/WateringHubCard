@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 WateringHub contributors
 
-import { LitElement, html } from 'lit';
+import { LitElement, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import type { Hass, CardConfig, Translator } from '../shared/types';
@@ -22,12 +22,13 @@ export class WateringHubCard extends LitElement {
   @state() private _programEntities: string[] = [];
   @state() private _expandedProgram: string | null = null;
   @state() private _skipDropdownOpen: string | null = null;
+  @state() private _toast = '';
   @state() private _tick = 0;
 
   private _t: Translator = (key: string) => key;
   private _timerInterval: ReturnType<typeof setInterval> | null = null;
   private _unsubEvents: (() => void) | null = null;
-  private _boundCloseDropdown = this._closeSkipDropdown.bind(this);
+  private readonly _boundCloseDropdown = this._closeSkipDropdown.bind(this);
 
   static readonly styles = [sharedStyles, cardStyles];
 
@@ -119,14 +120,24 @@ export class WateringHubCard extends LitElement {
     this._skipDropdownOpen = this._skipDropdownOpen === entityId ? null : entityId;
   }
 
+  private _showToast(msg: string): void {
+    this._toast = msg;
+    setTimeout(() => {
+      this._toast = '';
+    }, 3000);
+  }
+
   private _handleSkip(entityId: string, days: number): void {
     const programId = entityId.replace('switch.wateringhub_', '');
     this._hass.callService('wateringhub', 'skip_program', { id: programId, days });
     this._skipDropdownOpen = null;
+    this._showToast(this._t('skip.toast_paused', { count: days }));
   }
 
   private _handleCancelSkip(entityId: string): void {
-    this._handleSkip(entityId, 0);
+    const programId = entityId.replace('switch.wateringhub_', '');
+    this._hass.callService('wateringhub', 'skip_program', { id: programId, days: 0 });
+    this._showToast(this._t('skip.toast_resumed'));
   }
 
   private _closeSkipDropdown(e: Event): void {
@@ -163,6 +174,7 @@ export class WateringHubCard extends LitElement {
           (id) => this._handleCancelSkip(id),
           this._t,
         )}
+        ${this._toast ? html`<div class="toast">${this._toast}</div>` : nothing}
       </ha-card>
     `;
   }

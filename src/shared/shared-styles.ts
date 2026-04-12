@@ -224,4 +224,30 @@ export const sharedStyles = css`
   .checkbox-item input[type='checkbox'] {
     accent-color: var(--primary-color);
   }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-text-color);
+    color: var(--card-background-color);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 100;
+    animation: toast-in 0.3s ease;
+  }
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
 `;
