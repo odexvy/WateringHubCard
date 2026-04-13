@@ -30,9 +30,9 @@ export const configStyles = css`
   }
 
   .form-hint {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--secondary-text-color);
-    margin-top: 4px;
+    margin-bottom: 16px;
   }
   /* Inline form */
   .inline-form {

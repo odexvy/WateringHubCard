@@ -25,6 +25,8 @@ import {
   type WaterSupplyFormState,
 } from './config-templates';
 import { renderConfirmDialog } from '../shared/shared-templates';
+import type { ValveAssignment } from './config-valves-tab';
+import { valvesToAssignments } from './config-valves-tab';
 import './config-editor';
 
 @customElement('wateringhub-config-card')
@@ -42,6 +44,7 @@ export class WateringHubConfigCard extends LitElement {
   @state() private _confirmAction: (() => void) | null = null;
   @state() private _editingProgram: ProgramFormState | null = null;
   @state() private _editingWaterSupply: WaterSupplyFormState | null = null;
+  @state() private _editingValves: import('./config-valves-tab').ValveAssignment[] | null = null;
 
   private _t: Translator = (key: string) => key;
 
@@ -93,6 +96,7 @@ export class WateringHubConfigCard extends LitElement {
     this._editingZone = null;
     this._editingProgram = null;
     this._editingWaterSupply = null;
+    this._editingValves = null;
   }
 
   // ── Zone CRUD ──────────────────────────────────────────
@@ -267,19 +271,30 @@ export class WateringHubConfigCard extends LitElement {
 
   // ── Valve assignment ────────────────────────────────────
 
-  private async _changeValve(
-    entityId: string,
-    field: 'zone_id' | 'water_supply_id',
-    value: string,
-  ): Promise<void> {
-    const valves = getAvailableValves(this._hass).map((v) => ({
-      entity_id: v.entity_id,
-      name: v.name,
-      water_supply_id:
-        v.entity_id === entityId && field === 'water_supply_id' ? value : v.water_supply_id,
-      zone_id: v.entity_id === entityId && field === 'zone_id' ? value : v.zone_id,
-    }));
-    await this._hass.callService('wateringhub', 'set_valves', { valves });
+  private _startEditValves(): void {
+    this._editingValves = valvesToAssignments(getAvailableValves(this._hass));
+  }
+
+  private _updateValvesForm(valves: ValveAssignment[]): void {
+    this._editingValves = valves;
+  }
+
+  private async _saveValves(): Promise<void> {
+    if (!this._editingValves) return;
+    await this._hass.callService('wateringhub', 'set_valves', {
+      valves: this._editingValves.map((v) => ({
+        entity_id: v.entity_id,
+        name: v.name,
+        water_supply_id: v.water_supply_id || null,
+        zone_id: v.zone_id || null,
+      })),
+    });
+    this._editingValves = null;
+    this._showToast(this._t('config.saved'));
+  }
+
+  private _cancelEditValves(): void {
+    this._editingValves = null;
   }
 
   private _deleteValveFromTab(entityId: string): void {
@@ -315,7 +330,11 @@ export class WateringHubConfigCard extends LitElement {
         ${this._activeTab === 'valves'
           ? renderValvesTab(
               this._hass,
-              (id, field, val) => this._changeValve(id, field, val),
+              this._editingValves,
+              () => this._startEditValves(),
+              (v) => this._updateValvesForm(v),
+              () => this._saveValves(),
+              () => this._cancelEditValves(),
               (id) => this._deleteValveFromTab(id),
               this._t,
             )

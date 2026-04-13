@@ -1,7 +1,7 @@
 # WateringHub Card — Project Status
 
 **Date:** 2026-04-11
-**Version:** 0.0.44
+**Version:** 0.0.45
 **Branch:** master
 
 ---
@@ -82,7 +82,7 @@ The repo contains **two custom cards** in a single bundle:
   - Create: name + valve selection (checkboxes)
   - Edit: pre-filled inline form
   - Delete: confirmation → `wateringhub.delete_zone`
-- **Valves tab** — read-only, list of available valves (from `available_valves` on status sensor)
+- **Valves tab** — assign zone + water supply per valve with labeled dropdowns, global save button (disabled if incomplete)
 - **Inline forms**: open in place within the list, only one open at a time
 - **Reorder**: reorder valves in a program via arrow buttons
 - **Toast notifications**: visual confirmation after each save/delete (zone, program)
@@ -155,7 +155,7 @@ WateringHubCard/
 │   │   ├── config-programs-tab.ts     # Programs tab (list, CRUD form)
 │   │   ├── config-zones-tab.ts        # Zones tab (list, CRUD form)
 │   │   ├── config-water-supplies-tab.ts # Water supplies tab (CRUD)
-│   │   ├── config-valves-tab.ts       # Valves tab (zone + supply dropdowns per valve)
+│   │   ├── config-valves-tab.ts       # Valves tab (zone + supply dropdowns, global save)
 │   │   ├── config-styles.ts           # Config CSS
 │   │   ├── editor-styles.ts           # Editor CSS
 │   │   └── config-helpers.ts          # Config helpers (getAvailableValves, getZones, generateId)

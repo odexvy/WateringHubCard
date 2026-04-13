@@ -57,7 +57,7 @@ src/
 │   ├── config-programs-tab.ts      # Programs tab (list, CRUD form)
 │   ├── config-zones-tab.ts         # Zones tab (list, CRUD form)
 │   ├── config-water-supplies-tab.ts # Water supplies tab (CRUD)
-│   ├── config-valves-tab.ts        # Valves tab (zone + supply dropdowns per valve)
+│   ├── config-valves-tab.ts        # Valves tab (zone + supply dropdowns, global save)
 │   ├── config-styles.ts            # Config CSS
 │   ├── editor-styles.ts            # Editor CSS
 │   └── config-helpers.ts           # Config helpers (getAvailableValves, getZones, generateId)
