@@ -32,9 +32,13 @@ export function renderProgramsTab(
   const programEntities = discoverPrograms(hass);
   const zones = getZones(hass);
   const valves = getAvailableValves(hass);
+  const hasConfiguredValves = valves.some((v) => v.zone_id !== null);
 
   return html`
     <div class="form-hint">${t('config.hint_programs')}</div>
+    ${hasConfiguredValves
+      ? nothing
+      : html`<div class="empty-state">${t('config.hint_programs_prereq')}</div>`}
     ${programEntities.map((entityId) => {
       const entity = hass.states[entityId];
       if (!entity) return nothing;

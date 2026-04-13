@@ -16,8 +16,8 @@ import {
 interface ValveFormEntry {
   entity_id: string;
   name: string;
-  water_supply_id: string;
-  zone_id: string;
+  water_supply_id: string | null;
+  zone_id: string | null;
 }
 
 @customElement('wateringhub-config-editor')
@@ -210,7 +210,7 @@ export class WateringHubConfigEditor extends LitElement {
               </div>
             `
           : zones.length === 0 || supplies.length === 0
-            ? html`<div class="empty-state">${this._t('config.no_water_supply_hint')}</div>`
+            ? html`<div class="empty-state">${this._t('config.hint_valves_prereq')}</div>`
             : renderAddButton(`+ ${this._t('config.add_valve')}`, () => this._startAdd())}
         ${renderConfirmDialog(
           !!this._confirmAction,

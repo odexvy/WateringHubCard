@@ -84,8 +84,10 @@
   "config.no_water_supply_hint": "Créez d'abord une arrivée d'eau",
 
   "config.hint_programs": "Créez des programmes d'arrosage avec un horaire et des zones.",
-  "config.hint_zones": "Regroupez vos vannes par zone logique.",
-  "config.hint_water_supplies": "Définissez vos arrivées d'eau pour activer le parallélisme.",
+  "config.hint_zones": "Créez au moins une zone pour regrouper vos vannes.",
+  "config.hint_water_supplies": "Créez au moins une arrivée d'eau pour activer le parallélisme.",
   "config.hint_valves": "Configurez vos vannes et assignez-les à une zone et une arrivée d'eau.",
-  "config.none": "Aucun"
+  "config.none": "Aucun",
+  "config.hint_valves_prereq": "Créez d'abord des arrivées d'eau et des zones",
+  "config.hint_programs_prereq": "Configurez d'abord vos vannes"
 }

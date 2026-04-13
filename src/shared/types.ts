@@ -37,8 +37,8 @@ export interface AvailableValve {
   id: string;
   name: string;
   entity_id: string;
-  water_supply_id: string;
-  zone_id: string;
+  water_supply_id: string | null;
+  zone_id: string | null;
 }
 
 export interface ZoneConfig {

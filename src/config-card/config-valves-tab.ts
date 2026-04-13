@@ -1,4 +1,4 @@
-import { html, TemplateResult } from 'lit';
+import { html, nothing, TemplateResult } from 'lit';
 import type { Hass, Translator } from '../shared/types';
 import { getAvailableValves, getZones, getWaterSupplies } from './config-helpers';
 import { renderIconButton } from '../shared/shared-templates';
@@ -20,8 +20,11 @@ export function renderValvesTab(
     `;
   }
 
+  const hasPrereqs = zones.length > 0 && supplies.length > 0;
+
   return html`
     <div class="form-hint">${t('config.hint_valves')}</div>
+    ${hasPrereqs ? nothing : html`<div class="empty-state">${t('config.hint_valves_prereq')}</div>`}
     ${valves.map(
       (v) => html`
         <div class="list-item">
@@ -33,7 +36,7 @@ export function renderValvesTab(
                 <select
                   class="form-select"
                   style="flex:1; min-width:120px;"
-                  .value=${v.zone_id}
+                  .value=${v.zone_id ?? ''}
                   @change=${(e: Event) => {
                     onChangeValve(v.entity_id, 'zone_id', (e.target as HTMLSelectElement).value);
                   }}
@@ -43,7 +46,7 @@ export function renderValvesTab(
                 <select
                   class="form-select"
                   style="flex:1; min-width:120px;"
-                  .value=${v.water_supply_id}
+                  .value=${v.water_supply_id ?? ''}
                   @change=${(e: Event) => {
                     onChangeValve(
                       v.entity_id,
