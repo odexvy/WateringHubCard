@@ -5,11 +5,7 @@ import { renderIconButton } from '../shared/shared-templates';
 
 export function renderValvesTab(
   hass: Hass,
-  onChangeValve: (
-    entityId: string,
-    field: 'zone_id' | 'water_supply_id',
-    value: string | null,
-  ) => void,
+  onChangeValve: (entityId: string, field: 'zone_id' | 'water_supply_id', value: string) => void,
   onDeleteValve: (entityId: string) => void,
   t: Translator,
 ): TemplateResult {
@@ -37,25 +33,25 @@ export function renderValvesTab(
                 <select
                   class="form-select"
                   style="flex:1; min-width:120px;"
-                  .value=${v.zone_id ?? ''}
+                  .value=${v.zone_id}
                   @change=${(e: Event) => {
-                    const val = (e.target as HTMLSelectElement).value;
-                    onChangeValve(v.entity_id, 'zone_id', val || null);
+                    onChangeValve(v.entity_id, 'zone_id', (e.target as HTMLSelectElement).value);
                   }}
                 >
-                  <option value="">${t('config.none')}</option>
                   ${zones.map((z) => html`<option value=${z.id}>${z.name}</option>`)}
                 </select>
                 <select
                   class="form-select"
                   style="flex:1; min-width:120px;"
-                  .value=${v.water_supply_id ?? ''}
+                  .value=${v.water_supply_id}
                   @change=${(e: Event) => {
-                    const val = (e.target as HTMLSelectElement).value;
-                    onChangeValve(v.entity_id, 'water_supply_id', val || null);
+                    onChangeValve(
+                      v.entity_id,
+                      'water_supply_id',
+                      (e.target as HTMLSelectElement).value,
+                    );
                   }}
                 >
-                  <option value="">${t('config.none')}</option>
                   ${supplies.map((s) => html`<option value=${s.id}>${s.name}</option>`)}
                 </select>
               </div>

@@ -13,10 +13,10 @@ export function renderTabs(
   t: Translator,
 ): TemplateResult {
   const tabs = [
-    { id: 'programs', label: t('config.tab_programs') },
-    { id: 'zones', label: t('config.tab_zones') },
     { id: 'water_supplies', label: t('config.tab_water_supplies') },
+    { id: 'zones', label: t('config.tab_zones') },
     { id: 'valves', label: t('config.tab_valves') },
+    { id: 'programs', label: t('config.tab_programs') },
   ];
   return html`
     <div class="tabs">

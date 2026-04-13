@@ -34,7 +34,7 @@ export class WateringHubConfigCard extends LitElement {
   }
   @state() private _config!: CardConfig;
   @state() private _hass!: Hass;
-  @state() private _activeTab = 'programs';
+  @state() private _activeTab = 'water_supplies';
   @state() private _editingZone: ZoneFormState | null = null;
   @state() private _toast = '';
   @state() private _confirmMessage = '';
@@ -129,8 +129,12 @@ export class WateringHubConfigCard extends LitElement {
       this._t('config.confirm_delete_zone'),
       this._t('config.delete'),
       async () => {
-        await this._hass.callService('wateringhub', 'delete_zone', { id: zoneId });
-        this._showToast(this._t('config.deleted'));
+        try {
+          await this._hass.callService('wateringhub', 'delete_zone', { id: zoneId });
+          this._showToast(this._t('config.deleted'));
+        } catch {
+          this._showToast(this._t('config.error_water_supply_in_use'));
+        }
       },
     );
   }
@@ -251,8 +255,12 @@ export class WateringHubConfigCard extends LitElement {
       this._t('config.confirm_delete_water_supply'),
       this._t('config.delete'),
       async () => {
-        await this._hass.callService('wateringhub', 'delete_water_supply', { id: supplyId });
-        this._showToast(this._t('config.deleted'));
+        try {
+          await this._hass.callService('wateringhub', 'delete_water_supply', { id: supplyId });
+          this._showToast(this._t('config.deleted'));
+        } catch {
+          this._showToast(this._t('config.error_water_supply_in_use'));
+        }
       },
     );
   }
@@ -262,7 +270,7 @@ export class WateringHubConfigCard extends LitElement {
   private async _changeValve(
     entityId: string,
     field: 'zone_id' | 'water_supply_id',
-    value: string | null,
+    value: string,
   ): Promise<void> {
     const valves = getAvailableValves(this._hass).map((v) => ({
       entity_id: v.entity_id,

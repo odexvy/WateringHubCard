@@ -5,7 +5,7 @@ import type { Hass, CardConfig, Translator, AvailableValve } from '../shared/typ
 import { getTranslator } from '../shared/i18n/index';
 import { sharedStyles } from '../shared/shared-styles';
 import { editorStyles } from './editor-styles';
-import { getAvailableValves } from './config-helpers';
+import { getAvailableValves, getZones, getWaterSupplies } from './config-helpers';
 import {
   renderButton,
   renderAddButton,
@@ -16,8 +16,8 @@ import {
 interface ValveFormEntry {
   entity_id: string;
   name: string;
-  water_supply_id: string | null;
-  zone_id: string | null;
+  water_supply_id: string;
+  zone_id: string;
 }
 
 @customElement('wateringhub-config-editor')
@@ -26,6 +26,8 @@ export class WateringHubConfigEditor extends LitElement {
   @state() private _hass!: Hass;
   @state() private _adding = false;
   @state() private _newEntityId = '';
+  @state() private _newZoneId = '';
+  @state() private _newWaterSupplyId = '';
   @state() private _confirmMessage = '';
   @state() private _confirmLabel = '';
   @state() private _confirmAction: (() => void) | null = null;
@@ -92,6 +94,8 @@ export class WateringHubConfigEditor extends LitElement {
   private _startAdd(): void {
     this._adding = true;
     this._newEntityId = '';
+    this._newZoneId = '';
+    this._newWaterSupplyId = '';
   }
 
   private _onEntityPicked(e: CustomEvent): void {
@@ -105,7 +109,7 @@ export class WateringHubConfigEditor extends LitElement {
   }
 
   private async _confirmAdd(): Promise<void> {
-    if (!this._newEntityId) return;
+    if (!this._newEntityId || !this._newZoneId || !this._newWaterSupplyId) return;
     const name = this._getFriendlyName(this._newEntityId);
     const valves = [
       ...this._getValves().map((v) => ({
@@ -114,20 +118,31 @@ export class WateringHubConfigEditor extends LitElement {
         water_supply_id: v.water_supply_id,
         zone_id: v.zone_id,
       })),
-      { entity_id: this._newEntityId, name, water_supply_id: null, zone_id: null },
+      {
+        entity_id: this._newEntityId,
+        name,
+        water_supply_id: this._newWaterSupplyId,
+        zone_id: this._newZoneId,
+      },
     ];
     await this._setValves(valves);
     this._adding = false;
     this._newEntityId = '';
+    this._newZoneId = '';
+    this._newWaterSupplyId = '';
   }
 
   private _cancelAdd(): void {
     this._adding = false;
     this._newEntityId = '';
+    this._newZoneId = '';
+    this._newWaterSupplyId = '';
   }
 
   render() {
     const valves = this._getValves();
+    const zones = getZones(this._hass);
+    const supplies = getWaterSupplies(this._hass);
 
     return html`
       <div class="editor-section">
@@ -160,13 +175,43 @@ export class WateringHubConfigEditor extends LitElement {
                   @value-changed=${this._onEntityPicked}
                   allow-custom-entity
                 ></ha-entity-picker>
+                <div class="form-row">
+                  <label class="form-label">${this._t('config.tab_zones')}</label>
+                  <select
+                    class="form-select"
+                    style="width:100%"
+                    .value=${this._newZoneId}
+                    @change=${(e: Event) => {
+                      this._newZoneId = (e.target as HTMLSelectElement).value;
+                    }}
+                  >
+                    <option value="">—</option>
+                    ${zones.map((z) => html`<option value=${z.id}>${z.name}</option>`)}
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label class="form-label">${this._t('config.tab_water_supplies')}</label>
+                  <select
+                    class="form-select"
+                    style="width:100%"
+                    .value=${this._newWaterSupplyId}
+                    @change=${(e: Event) => {
+                      this._newWaterSupplyId = (e.target as HTMLSelectElement).value;
+                    }}
+                  >
+                    <option value="">—</option>
+                    ${supplies.map((s) => html`<option value=${s.id}>${s.name}</option>`)}
+                  </select>
+                </div>
                 <div class="form-actions">
                   ${renderButton(this._t('config.cancel'), () => this._cancelAdd(), 'cancel')}
                   ${renderButton(this._t('config.save'), () => this._confirmAdd(), 'primary')}
                 </div>
               </div>
             `
-          : renderAddButton(`+ ${this._t('config.add_valve')}`, () => this._startAdd())}
+          : zones.length === 0 || supplies.length === 0
+            ? html`<div class="empty-state">${this._t('config.no_water_supply_hint')}</div>`
+            : renderAddButton(`+ ${this._t('config.add_valve')}`, () => this._startAdd())}
         ${renderConfirmDialog(
           !!this._confirmAction,
           this._confirmMessage,

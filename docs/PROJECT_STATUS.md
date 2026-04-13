@@ -1,7 +1,7 @@
 # WateringHub Card — Project Status
 
 **Date:** 2026-04-11
-**Version:** 0.0.42
+**Version:** 0.0.43
 **Branch:** master
 
 ---
@@ -72,7 +72,7 @@ The repo contains **two custom cards** in a single bundle:
   - Automatic name from the selected switch's friendly_name
   - Calls `wateringhub.set_valves` on each add/remove (no reboot)
 - **Title** — header "WateringHub Config"
-- **4 tabs**: Programs | Zones | Water Supplies | Valves
+- **4 tabs**: Water Supplies | Zones | Valves | Programs (setup flow order)
 - **Programs tab** (default) — inline CRUD:
   - Create: name + trigger time + zone selection + duration and frequency per valve
   - Per-valve frequency: "Every day" (default) / "Every N days" / "Specific days"
@@ -101,16 +101,16 @@ The repo contains **two custom cards** in a single bundle:
 | ---------------------------- | -------------------------------------------- | ------------------------------------------------------------ |
 | `wateringhub.create_zone`    | `{ id, name }`                               | Create a zone (name only)                                    |
 | `wateringhub.update_zone`    | `{ id, name? }`                              | Update a zone (name only)                                    |
-| `wateringhub.delete_zone`    | `{ id }`                                     | Delete a zone (valves reassigned to null)                    |
+| `wateringhub.delete_zone`    | `{ id }`                                     | Delete a zone (refuses if valves assigned)                   |
 | `wateringhub.create_program` | `{ id, name, schedule, zones, dry_run? }`    | Create a program (zones[].valves[].frequency optional)       |
 | `wateringhub.update_program` | `{ id, name?, schedule?, zones?, dry_run? }` | Update a program (zones[].valves[].frequency optional)       |
 | `wateringhub.delete_program` | `{ id }`                                     | Delete a program                                             |
-| `wateringhub.set_valves`     | `{ valves: [{ entity_id, name, water_supply_id?, zone_id? }] }` | Configure valves with zone + supply assignment   |
+| `wateringhub.set_valves`     | `{ valves: [{ entity_id, name, water_supply_id, zone_id }] }` | Configure valves (zone + supply required)         |
 | `wateringhub.stop_all`       | `{}`                                         | Emergency stop                                               |
 | `wateringhub.skip_program`   | `{ id, days }`                               | Skip N days (days=0 cancels). `skip_until` attribute on switch |
 | `wateringhub.create_water_supply` | `{ id, name }`                          | Create a water supply                                        |
 | `wateringhub.update_water_supply` | `{ id, name? }`                         | Update a water supply                                        |
-| `wateringhub.delete_water_supply` | `{ id }`                                | Delete a water supply (valves reassigned to null)            |
+| `wateringhub.delete_water_supply` | `{ id }`                                | Delete a water supply (refuses if valves assigned)           |
 
 ---
 
@@ -267,3 +267,4 @@ Update: HACS shows "update available" → install → Ctrl+Shift+R (hard refresh
 27. **Custom confirm dialog** — overlay dialog with HA CSS variables for all destructive confirmations, replacing native browser `confirm()`
 28. **Water supply** — per-valve water supply assignment enables parallel execution across different supplies. Valves on same supply run sequentially, different supplies run in parallel. total_duration = max across supplies.
 29. **Valve-centric assignment** — zone and water_supply assigned per-valve via set_valves (not via zone CRUD). Zones and supplies are name-only CRUD. Valves tab is the center of assignment with dropdowns.
+30. **Mandatory zone + supply** — every valve must have a zone_id and water_supply_id (never null). Setup flow: create supply → create zone → add valves. Delete zone/supply refused if valves assigned. Tab order follows setup flow.

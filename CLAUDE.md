@@ -29,7 +29,7 @@ Custom Home Assistant card (LitElement + TypeScript) for the `wateringhub` integ
 - `sensor.wateringhub_last_run` — global: ISO datetime
 - Service: `wateringhub.skip_program` — `{ id, days }` (days=0 to cancel)
 - Service: `wateringhub.create_water_supply` / `update_water_supply` / `delete_water_supply`
-- Service: `wateringhub.set_valves` — `{ valves: [{ entity_id, name, water_supply_id?, zone_id? }] }`
+- Service: `wateringhub.set_valves` — `{ valves: [{ entity_id, name, water_supply_id, zone_id }] }` (both required)
 
 ## File Structure
 
