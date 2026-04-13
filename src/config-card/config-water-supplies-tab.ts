@@ -1,6 +1,6 @@
 import { html, nothing, TemplateResult } from 'lit';
 import type { Hass, Translator, WaterSupply, WaterSupplyFormState } from '../shared/types';
-import { getWaterSupplies } from './config-helpers';
+import { getAvailableValves, getWaterSupplies } from './config-helpers';
 import {
   renderListItem,
   renderFormRow,
@@ -20,20 +20,24 @@ export function renderWaterSuppliesTab(
   t: Translator,
 ): TemplateResult {
   const supplies = getWaterSupplies(hass);
+  const valves = getAvailableValves(hass);
 
   return html`
     <div class="form-hint">${t('config.hint_water_supplies')}</div>
-    ${supplies.map((supply) =>
-      editingSupply?.id === supply.id
-        ? renderSupplyForm(editingSupply, onSave, onCancel, onFormUpdate, t)
-        : renderListItem(
-            supply.name,
-            supply.id,
-            () => onEdit(supply),
-            () => onDelete(supply.id),
-            t,
-          ),
-    )}
+    ${supplies.map((supply) => {
+      if (editingSupply?.id === supply.id) {
+        return renderSupplyForm(editingSupply, onSave, onCancel, onFormUpdate, t);
+      }
+      const supplyValves = valves.filter((v) => v.water_supply_id === supply.id);
+      const valveNames = supplyValves.map((v) => v.name).join(', ') || '—';
+      return renderListItem(
+        supply.name,
+        valveNames,
+        () => onEdit(supply),
+        () => onDelete(supply.id),
+        t,
+      );
+    })}
     ${editingSupply?.isNew
       ? renderSupplyForm(editingSupply, onSave, onCancel, onFormUpdate, t)
       : nothing}

@@ -124,8 +124,9 @@ export function renderRunningView(
   const timeline = info.valveSequence.length > 0 ? valveTimeline : nothing;
 
   const CIRCUMFERENCE = 2 * Math.PI * 30;
-  const globalPct = info.progressPercent / 100;
-  const dashOffset = CIRCUMFERENCE * (1 - Math.min(1, globalPct));
+  const globalPct =
+    info.totalDuration > 0 ? Math.min(1, info.totalElapsed / info.totalDuration) : 0;
+  const dashOffset = CIRCUMFERENCE * (1 - globalPct);
 
   return html`
     <div class="running-block">

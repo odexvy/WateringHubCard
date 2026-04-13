@@ -284,8 +284,8 @@ export class WateringHubConfigCard extends LitElement {
       valves: this._editingValves.map((v) => ({
         entity_id: v.entity_id,
         name: v.name,
-        water_supply_id: v.water_supply_id || null,
-        zone_id: v.zone_id || null,
+        water_supply_id: v.water_supply_id,
+        zone_id: v.zone_id,
       })),
     });
     this._editingValves = null;

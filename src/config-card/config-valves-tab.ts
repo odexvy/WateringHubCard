@@ -6,8 +6,8 @@ import { renderIconButton } from '../shared/shared-templates';
 export interface ValveAssignment {
   entity_id: string;
   name: string;
-  zone_id: string;
-  water_supply_id: string;
+  zone_id: string | null;
+  water_supply_id: string | null;
 }
 
 export function renderValvesTab(
@@ -154,8 +154,8 @@ function valvesToAssignments(valves: AvailableValve[]): ValveAssignment[] {
   return valves.map((v) => ({
     entity_id: v.entity_id,
     name: v.name,
-    zone_id: v.zone_id ?? '',
-    water_supply_id: v.water_supply_id ?? '',
+    zone_id: v.zone_id,
+    water_supply_id: v.water_supply_id,
   }));
 }
 
