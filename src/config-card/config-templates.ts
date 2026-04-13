@@ -4,7 +4,8 @@ import type { Translator } from '../shared/types';
 export { renderValvesTab } from './config-valves-tab';
 export { renderZonesTab } from './config-zones-tab';
 export { renderProgramsTab } from './config-programs-tab';
-export type { ProgramFormState, ZoneFormState } from '../shared/types';
+export { renderWaterSuppliesTab } from './config-water-supplies-tab';
+export type { ProgramFormState, ZoneFormState, WaterSupplyFormState } from '../shared/types';
 
 export function renderTabs(
   activeTab: string,
@@ -14,6 +15,7 @@ export function renderTabs(
   const tabs = [
     { id: 'programs', label: t('config.tab_programs') },
     { id: 'zones', label: t('config.tab_zones') },
+    { id: 'water_supplies', label: t('config.tab_water_supplies') },
     { id: 'valves', label: t('config.tab_valves') },
   ];
   return html`

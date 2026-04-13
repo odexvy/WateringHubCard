@@ -24,10 +24,12 @@ Custom Home Assistant card (LitElement + TypeScript) for the `wateringhub` integ
 ## Entities
 
 - `switch.wateringhub_*` — per-program toggles (auto-discovered, attrs: schedule, zones, total_duration, dry_run, skip_until)
-- `sensor.wateringhub_status` — global: idle / running / error (running attrs: valves_sequence, dry_run)
+- `sensor.wateringhub_status` — global: idle / running / error (running attrs: active_valves, valves_sequence, dry_run; permanent: water_supplies, available_valves, zones)
 - `sensor.wateringhub_next_run` — global: ISO datetime
 - `sensor.wateringhub_last_run` — global: ISO datetime
 - Service: `wateringhub.skip_program` — `{ id, days }` (days=0 to cancel)
+- Service: `wateringhub.create_water_supply` / `update_water_supply` / `delete_water_supply`
+- Service: `wateringhub.set_valves` — `{ valves: [{ entity_id, name, water_supply_id }] }`
 
 ## File Structure
 
@@ -54,7 +56,8 @@ src/
 │   ├── config-templates.ts         # Tab orchestrator (renderTabs + re-exports)
 │   ├── config-programs-tab.ts      # Programs tab (list, CRUD form)
 │   ├── config-zones-tab.ts         # Zones tab (list, CRUD form)
-│   ├── config-valves-tab.ts        # Valves tab (read-only list)
+│   ├── config-water-supplies-tab.ts # Water supplies tab (CRUD)
+│   ├── config-valves-tab.ts        # Valves tab (read-only, shows supply per valve)
 │   ├── config-styles.ts            # Config CSS
 │   ├── editor-styles.ts            # Editor CSS
 │   └── config-helpers.ts           # Config helpers (getAvailableValves, getZones, generateId)

@@ -37,6 +37,7 @@ export interface AvailableValve {
   id: string;
   name: string;
   entity_id: string;
+  water_supply_id: string;
 }
 
 export interface ZoneConfig {
@@ -54,6 +55,8 @@ export interface ValveStep {
   zone_name: string;
   duration: number;
   status: 'done' | 'running' | 'pending';
+  water_supply_id: string;
+  start?: string;
 }
 
 // Valve frequency override
@@ -120,4 +123,25 @@ export interface ZoneFormState {
   name: string;
   valves: string[];
   isNew: boolean;
+}
+
+// Water supply
+
+export interface WaterSupply {
+  id: string;
+  name: string;
+}
+
+export interface WaterSupplyFormState {
+  id: string;
+  name: string;
+  isNew: boolean;
+}
+
+export interface ActiveValve {
+  water_supply_id: string;
+  valve_id: string;
+  valve_name: string;
+  valve_start: string;
+  valve_duration: number;
 }

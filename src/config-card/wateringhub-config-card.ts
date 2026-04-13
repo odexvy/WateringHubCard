@@ -6,6 +6,7 @@ import type {
   CardConfig,
   Translator,
   ZoneConfig,
+  WaterSupply,
   ProgramSchedule,
   ValveFrequency,
 } from '../shared/types';
@@ -18,8 +19,10 @@ import {
   renderValvesTab,
   renderZonesTab,
   renderProgramsTab,
+  renderWaterSuppliesTab,
   type ZoneFormState,
   type ProgramFormState,
+  type WaterSupplyFormState,
 } from './config-templates';
 import { renderConfirmDialog } from '../shared/shared-templates';
 import './config-editor';
@@ -38,6 +41,7 @@ export class WateringHubConfigCard extends LitElement {
   @state() private _confirmLabel = '';
   @state() private _confirmAction: (() => void) | null = null;
   @state() private _editingProgram: ProgramFormState | null = null;
+  @state() private _editingWaterSupply: WaterSupplyFormState | null = null;
 
   private _t: Translator = (key: string) => key;
 
@@ -88,6 +92,7 @@ export class WateringHubConfigCard extends LitElement {
     this._activeTab = tab;
     this._editingZone = null;
     this._editingProgram = null;
+    this._editingWaterSupply = null;
   }
 
   // ── Zone CRUD ──────────────────────────────────────────
@@ -216,6 +221,47 @@ export class WateringHubConfigCard extends LitElement {
     );
   }
 
+  // ── Water Supply CRUD ────────────────────────────────────
+
+  private _newWaterSupply(): void {
+    this._editingWaterSupply = { id: '', name: '', isNew: true };
+  }
+
+  private _editWaterSupply(supply: WaterSupply): void {
+    this._editingWaterSupply = { ...supply, isNew: false };
+  }
+
+  private _cancelWaterSupply(): void {
+    this._editingWaterSupply = null;
+  }
+
+  private _updateWaterSupplyForm(form: WaterSupplyFormState): void {
+    this._editingWaterSupply = form;
+  }
+
+  private async _saveWaterSupply(form: WaterSupplyFormState): Promise<void> {
+    const id = form.isNew ? generateId(form.name) : form.id;
+    const service = form.isNew ? 'create_water_supply' : 'update_water_supply';
+    await this._hass.callService('wateringhub', service, { id, name: form.name });
+    this._editingWaterSupply = null;
+    this._showToast(this._t('config.saved'));
+  }
+
+  private _deleteWaterSupply(supplyId: string): void {
+    this._requestConfirm(
+      this._t('config.confirm_delete_water_supply'),
+      this._t('config.delete'),
+      async () => {
+        try {
+          await this._hass.callService('wateringhub', 'delete_water_supply', { id: supplyId });
+          this._showToast(this._t('config.deleted'));
+        } catch {
+          this._showToast(this._t('config.error_water_supply_in_use'));
+        }
+      },
+    );
+  }
+
   // ── Render ─────────────────────────────────────────────
 
   render() {
@@ -238,6 +284,19 @@ export class WateringHubConfigCard extends LitElement {
               (f) => this._saveZone(f),
               () => this._cancelZone(),
               (f) => this._updateZoneForm(f),
+              this._t,
+            )
+          : ''}
+        ${this._activeTab === 'water_supplies'
+          ? renderWaterSuppliesTab(
+              this._hass,
+              this._editingWaterSupply,
+              (s) => this._editWaterSupply(s),
+              (id) => this._deleteWaterSupply(id),
+              () => this._newWaterSupply(),
+              (f) => this._saveWaterSupply(f),
+              () => this._cancelWaterSupply(),
+              (f) => this._updateWaterSupplyForm(f),
               this._t,
             )
           : ''}

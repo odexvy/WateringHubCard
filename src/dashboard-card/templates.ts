@@ -6,6 +6,7 @@ import type {
   ProgramZone,
   ValveStep,
   ValveFrequency,
+  ActiveValve,
 } from '../shared/types';
 import {
   getGlobalStatus,
@@ -110,6 +111,18 @@ export function renderRunningView(
   const info = getRunningInfo(hass);
   if (!info) return html``;
 
+  const waterSupplies =
+    (hass.states['sensor.wateringhub_status']?.attributes.water_supplies as Array<{
+      id: string;
+      name: string;
+    }>) ?? [];
+
+  const valveTimeline =
+    info.activeValves.length > 1
+      ? renderParallelTimeline(info.valveSequence, info.activeValves, waterSupplies)
+      : renderValveTimeline(info.valveSequence, info.activeValves);
+  const timeline = info.valveSequence.length > 0 ? valveTimeline : nothing;
+
   const CIRCUMFERENCE = 2 * Math.PI * 30;
   const globalPct = info.totalDuration > 0 ? info.totalElapsed / info.totalDuration : 0;
   const dashOffset = CIRCUMFERENCE * (1 - Math.min(1, globalPct));
@@ -148,14 +161,12 @@ export function renderRunningView(
         </div>
       </div>
 
-      ${info.valveSequence.length > 0
-        ? renderValveTimeline(info.valveSequence, info.remaining)
-        : nothing}
+      ${timeline}
     </div>
   `;
 }
 
-function renderValveTimeline(steps: ValveStep[], remaining: number): TemplateResult {
+function renderValveTimeline(steps: ValveStep[], activeValves: ActiveValve[]): TemplateResult {
   // Group by zone, preserving order
   const groups: { zoneName: string; valves: ValveStep[] }[] = [];
   for (const step of steps) {
@@ -165,6 +176,13 @@ function renderValveTimeline(steps: ValveStep[], remaining: number): TemplateRes
     } else {
       groups.push({ zoneName: step.zone_name, valves: [step] });
     }
+  }
+
+  // Build a map of valve_id -> remaining seconds from active valves
+  const remainingByValve = new Map<string, number>();
+  for (const av of activeValves) {
+    const elapsed = Math.max(0, (Date.now() - new Date(av.valve_start).getTime()) / 1000);
+    remainingByValve.set(av.valve_id, Math.max(0, av.valve_duration - elapsed));
   }
 
   // SVG icons as inline templates
@@ -189,18 +207,63 @@ function renderValveTimeline(steps: ValveStep[], remaining: number): TemplateRes
           <div class="tl-zone">${group.zoneName}</div>
           ${group.valves.map((v) => {
             const durationMin = Math.ceil(v.duration / 60);
+            const valveRemaining = remainingByValve.get(v.valve_id) ?? 0;
             return html`
               <div class="tl-step tl-${v.status}">
                 <span class="tl-dot">${dotMap[v.status]}</span>
                 <span class="tl-step-name">${v.valve_name}</span>
                 <span class="tl-step-time">
-                  ${v.status === 'running' ? formatRemainingTime(remaining) : `${durationMin} min`}
+                  ${v.status === 'running'
+                    ? formatRemainingTime(valveRemaining)
+                    : `${durationMin} min`}
                 </span>
               </div>
             `;
           })}
         `,
       )}
+    </div>
+  `;
+}
+
+function renderParallelTimeline(
+  steps: ValveStep[],
+  activeValves: ActiveValve[],
+  waterSupplies: Array<{ id: string; name: string }>,
+): TemplateResult {
+  // Group steps by water_supply_id, preserving order
+  const supplyOrder: string[] = [];
+  const stepsBySupply = new Map<string, ValveStep[]>();
+  for (const step of steps) {
+    if (!stepsBySupply.has(step.water_supply_id)) {
+      supplyOrder.push(step.water_supply_id);
+      stepsBySupply.set(step.water_supply_id, []);
+    }
+    stepsBySupply.get(step.water_supply_id)!.push(step);
+  }
+
+  // Filter active valves per supply
+  const activeBySupply = new Map<string, ActiveValve[]>();
+  for (const av of activeValves) {
+    if (!activeBySupply.has(av.water_supply_id)) {
+      activeBySupply.set(av.water_supply_id, []);
+    }
+    activeBySupply.get(av.water_supply_id)!.push(av);
+  }
+
+  return html`
+    <div class="parallel-timeline">
+      ${supplyOrder.map((supplyId) => {
+        const supplySteps = stepsBySupply.get(supplyId) ?? [];
+        const supplyActive = activeBySupply.get(supplyId) ?? [];
+        const label = waterSupplies.find((ws) => ws.id === supplyId)?.name ?? supplyId;
+        return html`
+          <div class="supply-column">
+            <div class="supply-label">${label}</div>
+            ${renderValveTimeline(supplySteps, supplyActive)}
+          </div>
+        `;
+      })}
     </div>
   `;
 }

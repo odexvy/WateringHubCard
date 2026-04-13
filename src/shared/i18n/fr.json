@@ -73,5 +73,13 @@
   "skip.cancel": "Reprendre",
   "skip.toast_paused": "Programme en pause {count} j",
   "skip.toast_resumed": "Programme repris",
-  "confirm.stop": "Arrêter"
+  "confirm.stop": "Arrêter",
+
+  "config.tab_water_supplies": "Arrivées d'eau",
+  "config.no_water_supplies": "Aucune arrivée d'eau",
+  "config.new_water_supply": "Nouvelle arrivée",
+  "config.water_supply": "Arrivée d'eau",
+  "config.confirm_delete_water_supply": "Supprimer cette arrivée ?",
+  "config.error_water_supply_in_use": "Réassignez d'abord les vannes",
+  "config.no_water_supply_hint": "Créez d'abord une arrivée d'eau"
 }

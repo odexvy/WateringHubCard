@@ -4,6 +4,7 @@ import type {
   Translator,
   ProgramSchedule,
   ValveStep,
+  ActiveValve,
   ErrorInfo,
   SkipInfo,
 } from './types';
@@ -74,21 +75,14 @@ export function getErrorInfo(hass: Hass): ErrorInfo | null {
 
 export interface RunningInfo {
   programName: string;
-  zoneName: string;
-  valveName: string;
-  valveStart: string;
-  valveDuration: number;
   valvesDone: number;
   valvesTotal: number;
   progressPercent: number;
-  remaining: number;
   totalRemaining: number;
   totalDuration: number;
   totalElapsed: number;
-  valvePercent: number;
-  finePercent: number;
-  globalEndPercent: number;
   valveSequence: ValveStep[];
+  activeValves: ActiveValve[];
   dryRun: boolean;
 }
 
@@ -97,57 +91,52 @@ export function getRunningInfo(hass: Hass): RunningInfo | null {
   if (entity?.state !== 'running') return null;
 
   const attrs = entity.attributes;
-  const valveStart = attrs.current_valve_start as string | null;
-  const valveDuration = (attrs.current_valve_duration as number) ?? 0;
   const valvesDone = (attrs.valves_done as number) ?? 0;
   const valvesTotal = (attrs.valves_total as number) ?? 1;
-
-  const elapsed = valveStart
-    ? Math.max(0, (Date.now() - new Date(valveStart).getTime()) / 1000)
-    : 0;
-  const remaining = Math.max(0, valveDuration - elapsed);
-  const valvePercent = valveDuration > 0 ? Math.min(100, (elapsed / valveDuration) * 100) : 0;
-  const finePercent = ((valvesDone + valvePercent / 100) / valvesTotal) * 100;
-  const globalEndPercent = ((valvesDone + 1) / valvesTotal) * 100;
   const valveSequence = Array.isArray(attrs.valves_sequence)
     ? (attrs.valves_sequence as ValveStep[])
     : [];
+  const activeValves = Array.isArray(attrs.active_valves)
+    ? (attrs.active_valves as ActiveValve[])
+    : [];
 
-  // Total remaining: current valve remaining + all pending valve durations
-  const pendingDuration = valveSequence
-    .filter((v) => v.status === 'pending')
-    .reduce((s, v) => s + v.duration, 0);
-  const totalRemaining = remaining + pendingDuration;
+  // Per-supply remaining: for each active valve, compute remaining on its supply
+  const remainingPerSupply = activeValves.map((av) => {
+    const elapsed = Math.max(0, (Date.now() - new Date(av.valve_start).getTime()) / 1000);
+    const currentRemaining = Math.max(0, av.valve_duration - elapsed);
+    const pendingOnSupply = valveSequence
+      .filter((v) => v.water_supply_id === av.water_supply_id && v.status === 'pending')
+      .reduce((s, v) => s + v.duration, 0);
+    return currentRemaining + pendingOnSupply;
+  });
+  const totalRemaining = remainingPerSupply.length > 0 ? Math.max(...remainingPerSupply) : 0;
 
-  // Total duration of all valves (from sequence or fallback)
-  const totalDuration =
-    valveSequence.length > 0
-      ? valveSequence.reduce((s, v) => s + v.duration, 0)
-      : valveDuration * valvesTotal;
+  // Total duration: max across supplies
+  const supplyIds = [...new Set(valveSequence.map((v) => v.water_supply_id))];
+  const durationPerSupply = supplyIds.map((sid) =>
+    valveSequence.filter((v) => v.water_supply_id === sid).reduce((s, v) => s + v.duration, 0),
+  );
+  const totalDuration = durationPerSupply.length > 0 ? Math.max(...durationPerSupply) : 0;
 
-  // Total elapsed across all valves
+  // Total elapsed: done durations + active elapsed
   const doneDuration = valveSequence
     .filter((v) => v.status === 'done')
     .reduce((s, v) => s + v.duration, 0);
-  const totalElapsed = doneDuration + elapsed;
+  const activeElapsed = activeValves.reduce((s, av) => {
+    return s + Math.max(0, (Date.now() - new Date(av.valve_start).getTime()) / 1000);
+  }, 0);
+  const totalElapsed = doneDuration + activeElapsed;
 
   return {
     programName: (attrs.current_program as string) ?? '',
-    zoneName: (attrs.current_zone_name as string) ?? '',
-    valveName: (attrs.current_valve_name as string) ?? '',
-    valveStart: valveStart ?? '',
-    valveDuration,
     valvesDone,
     valvesTotal,
     progressPercent: (attrs.progress_percent as number) ?? 0,
-    remaining,
     totalRemaining,
     totalDuration,
     totalElapsed,
-    valvePercent,
-    finePercent,
-    globalEndPercent,
     valveSequence,
+    activeValves,
     dryRun: attrs.dry_run === true,
   };
 }

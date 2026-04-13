@@ -425,4 +425,26 @@ export const cardStyles = css`
   .skip-dropdown-option:hover {
     background: var(--secondary-background-color);
   }
+
+  /* Parallel timeline */
+  .parallel-timeline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .supply-column {
+    flex: 1;
+    min-width: 200px;
+  }
+  .supply-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: white;
+    background: var(--primary-color);
+    margin-bottom: 8px;
+  }
 `;

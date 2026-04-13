@@ -1,7 +1,7 @@
 # WateringHub Card — Project Status
 
 **Date:** 2026-04-11
-**Version:** 0.0.40
+**Version:** 0.0.41
 **Branch:** master
 
 ---
@@ -34,8 +34,9 @@ The repo contains **two custom cards** in a single bundle:
   - Valves per zone with `mdi:water` icon + duration
   - Total duration with `mdi:timer-outline` icon
 - **Running block** — dedicated block shown when status=running:
-  - Blue SVG circular progress with total remaining time in center
+  - Blue SVG circular progress with total remaining time in center (max across water supplies)
   - Program name + "Valve X of Y"
+  - Parallel timeline by water supply when multiple supplies active
   - Vertical valve timeline grouped by zone (check/filled dot/empty circle)
   - Real-time countdown on active valve
   - "Stop All" button in top-right corner
@@ -71,7 +72,7 @@ The repo contains **two custom cards** in a single bundle:
   - Automatic name from the selected switch's friendly_name
   - Calls `wateringhub.set_valves` on each add/remove (no reboot)
 - **Title** — header "WateringHub Config"
-- **3 tabs**: Programs | Zones | Valves (valves last, read-only)
+- **4 tabs**: Programs | Zones | Water Supplies | Valves
 - **Programs tab** (default) — inline CRUD:
   - Create: name + trigger time + zone selection + duration and frequency per valve
   - Per-valve frequency: "Every day" (default) / "Every N days" / "Specific days"
@@ -104,9 +105,12 @@ The repo contains **two custom cards** in a single bundle:
 | `wateringhub.create_program` | `{ id, name, schedule, zones, dry_run? }`    | Create a program (zones[].valves[].frequency optional)       |
 | `wateringhub.update_program` | `{ id, name?, schedule?, zones?, dry_run? }` | Update a program (zones[].valves[].frequency optional)       |
 | `wateringhub.delete_program` | `{ id }`                                     | Delete a program                                             |
-| `wateringhub.set_valves`     | `{ valves: [{ entity_id, name }] }`          | Configure valves (replaces the entire list)                  |
+| `wateringhub.set_valves`     | `{ valves: [{ entity_id, name, water_supply_id }] }` | Configure valves with water supply assignment          |
 | `wateringhub.stop_all`       | `{}`                                         | Emergency stop                                               |
 | `wateringhub.skip_program`   | `{ id, days }`                               | Skip N days (days=0 cancels). `skip_until` attribute on switch |
+| `wateringhub.create_water_supply` | `{ id, name }`                          | Create a water supply                                        |
+| `wateringhub.update_water_supply` | `{ id, name? }`                         | Update a water supply                                        |
+| `wateringhub.delete_water_supply` | `{ id }`                                | Delete a water supply (error if valves still assigned)       |
 
 ---
 
@@ -116,8 +120,8 @@ The repo contains **two custom cards** in a single bundle:
 | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `switch.wateringhub_*`                             | Program toggles (attributes: schedule, zones with frequency per valve, total_duration, dry_run, skip_until)                                                                |
 | `sensor.wateringhub_status`                        | Global status: idle / running / error                                                                                                                                      |
-| `sensor.wateringhub_status` (permanent attributes) | available_valves, zones                                                                                                                                                    |
-| `sensor.wateringhub_status` (running attributes)   | current_program, current_zone_name, current_valve_name, current_valve_start, current_valve_duration, valves_done, valves_total, progress_percent, valves_sequence, dry_run  |
+| `sensor.wateringhub_status` (permanent attributes) | available_valves (with water_supply_id), zones, water_supplies                                                                                                             |
+| `sensor.wateringhub_status` (running attributes)   | current_program, active_valves (per-supply), valves_done, valves_total, progress_percent, valves_sequence (with water_supply_id), dry_run                                  |
 | `sensor.wateringhub_status` (error attributes)     | current_program, error_message                                                                                                                                             |
 | `sensor.wateringhub_next_run`                      | Next scheduled watering (ISO datetime)                                                                                                                                     |
 | `sensor.wateringhub_last_run`                      | Last watering (ISO datetime)                                                                                                                                               |
@@ -150,7 +154,8 @@ WateringHubCard/
 │   │   ├── config-templates.ts        # Tab orchestrator (renderTabs + re-exports)
 │   │   ├── config-programs-tab.ts     # Programs tab (list, CRUD form)
 │   │   ├── config-zones-tab.ts        # Zones tab (list, CRUD form)
-│   │   ├── config-valves-tab.ts       # Valves tab (read-only)
+│   │   ├── config-water-supplies-tab.ts # Water supplies tab (CRUD)
+│   │   ├── config-valves-tab.ts       # Valves tab (read-only, shows water supply per valve)
 │   │   ├── config-styles.ts           # Config CSS
 │   │   ├── editor-styles.ts           # Editor CSS
 │   │   └── config-helpers.ts          # Config helpers (getAvailableValves, getZones, generateId)
@@ -259,4 +264,5 @@ Update: HACS shows "update available" → install → Ctrl+Shift+R (hard refresh
 24. **Skip = temporary state** — skip is managed via a dedicated `skip_program` service (not via `update_program`), because it's runtime control, not configuration
 25. **Shared components** — `shared-templates.ts` (renderBadge, renderButton, renderListItem, renderFormRow) and `shared-styles.ts` mutualize CSS + HTML between dashboard and config cards
 26. **Folder structure** — `src/shared/` (types, helpers, styles, templates, i18n) + `src/dashboard-card/` + `src/config-card/` for symmetric organization
-27. **HA native dialogs** — `ha-dialog` + `mwc-button` for all destructive confirmations, replacing native browser `confirm()`
+27. **Custom confirm dialog** — overlay dialog with HA CSS variables for all destructive confirmations, replacing native browser `confirm()`
+28. **Water supply** — per-valve water supply assignment enables parallel execution across different supplies. Valves on same supply run sequentially, different supplies run in parallel. total_duration = max across supplies.

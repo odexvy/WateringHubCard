@@ -1,5 +1,10 @@
 import type { Hass } from '../shared/types';
-import { getAvailableValves, getZones, generateId } from '../config-card/config-helpers';
+import {
+  getAvailableValves,
+  getZones,
+  getWaterSupplies,
+  generateId,
+} from '../config-card/config-helpers';
 
 function makeHass(
   states: Record<string, { state: string; attributes?: Record<string, unknown> }>,
@@ -64,6 +69,33 @@ describe('getZones', () => {
       'sensor.wateringhub_status': { state: 'idle', attributes: {} },
     });
     expect(getZones(hass)).toEqual([]);
+  });
+});
+
+// ── getWaterSupplies ─────────────────────────────────────
+
+describe('getWaterSupplies', () => {
+  it('returns water supplies from sensor attributes', () => {
+    const waterSupplies = [{ id: 'forage', name: 'Forage' }];
+    const hass = makeHass({
+      'sensor.wateringhub_status': {
+        state: 'idle',
+        attributes: { water_supplies: waterSupplies },
+      },
+    });
+    expect(getWaterSupplies(hass)).toEqual(waterSupplies);
+  });
+
+  it('returns empty array when sensor missing', () => {
+    const hass = makeHass({});
+    expect(getWaterSupplies(hass)).toEqual([]);
+  });
+
+  it('returns empty array when attribute missing', () => {
+    const hass = makeHass({
+      'sensor.wateringhub_status': { state: 'idle', attributes: {} },
+    });
+    expect(getWaterSupplies(hass)).toEqual([]);
   });
 });
 

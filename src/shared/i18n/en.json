@@ -73,5 +73,13 @@
   "skip.cancel": "Resume",
   "skip.toast_paused": "Program paused {count} d",
   "skip.toast_resumed": "Program resumed",
-  "confirm.stop": "Stop"
+  "confirm.stop": "Stop",
+
+  "config.tab_water_supplies": "Water Supplies",
+  "config.no_water_supplies": "No water supplies",
+  "config.new_water_supply": "New supply",
+  "config.water_supply": "Water supply",
+  "config.confirm_delete_water_supply": "Delete this water supply?",
+  "config.error_water_supply_in_use": "Reassign valves first",
+  "config.no_water_supply_hint": "Create a water supply first"
 }
