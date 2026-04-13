@@ -96,7 +96,6 @@ export class WateringHubConfigCard extends LitElement {
     this._editingZone = null;
     this._editingProgram = null;
     this._editingWaterSupply = null;
-    this._editingValves = null;
   }
 
   // ── Zone CRUD ──────────────────────────────────────────
