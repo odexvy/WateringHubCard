@@ -1,6 +1,6 @@
 {
   "name": "wateringhub-card",
-  "version": "0.0.46",
+  "version": "0.0.47",
   "description": "Custom Home Assistant card for WateringHub",
   "scripts": {
     "build": "esbuild src/index.ts --bundle --outfile=dist/wateringhub-card.js --format=esm --minify",

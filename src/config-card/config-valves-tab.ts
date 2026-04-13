@@ -108,7 +108,6 @@ function renderValveDropdowns(
         <select
           class="form-select"
           style="width:100%;${zoneEmpty ? errorBorder : ''}"
-          .value=${v.zone_id ?? ''}
           @change=${(e: Event) => {
             if (!isEditing) onStartEdit();
             const val = (e.target as HTMLSelectElement).value;
@@ -118,8 +117,10 @@ function renderValveDropdowns(
             onFormUpdate(updated);
           }}
         >
-          <option value="">—</option>
-          ${zones.map((z) => html`<option value=${z.id}>${z.name}</option>`)}
+          <option value="" ?selected=${!v.zone_id}>—</option>
+          ${zones.map(
+            (z) => html`<option value=${z.id} ?selected=${z.id === v.zone_id}>${z.name}</option>`,
+          )}
         </select>
       </div>
       <div style="flex:1; min-width:120px;">
@@ -127,7 +128,6 @@ function renderValveDropdowns(
         <select
           class="form-select"
           style="width:100%;${supplyEmpty ? errorBorder : ''}"
-          .value=${v.water_supply_id ?? ''}
           @change=${(e: Event) => {
             if (!isEditing) onStartEdit();
             const val = (e.target as HTMLSelectElement).value;
@@ -137,8 +137,13 @@ function renderValveDropdowns(
             onFormUpdate(updated);
           }}
         >
-          <option value="">—</option>
-          ${supplies.map((s) => html`<option value=${s.id}>${s.name}</option>`)}
+          <option value="" ?selected=${!v.water_supply_id}>—</option>
+          ${supplies.map(
+            (s) =>
+              html`<option value=${s.id} ?selected=${s.id === v.water_supply_id}>
+                ${s.name}
+              </option>`,
+          )}
         </select>
       </div>
     </div>

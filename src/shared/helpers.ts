@@ -111,12 +111,21 @@ export function getRunningInfo(hass: Hass): RunningInfo | null {
   });
   const totalRemaining = remainingPerSupply.length > 0 ? Math.max(...remainingPerSupply) : 0;
 
-  // Total duration: max across supplies
-  const supplyIds = [...new Set(valveSequence.map((v) => v.water_supply_id))];
-  const durationPerSupply = supplyIds.map((sid) =>
-    valveSequence.filter((v) => v.water_supply_id === sid).reduce((s, v) => s + v.duration, 0),
-  );
-  const totalDuration = durationPerSupply.length > 0 ? Math.max(...durationPerSupply) : 0;
+  // Total duration: use backend value from switch attributes, fallback to sequence calculation
+  const programSwitch = attrs.current_program
+    ? hass.states[`switch.wateringhub_${attrs.current_program}`]
+    : undefined;
+  const backendTotalDuration = programSwitch?.attributes.total_duration as number | undefined;
+  let totalDuration: number;
+  if (backendTotalDuration !== undefined) {
+    totalDuration = backendTotalDuration * 60; // backend sends minutes, we use seconds
+  } else {
+    const supplyIds = [...new Set(valveSequence.map((v) => v.water_supply_id))];
+    const durationPerSupply = supplyIds.map((sid) =>
+      valveSequence.filter((v) => v.water_supply_id === sid).reduce((s, v) => s + v.duration, 0),
+    );
+    totalDuration = durationPerSupply.length > 0 ? Math.max(...durationPerSupply) : 0;
+  }
 
   // Total elapsed: done durations + active elapsed
   const doneDuration = valveSequence
