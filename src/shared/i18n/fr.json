@@ -81,5 +81,11 @@
   "config.water_supply": "Arrivée d'eau",
   "config.confirm_delete_water_supply": "Supprimer cette arrivée ?",
   "config.error_water_supply_in_use": "Réassignez d'abord les vannes",
-  "config.no_water_supply_hint": "Créez d'abord une arrivée d'eau"
+  "config.no_water_supply_hint": "Créez d'abord une arrivée d'eau",
+
+  "config.hint_programs": "Créez des programmes d'arrosage avec un horaire et des zones.",
+  "config.hint_zones": "Regroupez vos vannes par zone logique.",
+  "config.hint_water_supplies": "Définissez vos arrivées d'eau pour activer le parallélisme.",
+  "config.hint_valves": "Configurez vos vannes et assignez-les à une zone et une arrivée d'eau.",
+  "config.none": "Aucun"
 }

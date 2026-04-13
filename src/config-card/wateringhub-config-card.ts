@@ -13,7 +13,7 @@ import type {
 import { getTranslator } from '../shared/i18n/index';
 import { sharedStyles } from '../shared/shared-styles';
 import { configStyles } from './config-styles';
-import { generateId } from './config-helpers';
+import { generateId, getAvailableValves } from './config-helpers';
 import {
   renderTabs,
   renderValvesTab,
@@ -98,11 +98,11 @@ export class WateringHubConfigCard extends LitElement {
   // ── Zone CRUD ──────────────────────────────────────────
 
   private _newZone(): void {
-    this._editingZone = { id: '', name: '', valves: [], isNew: true };
+    this._editingZone = { id: '', name: '', isNew: true };
   }
 
   private _editZone(zone: ZoneConfig): void {
-    this._editingZone = { id: zone.id, name: zone.name, valves: [...zone.valves], isNew: false };
+    this._editingZone = { id: zone.id, name: zone.name, isNew: false };
   }
 
   private _cancelZone(): void {
@@ -119,7 +119,6 @@ export class WateringHubConfigCard extends LitElement {
     await this._hass.callService('wateringhub', service, {
       id,
       name: form.name,
-      valves: form.valves,
     });
     this._editingZone = null;
     this._showToast(this._t('config.saved'));
@@ -252,12 +251,44 @@ export class WateringHubConfigCard extends LitElement {
       this._t('config.confirm_delete_water_supply'),
       this._t('config.delete'),
       async () => {
-        try {
-          await this._hass.callService('wateringhub', 'delete_water_supply', { id: supplyId });
-          this._showToast(this._t('config.deleted'));
-        } catch {
-          this._showToast(this._t('config.error_water_supply_in_use'));
-        }
+        await this._hass.callService('wateringhub', 'delete_water_supply', { id: supplyId });
+        this._showToast(this._t('config.deleted'));
+      },
+    );
+  }
+
+  // ── Valve assignment ────────────────────────────────────
+
+  private async _changeValve(
+    entityId: string,
+    field: 'zone_id' | 'water_supply_id',
+    value: string | null,
+  ): Promise<void> {
+    const valves = getAvailableValves(this._hass).map((v) => ({
+      entity_id: v.entity_id,
+      name: v.name,
+      water_supply_id:
+        v.entity_id === entityId && field === 'water_supply_id' ? value : v.water_supply_id,
+      zone_id: v.entity_id === entityId && field === 'zone_id' ? value : v.zone_id,
+    }));
+    await this._hass.callService('wateringhub', 'set_valves', { valves });
+  }
+
+  private _deleteValveFromTab(entityId: string): void {
+    this._requestConfirm(
+      this._t('config.confirm_delete_valve'),
+      this._t('config.delete'),
+      async () => {
+        const valves = getAvailableValves(this._hass)
+          .filter((v) => v.entity_id !== entityId)
+          .map((v) => ({
+            entity_id: v.entity_id,
+            name: v.name,
+            water_supply_id: v.water_supply_id,
+            zone_id: v.zone_id,
+          }));
+        await this._hass.callService('wateringhub', 'set_valves', { valves });
+        this._showToast(this._t('config.deleted'));
       },
     );
   }
@@ -273,7 +304,14 @@ export class WateringHubConfigCard extends LitElement {
       <ha-card>
         <div class="header"><span class="title">${this._t('config.title')}</span></div>
         ${renderTabs(this._activeTab, (tab) => this._setTab(tab), this._t)}
-        ${this._activeTab === 'valves' ? renderValvesTab(this._hass, this._t) : ''}
+        ${this._activeTab === 'valves'
+          ? renderValvesTab(
+              this._hass,
+              (id, field, val) => this._changeValve(id, field, val),
+              (id) => this._deleteValveFromTab(id),
+              this._t,
+            )
+          : ''}
         ${this._activeTab === 'zones'
           ? renderZonesTab(
               this._hass,

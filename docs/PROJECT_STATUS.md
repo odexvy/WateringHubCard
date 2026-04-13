@@ -1,7 +1,7 @@
 # WateringHub Card — Project Status
 
 **Date:** 2026-04-11
-**Version:** 0.0.41
+**Version:** 0.0.42
 **Branch:** master
 
 ---
@@ -99,18 +99,18 @@ The repo contains **two custom cards** in a single bundle:
 
 | Service                      | Params                                       | Usage                                                        |
 | ---------------------------- | -------------------------------------------- | ------------------------------------------------------------ |
-| `wateringhub.create_zone`    | `{ id, name, valves }`                       | Create a zone                                                |
-| `wateringhub.update_zone`    | `{ id, name?, valves? }`                     | Update a zone                                                |
-| `wateringhub.delete_zone`    | `{ id }`                                     | Delete a zone                                                |
+| `wateringhub.create_zone`    | `{ id, name }`                               | Create a zone (name only)                                    |
+| `wateringhub.update_zone`    | `{ id, name? }`                              | Update a zone (name only)                                    |
+| `wateringhub.delete_zone`    | `{ id }`                                     | Delete a zone (valves reassigned to null)                    |
 | `wateringhub.create_program` | `{ id, name, schedule, zones, dry_run? }`    | Create a program (zones[].valves[].frequency optional)       |
 | `wateringhub.update_program` | `{ id, name?, schedule?, zones?, dry_run? }` | Update a program (zones[].valves[].frequency optional)       |
 | `wateringhub.delete_program` | `{ id }`                                     | Delete a program                                             |
-| `wateringhub.set_valves`     | `{ valves: [{ entity_id, name, water_supply_id }] }` | Configure valves with water supply assignment          |
+| `wateringhub.set_valves`     | `{ valves: [{ entity_id, name, water_supply_id?, zone_id? }] }` | Configure valves with zone + supply assignment   |
 | `wateringhub.stop_all`       | `{}`                                         | Emergency stop                                               |
 | `wateringhub.skip_program`   | `{ id, days }`                               | Skip N days (days=0 cancels). `skip_until` attribute on switch |
 | `wateringhub.create_water_supply` | `{ id, name }`                          | Create a water supply                                        |
 | `wateringhub.update_water_supply` | `{ id, name? }`                         | Update a water supply                                        |
-| `wateringhub.delete_water_supply` | `{ id }`                                | Delete a water supply (error if valves still assigned)       |
+| `wateringhub.delete_water_supply` | `{ id }`                                | Delete a water supply (valves reassigned to null)            |
 
 ---
 
@@ -155,7 +155,7 @@ WateringHubCard/
 │   │   ├── config-programs-tab.ts     # Programs tab (list, CRUD form)
 │   │   ├── config-zones-tab.ts        # Zones tab (list, CRUD form)
 │   │   ├── config-water-supplies-tab.ts # Water supplies tab (CRUD)
-│   │   ├── config-valves-tab.ts       # Valves tab (read-only, shows water supply per valve)
+│   │   ├── config-valves-tab.ts       # Valves tab (zone + supply dropdowns per valve)
 │   │   ├── config-styles.ts           # Config CSS
 │   │   ├── editor-styles.ts           # Editor CSS
 │   │   └── config-helpers.ts          # Config helpers (getAvailableValves, getZones, generateId)
@@ -266,3 +266,4 @@ Update: HACS shows "update available" → install → Ctrl+Shift+R (hard refresh
 26. **Folder structure** — `src/shared/` (types, helpers, styles, templates, i18n) + `src/dashboard-card/` + `src/config-card/` for symmetric organization
 27. **Custom confirm dialog** — overlay dialog with HA CSS variables for all destructive confirmations, replacing native browser `confirm()`
 28. **Water supply** — per-valve water supply assignment enables parallel execution across different supplies. Valves on same supply run sequentially, different supplies run in parallel. total_duration = max across supplies.
+29. **Valve-centric assignment** — zone and water_supply assigned per-valve via set_valves (not via zone CRUD). Zones and supplies are name-only CRUD. Valves tab is the center of assignment with dropdowns.

@@ -35,9 +35,11 @@ WateringHub Card provides two custom Lovelace cards for managing your irrigation
 
 - **Visual editor** — configure valves with native HA entity picker (autocomplete, search, icons)
 - **Programs** — create, edit, delete (trigger time, zones, per-valve durations and frequency, dry run toggle, drag & drop valve reorder)
-- **Zones** — create, edit, delete (name, valve selection)
-- **Valves** — read-only tab showing configured valves
+- **Zones** — create, edit, delete (name only, valves assigned in Valves tab)
+- **Water Supplies** — create, edit, delete (enables parallel execution)
+- **Valves** — assign zone + water supply per valve via dropdowns
 - **Toast notifications** — visual confirmation on save/delete actions
+- **Confirm dialogs** — custom overlay dialog for all destructive actions
 
 ### Shared
 

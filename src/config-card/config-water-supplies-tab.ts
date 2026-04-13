@@ -22,6 +22,7 @@ export function renderWaterSuppliesTab(
   const supplies = getWaterSupplies(hass);
 
   return html`
+    <div class="form-hint">${t('config.hint_water_supplies')}</div>
     ${supplies.map((supply) =>
       editingSupply?.id === supply.id
         ? renderSupplyForm(editingSupply, onSave, onCancel, onFormUpdate, t)

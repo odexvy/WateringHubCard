@@ -81,5 +81,11 @@
   "config.water_supply": "Water supply",
   "config.confirm_delete_water_supply": "Delete this water supply?",
   "config.error_water_supply_in_use": "Reassign valves first",
-  "config.no_water_supply_hint": "Create a water supply first"
+  "config.no_water_supply_hint": "Create a water supply first",
+
+  "config.hint_programs": "Create watering programs with a schedule and zones.",
+  "config.hint_zones": "Group your valves by logical zone.",
+  "config.hint_water_supplies": "Define your water supplies to enable parallel execution.",
+  "config.hint_valves": "Configure your valves and assign them to a zone and water supply.",
+  "config.none": "None"
 }

@@ -1,5 +1,5 @@
 import { html, nothing, TemplateResult } from 'lit';
-import type { Hass, Translator, AvailableValve, ZoneConfig, ZoneFormState } from '../shared/types';
+import type { Hass, Translator, ZoneConfig, ZoneFormState } from '../shared/types';
 import { getAvailableValves, getZones } from './config-helpers';
 import {
   renderListItem,
@@ -23,14 +23,13 @@ export function renderZonesTab(
   const valves = getAvailableValves(hass);
 
   return html`
+    <div class="form-hint">${t('config.hint_zones')}</div>
     ${zones.map((zone) =>
       editingZone?.id === zone.id
-        ? renderZoneForm(editingZone, valves, onSave, onCancel, onFormUpdate, t)
+        ? renderZoneForm(editingZone, onSave, onCancel, onFormUpdate, t)
         : renderZoneItem(zone, valves, onEdit, onDelete, t),
     )}
-    ${editingZone?.isNew
-      ? renderZoneForm(editingZone, valves, onSave, onCancel, onFormUpdate, t)
-      : nothing}
+    ${editingZone?.isNew ? renderZoneForm(editingZone, onSave, onCancel, onFormUpdate, t) : nothing}
     ${editingZone ? nothing : renderAddButton(`+ ${t('config.new_zone')}`, onNew)}
     ${zones.length === 0 && !editingZone
       ? html`<div class="empty-state">${t('config.no_zones')}</div>`
@@ -40,14 +39,13 @@ export function renderZonesTab(
 
 function renderZoneItem(
   zone: ZoneConfig,
-  valves: AvailableValve[],
+  valves: Array<{ id: string; name: string; zone_id: string | null }>,
   onEdit: (zone: ZoneConfig) => void,
   onDelete: (zoneId: string) => void,
   t: Translator,
 ): TemplateResult {
-  const valveNames = zone.valves
-    .map((vid) => valves.find((v) => v.id === vid)?.name ?? vid)
-    .join(', ');
+  const zoneValves = valves.filter((v) => v.zone_id === zone.id);
+  const valveNames = zoneValves.map((v) => v.name).join(', ') || '—';
 
   return renderListItem(
     zone.name,
@@ -60,7 +58,6 @@ function renderZoneItem(
 
 function renderZoneForm(
   form: ZoneFormState,
-  valves: AvailableValve[],
   onSave: (form: ZoneFormState) => void,
   onCancel: () => void,
   onFormUpdate: (form: ZoneFormState) => void,
@@ -76,29 +73,6 @@ function renderZoneForm(
           @input=${(e: InputEvent) =>
             onFormUpdate({ ...form, name: (e.target as HTMLInputElement).value })}
         />`,
-      )}
-      ${renderFormRow(
-        t('config.select_valves'),
-        html`<div class="checkbox-list">
-          ${valves.map((v) => {
-            const checked = form.valves.includes(v.id);
-            return html`
-              <label class="checkbox-item">
-                <input
-                  type="checkbox"
-                  .checked=${checked}
-                  @change=${() => {
-                    const newValves = checked
-                      ? form.valves.filter((id) => id !== v.id)
-                      : [...form.valves, v.id];
-                    onFormUpdate({ ...form, valves: newValves });
-                  }}
-                />
-                ${v.name}
-              </label>
-            `;
-          })}
-        </div>`,
       )}
       ${renderFormActions(onCancel, () => onSave(form), t)}
     </div>

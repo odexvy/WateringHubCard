@@ -37,13 +37,13 @@ export interface AvailableValve {
   id: string;
   name: string;
   entity_id: string;
-  water_supply_id: string;
+  water_supply_id: string | null;
+  zone_id: string | null;
 }
 
 export interface ZoneConfig {
   id: string;
   name: string;
-  valves: string[]; // valve IDs only
 }
 
 // Valve sequence (running view)
@@ -121,7 +121,6 @@ export interface ProgramFormState {
 export interface ZoneFormState {
   id: string;
   name: string;
-  valves: string[];
   isNew: boolean;
 }
 

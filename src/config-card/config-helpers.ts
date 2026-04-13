@@ -15,6 +15,10 @@ export function getWaterSupplies(hass: Hass): WaterSupply[] {
   return (entity?.attributes.water_supplies as WaterSupply[]) ?? [];
 }
 
+export function getValvesForZone(zoneId: string, valves: AvailableValve[]): AvailableValve[] {
+  return valves.filter((v) => v.zone_id === zoneId);
+}
+
 export function generateId(name: string): string {
   return name
     .toLowerCase()

@@ -10,7 +10,7 @@ import type {
   ProgramSchedule,
 } from '../shared/types';
 import { discoverPrograms, getFriendlyName, formatSchedule } from '../shared/helpers';
-import { getZones, getAvailableValves } from './config-helpers';
+import { getZones, getAvailableValves, getValvesForZone } from './config-helpers';
 import {
   renderListItem,
   renderFormRow,
@@ -34,6 +34,7 @@ export function renderProgramsTab(
   const valves = getAvailableValves(hass);
 
   return html`
+    <div class="form-hint">${t('config.hint_programs')}</div>
     ${programEntities.map((entityId) => {
       const entity = hass.states[entityId];
       if (!entity) return nothing;
@@ -174,7 +175,10 @@ function renderProgramForm(
                               ...form.zones,
                               {
                                 zone_id: zone.id,
-                                valves: zone.valves.map((vid) => ({ valve_id: vid, duration: 10 })),
+                                valves: getValvesForZone(zone.id, valves).map((v) => ({
+                                  valve_id: v.id,
+                                  duration: 10,
+                                })),
                               },
                             ];
                         onFormUpdate({ ...form, zones: newZones });
