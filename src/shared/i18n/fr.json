@@ -93,5 +93,8 @@
   "schedule.at_one": "à {time}",
   "schedule.at_many": "à {rest} et {last}",
   "config.trigger_times": "Horaires de déclenchement",
-  "config.add_time": "Ajouter un horaire"
+  "config.add_time": "Ajouter un horaire",
+  "config.valve_custom_times": "Horaires spécifiques",
+  "config.valve_custom_times_hint": "Ne tourne qu'aux horaires sélectionnés",
+  "config.valve_times_required": "Sélectionnez au moins un horaire, ou décochez les horaires spécifiques"
 }

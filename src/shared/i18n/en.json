@@ -93,5 +93,8 @@
   "schedule.at_one": "at {time}",
   "schedule.at_many": "at {rest} and {last}",
   "config.trigger_times": "Trigger times",
-  "config.add_time": "Add a time"
+  "config.add_time": "Add a time",
+  "config.valve_custom_times": "Custom times",
+  "config.valve_custom_times_hint": "Run only at selected times",
+  "config.valve_times_required": "Select at least one time, or uncheck custom times"
 }

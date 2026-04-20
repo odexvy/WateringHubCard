@@ -18,6 +18,22 @@ import {
   renderAddButton,
 } from '../shared/shared-templates';
 
+// Update schedule.times and prune any valve.times entries that reference
+// a time no longer in schedule.times. Returns a new form state.
+function applyScheduleTimes(form: ProgramFormState, newTimes: string[]): ProgramFormState {
+  const allowed = new Set(newTimes);
+  return {
+    ...form,
+    schedule: { times: newTimes },
+    zones: form.zones.map((z) => ({
+      ...z,
+      valves: z.valves.map((v) =>
+        v.times ? { ...v, times: v.times.filter((t) => allowed.has(t)) } : v,
+      ),
+    })),
+  };
+}
+
 export function renderProgramsTab(
   hass: Hass,
   editingProgram: ProgramFormState | null,
@@ -124,12 +140,10 @@ function renderProgramForm(
                   type="time"
                   .value=${time}
                   @input=${(e: InputEvent) => {
-                    const newTimes = [...(form.schedule.times ?? [])];
-                    newTimes[idx] = (e.target as HTMLInputElement).value;
-                    onFormUpdate({
-                      ...form,
-                      schedule: { times: [...newTimes].sort() },
-                    });
+                    const newTimes = (form.schedule.times ?? []).map((t, i) =>
+                      i === idx ? (e.target as HTMLInputElement).value : t,
+                    );
+                    onFormUpdate(applyScheduleTimes(form, newTimes));
                   }}
                 />
                 ${(form.schedule.times ?? []).length > 1
@@ -137,7 +151,7 @@ function renderProgramForm(
                       class="action-btn delete"
                       @click=${() => {
                         const newTimes = (form.schedule.times ?? []).filter((_, i) => i !== idx);
-                        onFormUpdate({ ...form, schedule: { times: newTimes } });
+                        onFormUpdate(applyScheduleTimes(form, newTimes));
                       }}
                     >
                       <ha-icon icon="mdi:close"></ha-icon>
@@ -150,8 +164,8 @@ function renderProgramForm(
             class="add-btn"
             style="margin-top:4px;"
             @click=${() => {
-              const newTimes = [...(form.schedule.times ?? []), '12:00'].sort();
-              onFormUpdate({ ...form, schedule: { times: newTimes } });
+              const newTimes = [...(form.schedule.times ?? []), '12:00'];
+              onFormUpdate(applyScheduleTimes(form, newTimes));
             }}
           >
             + ${t('config.add_time')}
@@ -348,6 +362,50 @@ function renderValveConfig(
         `
       : nothing;
 
+  const scheduleTimes = form.schedule.times ?? [];
+  const useCustomTimes = fv.times !== undefined;
+  const customTimesBlock =
+    scheduleTimes.length > 1
+      ? html`
+          <div class="valve-custom-times-row">
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                .checked=${useCustomTimes}
+                @change=${() =>
+                  updateValve({ times: useCustomTimes ? undefined : [...scheduleTimes] })}
+              />
+              ${t('config.valve_custom_times')}
+            </label>
+            ${useCustomTimes
+              ? html`
+                  <div class="valve-custom-times-slots">
+                    ${[...scheduleTimes].sort().map((slot) => {
+                      const slotChecked = (fv.times ?? []).includes(slot);
+                      return html`
+                        <label class="valve-custom-time-slot">
+                          <input
+                            type="checkbox"
+                            .checked=${slotChecked}
+                            @change=${() => {
+                              const current = fv.times ?? [];
+                              const next = slotChecked
+                                ? current.filter((t) => t !== slot)
+                                : [...current, slot];
+                              updateValve({ times: next });
+                            }}
+                          />
+                          ${slot}
+                        </label>
+                      `;
+                    })}
+                  </div>
+                `
+              : nothing}
+          </div>
+        `
+      : nothing;
+
   return html`
     <div class="valve-config-block">
       <div class="valve-duration-row">
@@ -393,6 +451,7 @@ function renderValveConfig(
         </select>
         ${freqEveryNInput} ${freqWeekdaysInput}
       </div>
+      ${customTimesBlock}
     </div>
   `;
 }

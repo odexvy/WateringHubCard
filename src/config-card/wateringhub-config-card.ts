@@ -167,7 +167,12 @@ export class WateringHubConfigCard extends LitElement {
     const zones = (
       (attrs.zones as Array<{
         zone_id: string;
-        valves: Array<{ valve_id: string; duration: number; frequency?: ValveFrequency }>;
+        valves: Array<{
+          valve_id: string;
+          duration: number;
+          frequency?: ValveFrequency;
+          times?: string[];
+        }>;
       }>) ?? []
     ).map((z) => ({
       zone_id: z.zone_id,
@@ -175,6 +180,7 @@ export class WateringHubConfigCard extends LitElement {
         valve_id: v.valve_id,
         duration: v.duration,
         frequency: v.frequency,
+        times: v.times,
       })),
     }));
 
@@ -197,12 +203,20 @@ export class WateringHubConfigCard extends LitElement {
   }
 
   private async _saveProgram(form: ProgramFormState): Promise<void> {
+    const hasEmptyCustomTimes = form.zones.some((z) =>
+      z.valves.some((v) => v.times !== undefined && v.times.length === 0),
+    );
+    if (hasEmptyCustomTimes) {
+      this._showToast(this._t('config.valve_times_required'));
+      return;
+    }
     const id = form.isNew ? generateId(form.name) : form.id;
     const service = form.isNew ? 'create_program' : 'update_program';
+    const sortedTimes = [...form.schedule.times].sort();
     await this._hass.callService('wateringhub', service, {
       id,
       name: form.name,
-      schedule: form.schedule,
+      schedule: { times: sortedTimes },
       dry_run: form.dry_run,
       zones: form.zones.map((z) => ({
         zone_id: z.zone_id,
@@ -210,6 +224,9 @@ export class WateringHubConfigCard extends LitElement {
           valve_id: v.valve_id,
           duration: v.duration,
           ...(v.frequency ? { frequency: v.frequency } : {}),
+          ...(v.times && v.times.length > 0 && v.times.length < sortedTimes.length
+            ? { times: [...v.times].sort() }
+            : {}),
         })),
       })),
     });

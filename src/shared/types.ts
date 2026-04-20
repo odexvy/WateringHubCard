@@ -75,6 +75,7 @@ export interface ProgramValve {
   valve_name: string;
   duration: number;
   frequency?: ValveFrequency;
+  times?: string[];
 }
 
 export interface ProgramZone {
@@ -102,6 +103,7 @@ export interface ProgramValveForm {
   valve_id: string;
   duration: number;
   frequency?: ValveFrequency;
+  times?: string[];
 }
 
 export interface ProgramZoneForm {

@@ -366,7 +366,10 @@ function renderProgramRecap(
               <div class="recap-valve">
                 <ha-icon icon="mdi:water"></ha-icon>
                 ${valve.valve_name} — ${valve.duration}
-                min${formatValveFrequency(valve.frequency, t)}
+                min${formatValveFrequency(valve.frequency, t)}${formatValveTimes(
+                  valve.times,
+                  schedule?.times,
+                )}
               </div>
             `,
           )}
@@ -380,6 +383,15 @@ function renderProgramRecap(
         : nothing}
     </div>
   `;
+}
+
+function formatValveTimes(
+  valveTimes: string[] | undefined,
+  scheduleTimes: string[] | undefined,
+): string {
+  if (!valveTimes || valveTimes.length === 0) return '';
+  if (scheduleTimes && valveTimes.length === scheduleTimes.length) return '';
+  return ` · ${[...valveTimes].sort().join(', ')}`;
 }
 
 function formatValveFrequency(frequency: ValveFrequency | undefined, t: Translator): string {
