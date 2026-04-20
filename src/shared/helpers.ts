@@ -161,12 +161,8 @@ export function formatSchedule(schedule: ProgramSchedule | undefined, t: Transla
 // ── Time formatting ──────────────────────────────────────
 
 function isInvalidState(entity: HassEntity | undefined): boolean {
-  return (
-    !entity ||
-    entity.state === 'None' ||
-    entity.state === 'unknown' ||
-    entity.state === 'unavailable'
-  );
+  const s = entity?.state;
+  return s == null || s === 'None' || s === 'null' || s === 'unknown' || s === 'unavailable';
 }
 
 export function formatRelative(

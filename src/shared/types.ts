@@ -55,7 +55,7 @@ export interface ValveStep {
   zone_name: string;
   duration: number;
   status: 'done' | 'running' | 'pending';
-  water_supply_id: string;
+  water_supply_id: string | null;
   start?: string;
 }
 
@@ -140,7 +140,7 @@ export interface WaterSupplyFormState {
 }
 
 export interface ActiveValve {
-  water_supply_id: string;
+  water_supply_id: string | null;
   valve_id: string;
   valve_name: string;
   valve_start: string;

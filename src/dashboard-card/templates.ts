@@ -233,8 +233,8 @@ function renderParallelTimeline(
   waterSupplies: Array<{ id: string; name: string }>,
 ): TemplateResult {
   // Group steps by water_supply_id, preserving order
-  const supplyOrder: string[] = [];
-  const stepsBySupply = new Map<string, ValveStep[]>();
+  const supplyOrder: Array<string | null> = [];
+  const stepsBySupply = new Map<string | null, ValveStep[]>();
   for (const step of steps) {
     if (!stepsBySupply.has(step.water_supply_id)) {
       supplyOrder.push(step.water_supply_id);
@@ -244,7 +244,7 @@ function renderParallelTimeline(
   }
 
   // Filter active valves per supply
-  const activeBySupply = new Map<string, ActiveValve[]>();
+  const activeBySupply = new Map<string | null, ActiveValve[]>();
   for (const av of activeValves) {
     if (!activeBySupply.has(av.water_supply_id)) {
       activeBySupply.set(av.water_supply_id, []);
@@ -257,7 +257,10 @@ function renderParallelTimeline(
       ${supplyOrder.map((supplyId) => {
         const supplySteps = stepsBySupply.get(supplyId) ?? [];
         const supplyActive = activeBySupply.get(supplyId) ?? [];
-        const label = waterSupplies.find((ws) => ws.id === supplyId)?.name ?? supplyId;
+        const label =
+          supplyId === null
+            ? '—'
+            : (waterSupplies.find((ws) => ws.id === supplyId)?.name ?? supplyId);
         return html`
           <div class="supply-column">
             <div class="supply-label">${label}</div>
