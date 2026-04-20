@@ -128,13 +128,23 @@ describe('statusLabel', () => {
 // ── formatSchedule ───────────────────────────────────────
 
 describe('formatSchedule', () => {
-  it('returns time from schedule', () => {
-    const schedule: ProgramSchedule = { time: '22:00' };
-    expect(formatSchedule(schedule, mockT)).toBe('22:00');
+  it('renders a single time via schedule.at_one', () => {
+    const schedule: ProgramSchedule = { times: ['22:00'] };
+    expect(formatSchedule(schedule, mockT)).toBe('schedule.at_one');
+  });
+
+  it('renders multiple times sorted via schedule.at_many', () => {
+    const schedule: ProgramSchedule = { times: ['18:00', '06:00', '12:00'] };
+    expect(formatSchedule(schedule, mockT)).toBe('schedule.at_many');
   });
 
   it('returns empty string for undefined', () => {
     expect(formatSchedule(undefined, mockT)).toBe('');
+  });
+
+  it('returns empty string for empty times', () => {
+    const schedule: ProgramSchedule = { times: [] };
+    expect(formatSchedule(schedule, mockT)).toBe('');
   });
 });
 

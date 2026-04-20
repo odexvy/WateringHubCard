@@ -148,9 +148,14 @@ export function formatRemainingTime(seconds: number): string {
 
 // ── Schedule formatting ──────────────────────────────────
 
-export function formatSchedule(schedule: ProgramSchedule | undefined, _t: Translator): string {
+export function formatSchedule(schedule: ProgramSchedule | undefined, t: Translator): string {
   if (!schedule) return '';
-  return schedule.time;
+  const times = [...schedule.times].sort();
+  if (times.length === 0) return '';
+  if (times.length === 1) return t('schedule.at_one', { time: times[0] });
+  const last = times[times.length - 1];
+  const rest = times.slice(0, -1).join(', ');
+  return t('schedule.at_many', { rest, last });
 }
 
 // ── Time formatting ──────────────────────────────────────

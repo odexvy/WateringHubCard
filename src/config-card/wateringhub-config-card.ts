@@ -148,7 +148,7 @@ export class WateringHubConfigCard extends LitElement {
     this._editingProgram = {
       id: '',
       name: '',
-      schedule: { time: '06:00' },
+      schedule: { times: ['06:00'] },
       zones: [],
       dry_run: false,
       isNew: true,
@@ -160,7 +160,10 @@ export class WateringHubConfigCard extends LitElement {
     if (!entity) return;
     const attrs = entity.attributes;
     const programId = (attrs.program_id as string) ?? '';
-    const schedule = (attrs.schedule as ProgramSchedule) ?? { time: '06:00' };
+    const rawSchedule = attrs.schedule as ProgramSchedule | undefined;
+    const schedule: ProgramSchedule = {
+      times: rawSchedule?.times ?? ['06:00'],
+    };
     const zones = (
       (attrs.zones as Array<{
         zone_id: string;

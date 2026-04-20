@@ -111,19 +111,52 @@ function renderProgramForm(
         />`,
       )}
 
-      <!-- Schedule — time only -->
+      <!-- Schedule — multiple times -->
       ${renderFormRow(
-        t('config.trigger_time'),
-        html`<input
-          class="form-input"
-          type="time"
-          .value=${form.schedule.time}
-          @input=${(e: InputEvent) =>
-            onFormUpdate({
-              ...form,
-              schedule: { time: (e.target as HTMLInputElement).value },
-            })}
-        />`,
+        t('config.trigger_times'),
+        html`<div style="display:flex; flex-direction:column; gap:6px;">
+          ${(form.schedule.times ?? []).map(
+            (time, idx) => html`
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input
+                  class="form-input"
+                  style="flex:1;"
+                  type="time"
+                  .value=${time}
+                  @input=${(e: InputEvent) => {
+                    const newTimes = [...(form.schedule.times ?? [])];
+                    newTimes[idx] = (e.target as HTMLInputElement).value;
+                    onFormUpdate({
+                      ...form,
+                      schedule: { times: [...newTimes].sort() },
+                    });
+                  }}
+                />
+                ${(form.schedule.times ?? []).length > 1
+                  ? html`<button
+                      class="action-btn delete"
+                      @click=${() => {
+                        const newTimes = (form.schedule.times ?? []).filter((_, i) => i !== idx);
+                        onFormUpdate({ ...form, schedule: { times: newTimes } });
+                      }}
+                    >
+                      <ha-icon icon="mdi:close"></ha-icon>
+                    </button>`
+                  : nothing}
+              </div>
+            `,
+          )}
+          <button
+            class="add-btn"
+            style="margin-top:4px;"
+            @click=${() => {
+              const newTimes = [...(form.schedule.times ?? []), '12:00'].sort();
+              onFormUpdate({ ...form, schedule: { times: newTimes } });
+            }}
+          >
+            + ${t('config.add_time')}
+          </button>
+        </div>`,
       )}
 
       <!-- Zones + valves with durations -->

@@ -1,5 +1,7 @@
 # WateringHub Card
 
+**Version:** 0.0.49
+
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![GitHub Release](https://img.shields.io/github/v/release/odexvy/WateringHubCard)](https://github.com/odexvy/WateringHubCard/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)

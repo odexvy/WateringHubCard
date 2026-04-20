@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WateringHub Card — Mockup v0.0.42</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css">
+  <style>
+    :root {
+      --primary-color: #03a9f4;
+      --primary-text-color: #e1e1e1;
+      --secondary-text-color: #9b9b9b;
+      --disabled-text-color: #6f6f6f;
+      --divider-color: #3a3a3a;
+      --card-background-color: #1c1c1c;
+      --secondary-background-color: #2a2a2a;
+      --success-color: #4caf50;
+      --warning-color: #ff9800;
+      --error-color: #f44336;
+      --text-primary-color: #fff;
+    }
+    body { background: #111; font-family: Roboto, 'Noto Sans', sans-serif; margin: 0; padding: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 420px)); gap: 24px; max-width: 1400px; margin: 0 auto; }
+    .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 8px; }
+    h2.section { color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; grid-column: 1 / -1; margin: 24px 0 0; padding-bottom: 8px; border-bottom: 1px solid #333; }
+    .ha-icon { display: inline-flex; align-items: center; justify-content: center; width: var(--mdc-icon-size, 24px); height: var(--mdc-icon-size, 24px); font-size: var(--mdc-icon-size, 24px); color: inherit; }
+    .ha-switch { appearance: none; width: 36px; height: 20px; background: var(--disabled-text-color); border-radius: 10px; position: relative; cursor: pointer; flex-shrink: 0; }
+    .ha-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: transform 0.2s; }
+    .ha-switch:checked { background: var(--primary-color); }
+    .ha-switch:checked::after { transform: translateX(16px); }
+    .ha-card { background: var(--card-background-color); border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); padding: 20px; }
+    .ha-card-rel { position: relative; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .title { font-size: 20px; font-weight: 500; color: var(--primary-text-color); }
+    .badge-sm { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 500; color: white; }
+    .badge-idle { background: var(--success-color); }
+    .badge-disabled { background: var(--disabled-text-color); }
+    .badge-skipped { background: none; border: 1px solid var(--warning-color); color: var(--warning-color); }
+    .badge-running { background: var(--primary-color); }
+    .badge-dry-run { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 500; background: var(--secondary-background-color); color: var(--secondary-text-color); border: 1px dashed var(--divider-color); margin-bottom: 12px; }
+    .badge-dry-run-sm { display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 500; background: var(--secondary-background-color); color: var(--secondary-text-color); border: 1px dashed var(--divider-color); margin-left: 8px; vertical-align: middle; }
+    .info-sm { font-size: 12px; color: var(--secondary-text-color); }
+    .program-wrapper { border-bottom: 1px solid var(--divider-color); padding: 4px 0; }
+    .program-wrapper:last-child { border-bottom: none; }
+    .program { display: flex; align-items: center; padding: 12px 0; gap: 12px; }
+    .program-header { display: flex; align-items: center; cursor: pointer; gap: 12px; flex: 1; min-width: 0; }
+    .program-name { flex: 1; font-size: 15px; color: var(--primary-text-color); }
+    .program-name.active { font-weight: 600; }
+    .active-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary-color); flex-shrink: 0; }
+    .chevron { color: var(--secondary-text-color); flex-shrink: 0; --mdc-icon-size: 20px; }
+    .chevron.open { transform: rotate(180deg); }
+    .program-status { display: flex; align-items: center; gap: 8px; padding: 2px 0 8px 32px; flex-wrap: wrap; }
+    .program-recap.open { max-height: 500px; padding-bottom: 12px; padding-left: 32px; }
+    .recap-schedule { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--secondary-text-color); padding: 10px 0 6px; }
+    .recap-zone { padding: 8px 0 4px; }
+    .recap-zone-badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 500; color: white; background: var(--primary-color); }
+    .recap-valve { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--secondary-text-color); padding: 4px 0 4px 28px; }
+    .recap-total { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--primary-text-color); font-weight: 500; padding: 10px 0 4px; border-top: 1px solid var(--divider-color); margin-top: 6px; }
+    .recap-schedule .ha-icon, .recap-valve .ha-icon, .recap-total .ha-icon { --mdc-icon-size: 18px; color: var(--secondary-text-color); }
+    .skip-btn { background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; color: var(--secondary-text-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .skip-btn .ha-icon { --mdc-icon-size: 20px; }
+    .skip-cancel-btn { background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; color: var(--secondary-text-color); display: inline-flex; align-items: center; justify-content: center; }
+    .skip-cancel-btn .ha-icon { --mdc-icon-size: 20px; }
+    .skip-dropdown-wrapper { position: relative; display: inline-flex; flex-shrink: 0; }
+    .skip-dropdown { position: absolute; top: 100%; right: 0; z-index: 10; background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); min-width: 120px; padding: 4px 0; margin-top: 4px; }
+    .skip-dropdown-option { display: block; width: 100%; padding: 8px 16px; border: none; background: none; text-align: left; font-size: 13px; color: var(--primary-text-color); cursor: pointer; }
+    .running-block { border: 1px solid var(--divider-color); border-radius: 12px; padding: 16px; margin-bottom: 20px; position: relative; }
+    .running-stop-btn { position: absolute; top: 16px; right: 16px; background: var(--error-color); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .global-hero { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .circular-progress { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+    .circular-progress svg { transform: rotate(-90deg); width: 72px; height: 72px; }
+    .cp-track { fill: none; stroke: var(--divider-color); stroke-width: 4; }
+    .cp-fill { fill: none; stroke: var(--primary-color); stroke-width: 4; stroke-linecap: round; }
+    .cp-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .cp-time { font-size: 14px; font-weight: 600; color: var(--primary-text-color); }
+    .global-program-name { font-size: 15px; font-weight: 500; color: var(--primary-text-color); }
+    .global-sub { font-size: 13px; color: var(--secondary-text-color); margin-top: 2px; }
+    .valve-timeline { position: relative; padding-left: 20px; }
+    .valve-timeline::before { content: ''; position: absolute; left: 7px; top: 4px; bottom: 4px; width: 2px; background: var(--divider-color); }
+    .tl-zone { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 500; color: white; background: var(--primary-color); margin: 6px 0 2px; }
+    .tl-step { display: flex; align-items: center; gap: 8px; padding: 5px 0; position: relative; }
+    .tl-dot { position: absolute; left: -20px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; }
+    .tl-dot svg { width: 14px; height: 14px; }
+    .tl-step-name { flex: 1; font-size: 13px; }
+    .tl-step-time { font-size: 12px; white-space: nowrap; }
+    .tl-done .tl-step-name, .tl-done .tl-step-time { color: var(--secondary-text-color); }
+    .tl-done .tl-dot svg { color: var(--success-color); }
+    .tl-running .tl-step-name { color: var(--primary-text-color); font-weight: 500; }
+    .tl-running .tl-step-time { color: var(--primary-color); font-weight: 600; }
+    .tl-running .tl-dot svg { color: var(--primary-color); }
+    .tl-pending .tl-step-name, .tl-pending .tl-step-time { color: var(--disabled-text-color); }
+    .tl-pending .tl-dot svg { color: var(--disabled-text-color); }
+    .error-view { border: 1px solid var(--error-color); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .error-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: var(--error-color); margin-bottom: 8px; }
+    .error-title .ha-icon { color: var(--error-color); }
+    .error-message { font-size: 13px; color: var(--primary-text-color); padding: 8px 12px; background: var(--secondary-background-color); border-radius: 8px; margin-bottom: 8px; font-family: monospace; }
+    .error-auto-stopped { font-size: 12px; color: var(--secondary-text-color); font-style: italic; }
+    .tabs { display: flex; border-bottom: 2px solid var(--divider-color); margin-bottom: 20px; }
+    .tab { padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--secondary-text-color); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+    .tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+    .inline-form { border: 2px solid var(--primary-color); border-radius: 8px; padding: 16px; margin-bottom: 8px; }
+    .form-row { margin-bottom: 12px; }
+    .form-label { font-size: 12px; color: var(--secondary-text-color); margin-bottom: 4px; display: block; }
+    .form-input { width: 100%; box-sizing: border-box; padding: 8px 12px; border: 1px solid var(--divider-color); border-radius: 6px; font-size: 14px; color: var(--primary-text-color); background: var(--card-background-color); }
+    .form-hint { font-size: 12px; color: var(--secondary-text-color); margin-bottom: 12px; }
+    .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+    .form-select { padding: 6px 10px; border: 1px solid var(--divider-color); border-radius: 6px; font-size: 13px; color: var(--primary-text-color); background: var(--card-background-color); }
+    .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .btn-primary { background: var(--primary-color); color: white; }
+    .btn-cancel { background: transparent; color: var(--secondary-text-color); }
+    .btn-danger { background: var(--error-color); color: white; }
+    .add-btn { width: 100%; padding: 10px; border: 1px dashed var(--divider-color); border-radius: 8px; background: transparent; color: var(--secondary-text-color); font-size: 14px; cursor: pointer; }
+    .list-item { border: 1px solid var(--divider-color); border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; }
+    .list-item-header { display: flex; justify-content: space-between; align-items: center; }
+    .list-item-name { font-size: 15px; font-weight: 500; color: var(--primary-text-color); }
+    .list-item-sub { font-size: 12px; color: var(--secondary-text-color); margin-top: 2px; }
+    .list-item-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .action-btn { background: none; border: none; cursor: pointer; padding: 4px; color: var(--secondary-text-color); }
+    .action-btn.delete:hover { color: var(--error-color); }
+    .toast { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: var(--primary-text-color); color: var(--card-background-color); padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 500; }
+    .confirm-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; border-radius: 12px; }
+    .confirm-dialog { background: var(--card-background-color); border-radius: 12px; padding: 24px; min-width: 280px; max-width: 400px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+    .confirm-message { font-size: 15px; color: var(--primary-text-color); margin-bottom: 20px; }
+    .confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .theme-toggle { position: fixed; top: 16px; right: 16px; background: var(--card-background-color); color: var(--primary-text-color); border: 1px solid var(--divider-color); border-radius: 8px; padding: 8px 16px; cursor: pointer; font-size: 13px; z-index: 100; }
+  </style>
+</head>
+<body>
+<button class="theme-toggle" onclick="toggleTheme()">Light / Dark</button>
+<div class="grid">
+
+  <h2 class="section">Dashboard — Programme States</h2>
+
+  <!-- 1. Idle -->
+  <div>
+    <div class="label">1. Programme actif — idle</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub</span></div>
+      <div class="program-wrapper">
+        <div class="program">
+          <div class="program-header"><span class="ha-icon chevron"><i class="mdi mdi-chevron-down"></i></span><div class="active-dot"></div><span class="program-name active">Arrosage quotidien</span></div>
+          <input type="checkbox" class="ha-switch" checked>
+        </div>
+        <div class="program-status">
+          <span class="badge-sm badge-idle">En attente</span>
+          <div class="skip-dropdown-wrapper"><button class="skip-btn"><span class="ha-icon"><i class="mdi mdi-pause-circle-outline"></i></span></button></div>
+          <span class="info-sm">Prochain : demain a 22:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Paused -->
+  <div>
+    <div class="label">2. Programme en pause</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub</span></div>
+      <div class="program-wrapper">
+        <div class="program">
+          <div class="program-header"><span class="ha-icon chevron"><i class="mdi mdi-chevron-down"></i></span><div class="active-dot"></div><span class="program-name active">Arrosage quotidien</span></div>
+          <input type="checkbox" class="ha-switch" checked>
+        </div>
+        <div class="program-status">
+          <span class="badge-sm badge-skipped">En pause 3 j</span>
+          <button class="skip-cancel-btn"><span class="ha-icon"><i class="mdi mdi-close-circle-outline"></i></span></button>
+          <span class="info-sm">Prochain : dans 3 j</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Disabled -->
+  <div>
+    <div class="label">3. Programme desactive</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub</span></div>
+      <div class="program-wrapper">
+        <div class="program">
+          <div class="program-header"><span class="ha-icon chevron"><i class="mdi mdi-chevron-down"></i></span><span class="program-name">Arrosage quotidien</span></div>
+          <input type="checkbox" class="ha-switch">
+        </div>
+        <div class="program-status"><span class="badge-sm badge-disabled">Desactive</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Dropdown pause -->
+  <div>
+    <div class="label">4. Dropdown pause</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub</span></div>
+      <div class="program-wrapper">
+        <div class="program">
+          <div class="program-header"><span class="ha-icon chevron"><i class="mdi mdi-chevron-down"></i></span><div class="active-dot"></div><span class="program-name active">Arrosage quotidien</span></div>
+          <input type="checkbox" class="ha-switch" checked>
+        </div>
+        <div class="program-status">
+          <span class="badge-sm badge-idle">En attente</span>
+          <div class="skip-dropdown-wrapper">
+            <button class="skip-btn" style="color:var(--warning-color);background:var(--secondary-background-color);"><span class="ha-icon"><i class="mdi mdi-pause-circle-outline"></i></span></button>
+            <div class="skip-dropdown">
+              <button class="skip-dropdown-option">1 jour</button>
+              <button class="skip-dropdown-option">2 jours</button>
+              <button class="skip-dropdown-option">3 jours</button>
+              <button class="skip-dropdown-option">5 jours</button>
+            </div>
+          </div>
+          <span class="info-sm">Prochain : demain a 22:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section">Dashboard — Running & Error</h2>
+
+  <!-- 5. Running parallel -->
+  <div>
+    <div class="label">5. Running — parallele</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub</span></div>
+      <div class="running-block">
+        <button class="running-stop-btn">Tout arreter</button>
+        <div class="global-hero">
+          <div class="circular-progress">
+            <svg viewBox="0 0 68 68"><circle class="cp-track" cx="34" cy="34" r="30"/><circle class="cp-fill" cx="34" cy="34" r="30" style="stroke-dasharray:188.5;stroke-dashoffset:94.2"/></svg>
+            <div class="cp-center"><span class="cp-time">17:23</span></div>
+          </div>
+          <div>
+            <div class="global-program-name">Arrosage quotidien</div>
+            <div class="global-sub">Vanne 3 sur 4</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;">
+          <div style="flex:1;min-width:200px;">
+            <div class="tl-zone">Arrivee jardin</div>
+            <div class="valve-timeline">
+              <div class="tl-step tl-done"><span class="tl-dot"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9Z"/></svg></span><span class="tl-step-name">Oscillant</span><span class="tl-step-time">10 min</span></div>
+              <div class="tl-step tl-running"><span class="tl-dot"><svg viewBox="0 0 24 24"><circle fill="currentColor" cx="12" cy="12" r="6"/></svg></span><span class="tl-step-name">Goutteur</span><span class="tl-step-time">2:45</span></div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:200px;">
+            <div class="tl-zone">Arrivee potager</div>
+            <div class="valve-timeline">
+              <div class="tl-step tl-running"><span class="tl-dot"><svg viewBox="0 0 24 24"><circle fill="currentColor" cx="12" cy="12" r="6"/></svg></span><span class="tl-step-name">Arroseur</span><span class="tl-step-time">7:23</span></div>
+              <div class="tl-step tl-pending"><span class="tl-dot"><svg viewBox="0 0 24 24"><circle fill="none" stroke="currentColor" stroke-width="2" cx="12" cy="12" r="6"/></svg></span><span class="tl-step-name">Potager</span><span class="tl-step-time">20 min</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="program-wrapper">
+        <div class="program">
+          <div class="program-header"><span class="ha-icon chevron"><i class="mdi mdi-chevron-down"></i></span><div class="active-dot"></div><span class="program-name active">Arrosage quotidien</span></div>
+          <input type="checkbox" class="ha-switch" checked>
+        </div>
+        <div class="program-status"><span class="badge-sm badge-running">Arrosage en cours</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Error -->
+  <div>
+    <div class="label">6. Error view</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub</span></div>
+      <div class="error-view">
+        <div class="error-title"><span class="ha-icon" style="--mdc-icon-size:20px"><i class="mdi mdi-alert-circle"></i></span>Erreur — Arrosage quotidien</div>
+        <div class="error-message">Device unavailable: switch.fake_valve_1</div>
+        <div class="error-auto-stopped">Toutes les vannes ont ete fermees automatiquement.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Recap -->
+  <div>
+    <div class="label">7. Recap ouvert</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub</span></div>
+      <div class="program-wrapper">
+        <div class="program">
+          <div class="program-header"><span class="ha-icon chevron open"><i class="mdi mdi-chevron-down"></i></span><div class="active-dot"></div><span class="program-name active">Arrosage quotidien</span></div>
+          <input type="checkbox" class="ha-switch" checked>
+        </div>
+        <div class="program-status">
+          <span class="badge-sm badge-idle">En attente</span>
+          <div class="skip-dropdown-wrapper"><button class="skip-btn"><span class="ha-icon"><i class="mdi mdi-pause-circle-outline"></i></span></button></div>
+          <span class="info-sm">Prochain : demain a 22:00</span>
+        </div>
+        <div class="program-recap open">
+          <div class="recap-schedule"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-calendar-clock"></i></span>22:00</div>
+          <div class="recap-schedule"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-history"></i></span>Dernier : il y a 2h</div>
+          <div class="recap-zone"><span class="recap-zone-badge">Jardin avant</span></div>
+          <div class="recap-valve"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-water"></i></span>Oscillant — 10 min</div>
+          <div class="recap-valve"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-water"></i></span>Goutteur — 5 min</div>
+          <div class="recap-zone"><span class="recap-zone-badge">Potager</span></div>
+          <div class="recap-valve"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-water"></i></span>Arroseur — 15 min</div>
+          <div class="recap-total"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-timer-outline"></i></span>Duree totale : 15 min</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Toast -->
+  <div>
+    <div class="label">8. Toast notification</div>
+    <div class="ha-card" style="min-height:100px;position:relative;">
+      <div class="header"><span class="title">WateringHub</span></div>
+      <div class="program-status"><span class="badge-sm badge-skipped">En pause 3 j</span><span class="info-sm">Prochain : dans 3 j</span></div>
+      <div class="toast">Programme en pause 3 j</div>
+    </div>
+  </div>
+
+  <h2 class="section">Config — 1. Arrivees d'eau</h2>
+
+  <!-- 9. Water supplies tab -->
+  <div>
+    <div class="label">9. Onglet arrivees d'eau</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub Config</span></div>
+      <div class="tabs"><div class="tab active">Arrivees</div><div class="tab">Zones</div><div class="tab">Vannes</div><div class="tab">Programmes</div></div>
+      <div class="form-hint">Definissez vos arrivees d'eau pour activer le parallelisme.</div>
+      <div class="list-item">
+        <div class="list-item-header">
+          <div><div class="list-item-name">Arrivee jardin</div><div class="list-item-sub">Oscillant, Goutteur</div></div>
+          <div class="list-item-actions"><button class="action-btn"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-pencil"></i></span></button><button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button></div>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-header">
+          <div><div class="list-item-name">Arrivee potager</div><div class="list-item-sub">Arroseur, Goutteur potager</div></div>
+          <div class="list-item-actions"><button class="action-btn"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-pencil"></i></span></button><button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button></div>
+        </div>
+      </div>
+      <button class="add-btn">+ Nouvelle arrivee</button>
+    </div>
+  </div>
+
+  <h2 class="section">Config — 2. Zones</h2>
+
+  <!-- 10. Zones tab -->
+  <div>
+    <div class="label">10. Onglet zones</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub Config</span></div>
+      <div class="tabs"><div class="tab">Arrivees</div><div class="tab active">Zones</div><div class="tab">Vannes</div><div class="tab">Programmes</div></div>
+      <div class="form-hint">Regroupez vos vannes par zone logique.</div>
+      <div class="list-item">
+        <div class="list-item-header">
+          <div><div class="list-item-name">Jardin avant</div><div class="list-item-sub">Oscillant, Goutteur</div></div>
+          <div class="list-item-actions"><button class="action-btn"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-pencil"></i></span></button><button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button></div>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-header">
+          <div><div class="list-item-name">Potager</div><div class="list-item-sub">Arroseur, Goutteur potager</div></div>
+          <div class="list-item-actions"><button class="action-btn"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-pencil"></i></span></button><button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button></div>
+        </div>
+      </div>
+      <button class="add-btn">+ Nouvelle zone</button>
+    </div>
+  </div>
+
+  <!-- 11. Zone form (name only) -->
+  <div>
+    <div class="label">11. Formulaire zone (nom seul)</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub Config</span></div>
+      <div class="tabs"><div class="tab">Arrivees</div><div class="tab active">Zones</div><div class="tab">Vannes</div><div class="tab">Programmes</div></div>
+      <div class="form-hint">Regroupez vos vannes par zone logique.</div>
+      <div class="inline-form">
+        <div class="form-row"><label class="form-label">Nom</label><input class="form-input" value="Jardin avant"></div>
+        <div class="form-actions"><button class="btn btn-cancel">Annuler</button><button class="btn btn-primary">Sauvegarder</button></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section">Config — 3. Vannes (centre d'assignation)</h2>
+
+  <!-- 14. Valves tab with dropdowns -->
+  <div>
+    <div class="label">14. Onglet vannes — dropdowns</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub Config</span></div>
+      <div class="tabs"><div class="tab">Arrivees</div><div class="tab">Zones</div><div class="tab active">Vannes</div><div class="tab">Programmes</div></div>
+      <div class="form-hint">Configurez vos vannes et assignez-les a une zone et une arrivee d'eau.</div>
+      <div class="list-item">
+        <div class="list-item-header">
+          <div style="flex:1">
+            <div class="list-item-name">Oscillant cedre</div>
+            <div class="list-item-sub">switch.vanne_oscillant</div>
+            <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+              <select class="form-select" style="flex:1;min-width:120px;"><option selected>Jardin avant</option><option>Potager</option></select>
+              <select class="form-select" style="flex:1;min-width:120px;"><option selected>Arrivee jardin</option><option>Arrivee potager</option></select>
+            </div>
+          </div>
+          <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-header">
+          <div style="flex:1">
+            <div class="list-item-name">Goutteur haie</div>
+            <div class="list-item-sub">switch.vanne_goutteur</div>
+            <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+              <select class="form-select" style="flex:1;min-width:120px;"><option selected>Jardin avant</option><option>Potager</option></select>
+              <select class="form-select" style="flex:1;min-width:120px;"><option selected>Arrivee jardin</option><option>Arrivee potager</option></select>
+            </div>
+          </div>
+          <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-header">
+          <div style="flex:1">
+            <div class="list-item-name">Arroseur pelouse</div>
+            <div class="list-item-sub">switch.vanne_arroseur</div>
+            <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+              <select class="form-select" style="flex:1;min-width:120px;"><option>Jardin avant</option><option selected>Potager</option></select>
+              <select class="form-select" style="flex:1;min-width:120px;"><option>Arrivee jardin</option><option selected>Arrivee potager</option></select>
+            </div>
+          </div>
+          <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section">Config — 4. Programmes</h2>
+
+  <!-- 13. Programmes tab -->
+  <div>
+    <div class="label">13. Onglet programmes</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub Config</span></div>
+      <div class="tabs"><div class="tab">Arrivees</div><div class="tab">Zones</div><div class="tab">Vannes</div><div class="tab active">Programmes</div></div>
+      <div class="form-hint">Creez des programmes d'arrosage avec un horaire et des zones.</div>
+      <div class="list-item">
+        <div class="list-item-header">
+          <div><div class="list-item-name">Arrosage quotidien <span class="badge-dry-run-sm">Mode test</span></div><div class="list-item-sub">22:00 — 15 min</div></div>
+          <div class="list-item-actions"><button class="action-btn"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-pencil"></i></span></button><button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button></div>
+        </div>
+      </div>
+      <button class="add-btn">+ Nouveau programme</button>
+    </div>
+  </div>
+
+  <!-- 14. Programme form -->
+  <div>
+    <div class="label">14. Formulaire programme</div>
+    <div class="ha-card">
+      <div class="header"><span class="title">WateringHub Config</span></div>
+      <div class="tabs"><div class="tab">Arrivees</div><div class="tab">Zones</div><div class="tab">Vannes</div><div class="tab active">Programmes</div></div>
+      <div class="form-hint">Creez des programmes d'arrosage avec un horaire et des zones.</div>
+      <div class="inline-form">
+        <div class="form-row"><label class="form-label">Nom</label><input class="form-input" value="Arrosage quotidien"></div>
+        <div class="form-row"><label class="form-label">Heure</label><input class="form-input" type="time" value="22:00"></div>
+        <div class="form-row">
+          <label class="form-label">Zones</label>
+          <div style="border:1px solid var(--divider-color);border-radius:6px;padding:10px;margin-bottom:8px;">
+            <label style="font-size:13px;font-weight:500;color:var(--primary-text-color);display:flex;align-items:center;gap:8px;"><input type="checkbox" checked style="accent-color:var(--primary-color);">Jardin avant</label>
+            <div style="padding:4px 0 8px 24px;">
+              <div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;"><label style="flex:1;color:var(--primary-text-color);">Oscillant</label><input style="width:70px;padding:4px 8px;border:1px solid var(--divider-color);border-radius:4px;font-size:13px;text-align:right;color:var(--primary-text-color);background:var(--card-background-color);" type="number" value="10"><span>min</span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;"><label style="flex:1;color:var(--primary-text-color);">Goutteur</label><input style="width:70px;padding:4px 8px;border:1px solid var(--divider-color);border-radius:4px;font-size:13px;text-align:right;color:var(--primary-text-color);background:var(--card-background-color);" type="number" value="5"><span>min</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--secondary-text-color);text-align:right;margin-top:8px;">Total : 15 min</div>
+        <div class="form-actions"><button class="btn btn-cancel">Annuler</button><button class="btn btn-primary">Sauvegarder</button></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section">Overlays</h2>
+
+  <!-- 15. Confirm stop (renumbered) -->
+  <div>
+    <div class="label">15. Confirm — stop all</div>
+    <div class="ha-card ha-card-rel" style="min-height:160px;">
+      <div class="header" style="opacity:0.3"><span class="title">WateringHub</span></div>
+      <div class="confirm-overlay">
+        <div class="confirm-dialog">
+          <div class="confirm-message">Arreter tout l'arrosage ?</div>
+          <div class="confirm-actions"><button class="btn btn-cancel">Annuler</button><button class="btn btn-danger">Arreter</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 16. Confirm delete -->
+  <div>
+    <div class="label">16. Confirm — delete</div>
+    <div class="ha-card ha-card-rel" style="min-height:160px;">
+      <div class="header" style="opacity:0.3"><span class="title">WateringHub Config</span></div>
+      <div class="confirm-overlay">
+        <div class="confirm-dialog">
+          <div class="confirm-message">Supprimer ce programme ?</div>
+          <div class="confirm-actions"><button class="btn btn-cancel">Annuler</button><button class="btn btn-danger">Supprimer</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const r = document.documentElement;
+  const dark = getComputedStyle(r).getPropertyValue('--card-background-color').trim() === '#1c1c1c';
+  if (dark) {
+    r.style.setProperty('--primary-text-color','#212121');
+    r.style.setProperty('--secondary-text-color','#727272');
+    r.style.setProperty('--disabled-text-color','#bdbdbd');
+    r.style.setProperty('--divider-color','#e0e0e0');
+    r.style.setProperty('--card-background-color','#ffffff');
+    r.style.setProperty('--secondary-background-color','#f5f5f5');
+    document.body.style.background='#e8e8e8';
+  } else {
+    r.style.setProperty('--primary-text-color','#e1e1e1');
+    r.style.setProperty('--secondary-text-color','#9b9b9b');
+    r.style.setProperty('--disabled-text-color','#6f6f6f');
+    r.style.setProperty('--divider-color','#3a3a3a');
+    r.style.setProperty('--card-background-color','#1c1c1c');
+    r.style.setProperty('--secondary-background-color','#2a2a2a');
+    document.body.style.background='#111';
+  }
+}
+</script>
+</body>
+</html>

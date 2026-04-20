@@ -89,5 +89,9 @@
   "config.hint_valves": "Configure your valves and assign them to a zone and water supply.",
   "config.none": "None",
   "config.hint_valves_prereq": "Create water supplies and zones first",
-  "config.hint_programs_prereq": "Configure your valves first"
+  "config.hint_programs_prereq": "Configure your valves first",
+  "schedule.at_one": "at {time}",
+  "schedule.at_many": "at {rest} and {last}",
+  "config.trigger_times": "Trigger times",
+  "config.add_time": "Add a time"
 }

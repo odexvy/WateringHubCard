@@ -28,7 +28,7 @@ export interface CardConfig {
 export type Translator = (key: string, params?: Record<string, string | number>) => string;
 
 export interface ProgramSchedule {
-  time: string;
+  times: string[];
 }
 
 // Config card types

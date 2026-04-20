@@ -89,5 +89,9 @@
   "config.hint_valves": "Configurez vos vannes et assignez-les à une zone et une arrivée d'eau.",
   "config.none": "Aucun",
   "config.hint_valves_prereq": "Créez d'abord des arrivées d'eau et des zones",
-  "config.hint_programs_prereq": "Configurez d'abord vos vannes"
+  "config.hint_programs_prereq": "Configurez d'abord vos vannes",
+  "schedule.at_one": "à {time}",
+  "schedule.at_many": "à {rest} et {last}",
+  "config.trigger_times": "Horaires de déclenchement",
+  "config.add_time": "Ajouter un horaire"
 }
