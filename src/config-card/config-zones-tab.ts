@@ -43,6 +43,17 @@ export interface ZonesTabCallbacks {
   // Expanded zones local UI state
   expandedZones: Set<string>;
   onToggleZone: (zoneId: string) => void;
+  // Add-valve form
+  addingValve: boolean;
+  newValveEntityId: string;
+  newValveZoneId: string;
+  newValveSupplyId: string;
+  onStartAddValve: () => void;
+  onCancelAddValve: () => void;
+  onUpdateNewValveEntity: (id: string) => void;
+  onUpdateNewValveZone: (id: string) => void;
+  onUpdateNewValveSupply: (id: string) => void;
+  onSaveNewValve: () => void;
 }
 
 export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator): TemplateResult {
@@ -131,6 +142,14 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
         `
       : nothing}
 
+    <!-- Add a new valve -->
+    <div class="form-label" style="margin-top:16px;">${t('config.editor_section_valves')}</div>
+    ${cb.addingValve
+      ? renderAddValveForm(hass, valves, zones, supplies, cb, t)
+      : html`<button class="add-btn" @click=${cb.onStartAddValve}>
+          + ${t('config.add_valve')}
+        </button>`}
+
     <!-- Global valves save -->
     ${isEditingValves
       ? html`<div class="form-actions" style="margin-top:16px;">
@@ -140,6 +159,75 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
           </button>
         </div>`
       : nothing}
+  `;
+}
+
+function renderAddValveForm(
+  hass: Hass,
+  existingValves: ReturnType<typeof getAvailableValves>,
+  zones: ZoneConfig[],
+  supplies: WaterSupply[],
+  cb: ZonesTabCallbacks,
+  t: Translator,
+): TemplateResult {
+  const existingIds = new Set(existingValves.map((v) => v.entity_id));
+  const candidates = Object.keys(hass.states)
+    .filter((id) => id.startsWith('switch.') && !existingIds.has(id))
+    .map((id) => ({
+      id,
+      name: (hass.states[id]?.attributes.friendly_name as string | undefined) ?? id,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return html`
+    <div class="inline-form">
+      ${renderFormRow(
+        t('config.select_entity'),
+        html`<select
+          class="form-input"
+          @change=${(e: Event) => cb.onUpdateNewValveEntity((e.target as HTMLSelectElement).value)}
+        >
+          <option value="" ?selected=${!cb.newValveEntityId}>${t('config.none')}</option>
+          ${candidates.map(
+            (c) =>
+              html`<option value=${c.id} ?selected=${c.id === cb.newValveEntityId}>
+                ${c.name}
+              </option>`,
+          )}
+        </select>`,
+      )}
+      ${renderFormRow(
+        t('config.tab_zones'),
+        html`<select
+          class="form-input"
+          @change=${(e: Event) => cb.onUpdateNewValveZone((e.target as HTMLSelectElement).value)}
+        >
+          <option value="" ?selected=${!cb.newValveZoneId}>${t('config.none')}</option>
+          ${zones.map(
+            (z) =>
+              html`<option value=${z.id} ?selected=${z.id === cb.newValveZoneId}>
+                ${z.name}
+              </option>`,
+          )}
+        </select>`,
+      )}
+      ${renderFormRow(
+        t('config.tab_water_supplies'),
+        html`<select
+          class="form-input"
+          @change=${(e: Event) => cb.onUpdateNewValveSupply((e.target as HTMLSelectElement).value)}
+        >
+          <option value="" ?selected=${!cb.newValveSupplyId}>${t('config.none')}</option>
+          ${supplies.map(
+            (s) =>
+              html`<option value=${s.id} ?selected=${s.id === cb.newValveSupplyId}>
+                ${s.name}
+              </option>`,
+          )}
+        </select>`,
+      )}
+      ${renderFormActions(cb.onCancelAddValve, cb.onSaveNewValve, t)}
+    </div>
   `;
 }
 

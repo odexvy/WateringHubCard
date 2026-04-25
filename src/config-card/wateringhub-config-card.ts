@@ -48,6 +48,10 @@ export class WateringHubConfigCard extends LitElement {
   @state() private _editingWaterSupply: WaterSupplyFormState | null = null;
   @state() private _editingValves: ValveAssignment[] | null = null;
   @state() private _expandedZones: Set<string> = new Set();
+  @state() private _addingValve = false;
+  @state() private _newValveEntityId = '';
+  @state() private _newValveZoneId = '';
+  @state() private _newValveSupplyId = '';
 
   private _t: Translator = (key: string) => key;
 
@@ -99,6 +103,7 @@ export class WateringHubConfigCard extends LitElement {
     this._editingZone = null;
     this._editingProgram = null;
     this._editingWaterSupply = null;
+    this._addingValve = false;
   }
 
   private _toggleZone(zoneId: string): void {
@@ -345,6 +350,60 @@ export class WateringHubConfigCard extends LitElement {
     );
   }
 
+  // ── Add new valve ───────────────────────────────────────
+
+  private _startAddValve(): void {
+    this._addingValve = true;
+    this._newValveEntityId = '';
+    this._newValveZoneId = '';
+    this._newValveSupplyId = '';
+  }
+
+  private _cancelAddValve(): void {
+    this._addingValve = false;
+    this._newValveEntityId = '';
+    this._newValveZoneId = '';
+    this._newValveSupplyId = '';
+  }
+
+  private _updateNewValveEntity(id: string): void {
+    this._newValveEntityId = id;
+  }
+
+  private _updateNewValveZone(id: string): void {
+    this._newValveZoneId = id;
+  }
+
+  private _updateNewValveSupply(id: string): void {
+    this._newValveSupplyId = id;
+  }
+
+  private async _saveNewValve(): Promise<void> {
+    if (!this._newValveEntityId) {
+      this._showToast(this._t('config.add_valve_pick_entity'));
+      return;
+    }
+    const friendly = this._hass.states[this._newValveEntityId]?.attributes.friendly_name;
+    const name = typeof friendly === 'string' ? friendly : this._newValveEntityId;
+    const valves = [
+      ...getAvailableValves(this._hass).map((v) => ({
+        entity_id: v.entity_id,
+        name: v.name,
+        water_supply_id: v.water_supply_id,
+        zone_id: v.zone_id,
+      })),
+      {
+        entity_id: this._newValveEntityId,
+        name,
+        water_supply_id: this._newValveSupplyId || null,
+        zone_id: this._newValveZoneId || null,
+      },
+    ];
+    await this._hass.callService('wateringhub', 'set_valves', { valves });
+    this._showToast(this._t('config.saved'));
+    this._cancelAddValve();
+  }
+
   private _zonesTabCallbacks(): ZonesTabCallbacks {
     return {
       editingSupply: this._editingWaterSupply,
@@ -369,6 +428,16 @@ export class WateringHubConfigCard extends LitElement {
       onDeleteValve: (id) => this._deleteValveFromTab(id),
       expandedZones: this._expandedZones,
       onToggleZone: (id) => this._toggleZone(id),
+      addingValve: this._addingValve,
+      newValveEntityId: this._newValveEntityId,
+      newValveZoneId: this._newValveZoneId,
+      newValveSupplyId: this._newValveSupplyId,
+      onStartAddValve: () => this._startAddValve(),
+      onCancelAddValve: () => this._cancelAddValve(),
+      onUpdateNewValveEntity: (id) => this._updateNewValveEntity(id),
+      onUpdateNewValveZone: (id) => this._updateNewValveZone(id),
+      onUpdateNewValveSupply: (id) => this._updateNewValveSupply(id),
+      onSaveNewValve: () => this._saveNewValve(),
     };
   }
 

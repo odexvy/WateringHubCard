@@ -104,5 +104,7 @@
   "config.no_valves_in_zone": "No valve in this zone",
   "config.hint_zones_unified": "Manage water supplies, zones, and valves.",
   "config.valves_unassigned_warn": "Reassign valves first",
-  "config.editor_managed_in_card": "Configure water supplies, zones, valves, and programs from the card itself (Programmes / Zones tabs)."
+  "config.editor_managed_in_card": "Configure water supplies, zones, valves, and programs from the card itself (Programmes / Zones tabs).",
+  "config.editor_section_valves": "Valves",
+  "config.add_valve_pick_entity": "Pick a switch entity first"
 }
