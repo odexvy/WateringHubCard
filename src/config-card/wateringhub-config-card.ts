@@ -7,12 +7,15 @@ import type {
   Translator,
   ZoneConfig,
   WaterSupply,
-  ProgramSchedule,
-  ValveFrequency,
   ZoneFormState,
   ProgramFormState,
   WaterSupplyFormState,
 } from '../shared/types';
+import {
+  programFormFromEntity,
+  programToServicePayload,
+  hasEmptyCustomTimes,
+} from './config-program-state';
 import { getTranslator } from '../shared/i18n/index';
 import { sharedStyles } from '../shared/shared-styles';
 import { configStyles } from './config-styles';
@@ -47,7 +50,6 @@ export class WateringHubConfigCard extends LitElement {
   @state() private _editingProgram: ProgramFormState | null = null;
   @state() private _editingWaterSupply: WaterSupplyFormState | null = null;
   @state() private _editingValves: ValveAssignment[] | null = null;
-  @state() private _expandedZones: Set<string> = new Set();
   @state() private _addingValve = false;
   @state() private _newValveEntityId = '';
   @state() private _newValveZoneId = '';
@@ -104,13 +106,6 @@ export class WateringHubConfigCard extends LitElement {
     this._editingProgram = null;
     this._editingWaterSupply = null;
     this._addingValve = false;
-  }
-
-  private _toggleZone(zoneId: string): void {
-    const next = new Set(this._expandedZones);
-    if (next.has(zoneId)) next.delete(zoneId);
-    else next.add(zoneId);
-    this._expandedZones = next;
   }
 
   // ── Zone CRUD ──────────────────────────────────────────
@@ -173,40 +168,7 @@ export class WateringHubConfigCard extends LitElement {
   private _editProgram(entityId: string): void {
     const entity = this._hass.states[entityId];
     if (!entity) return;
-    const attrs = entity.attributes;
-    const programId = (attrs.program_id as string) ?? '';
-    const rawSchedule = attrs.schedule as ProgramSchedule | undefined;
-    const schedule: ProgramSchedule = {
-      times: rawSchedule?.times ?? ['06:00'],
-    };
-    const zones = (
-      (attrs.zones as Array<{
-        zone_id: string;
-        valves: Array<{
-          valve_id: string;
-          duration: number;
-          frequency?: ValveFrequency;
-          times?: string[];
-        }>;
-      }>) ?? []
-    ).map((z) => ({
-      zone_id: z.zone_id,
-      valves: z.valves.map((v) => ({
-        valve_id: v.valve_id,
-        duration: v.duration,
-        frequency: v.frequency,
-        times: v.times,
-      })),
-    }));
-
-    this._editingProgram = {
-      id: programId,
-      name: typeof attrs.friendly_name === 'string' ? attrs.friendly_name : programId,
-      schedule,
-      zones,
-      dry_run: attrs.dry_run === true,
-      isNew: false,
-    };
+    this._editingProgram = programFormFromEntity(entity);
   }
 
   private _cancelProgram(): void {
@@ -218,32 +180,14 @@ export class WateringHubConfigCard extends LitElement {
   }
 
   private async _saveProgram(form: ProgramFormState): Promise<void> {
-    const hasEmptyCustomTimes = form.zones.some((z) =>
-      z.valves.some((v) => v.times !== undefined && v.times.length === 0),
-    );
-    if (hasEmptyCustomTimes) {
+    if (hasEmptyCustomTimes(form)) {
       this._showToast(this._t('config.valve_times_required'));
       return;
     }
     const id = form.isNew ? generateId(form.name) : form.id;
     const service = form.isNew ? 'create_program' : 'update_program';
-    const sortedTimes = [...form.schedule.times].sort();
     await this._hass.callService('wateringhub', service, {
-      id,
-      name: form.name,
-      schedule: { times: sortedTimes },
-      dry_run: form.dry_run,
-      zones: form.zones.map((z) => ({
-        zone_id: z.zone_id,
-        valves: z.valves.map((v) => ({
-          valve_id: v.valve_id,
-          duration: v.duration,
-          ...(v.frequency ? { frequency: v.frequency } : {}),
-          ...(v.times && v.times.length > 0 && v.times.length < sortedTimes.length
-            ? { times: [...v.times].sort() }
-            : {}),
-        })),
-      })),
+      ...programToServicePayload(form, id),
     });
     this._editingProgram = null;
     this._showToast(this._t('config.saved'));
@@ -426,8 +370,6 @@ export class WateringHubConfigCard extends LitElement {
       onSaveValves: () => this._saveValves(),
       onCancelValves: () => this._cancelEditValves(),
       onDeleteValve: (id) => this._deleteValveFromTab(id),
-      expandedZones: this._expandedZones,
-      onToggleZone: (id) => this._toggleZone(id),
       addingValve: this._addingValve,
       newValveEntityId: this._newValveEntityId,
       newValveZoneId: this._newValveZoneId,

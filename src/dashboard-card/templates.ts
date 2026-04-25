@@ -394,7 +394,7 @@ function formatValveTimes(
 ): string {
   if (!valveTimes || valveTimes.length === 0) return '';
   if (scheduleTimes && valveTimes.length === scheduleTimes.length) return '';
-  return ` · ${[...valveTimes].sort().join(', ')}`;
+  return ` · ${[...valveTimes].sort((a, b) => a.localeCompare(b)).join(', ')}`;
 }
 
 function formatValveFrequency(frequency: ValveFrequency | undefined, t: Translator): string {

@@ -107,6 +107,71 @@ export function renderListItem(
   `;
 }
 
+// ── Inline name form (used for renaming supplies, zones, etc.) ─
+
+export function renderNameForm(
+  name: string,
+  onNameChange: (name: string) => void,
+  onSave: () => void,
+  onCancel: () => void,
+  t: Translator,
+): TemplateResult {
+  return html`
+    <div class="inline-form">
+      ${renderFormRow(
+        t('config.name'),
+        html`<input
+          class="form-input"
+          .value=${name}
+          @input=${(e: InputEvent) => onNameChange((e.target as HTMLInputElement).value)}
+        />`,
+      )}
+      ${renderFormActions(onCancel, onSave, t)}
+    </div>
+  `;
+}
+
+// ── Chip list (compact CRUD: click to edit, X to delete, "+ new" trailing chip) ─
+
+export interface ChipItem {
+  id: string;
+  name: string;
+}
+
+export function renderChipList<T extends ChipItem>(
+  items: T[],
+  options: {
+    icon: string;
+    addLabel: string;
+    onClick: (item: T) => void;
+    onDelete: (id: string) => void;
+    onNew: () => void;
+  },
+): TemplateResult {
+  return html`
+    <div class="supply-chips">
+      ${items.map(
+        (item) => html`
+          <span class="supply-chip" @click=${() => options.onClick(item)}>
+            <ha-icon icon=${options.icon}></ha-icon>
+            ${item.name}
+            <span
+              class="chip-close"
+              @click=${(e: Event) => {
+                e.stopPropagation();
+                options.onDelete(item.id);
+              }}
+            >
+              <ha-icon icon="mdi:close"></ha-icon>
+            </span>
+          </span>
+        `,
+      )}
+      <span class="supply-chip chip-add" @click=${options.onNew}> + ${options.addLabel} </span>
+    </div>
+  `;
+}
+
 // ── Confirm Dialog Component ────────────────────────────
 
 export function renderConfirmDialog(

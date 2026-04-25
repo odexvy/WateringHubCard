@@ -14,9 +14,10 @@ import {
   valvesToAssignments,
   type ValveAssignment,
 } from './config-helpers';
-import { renderFormRow, renderFormActions, renderIconButton } from '../shared/shared-templates';
+import { renderChipList, renderIconButton, renderNameForm } from '../shared/shared-templates';
+import { renderAddValveForm, type AddValveFormProps } from './config-add-valve-form';
 
-export interface ZonesTabCallbacks {
+export interface ZonesTabCallbacks extends AddValveFormProps {
   // Supplies
   editingSupply: WaterSupplyFormState | null;
   onNewSupply: () => void;
@@ -33,27 +34,16 @@ export interface ZonesTabCallbacks {
   onCancelZone: () => void;
   onUpdateZoneForm: (form: ZoneFormState) => void;
   onDeleteZone: (id: string) => void;
-  // Valves
+  // Valve assignment (immediate save via _editingValves staging)
   editingValves: ValveAssignment[] | null;
   onStartEditValves: () => void;
   onUpdateValves: (valves: ValveAssignment[]) => void;
   onSaveValves: () => void;
   onCancelValves: () => void;
   onDeleteValve: (entityId: string) => void;
-  // Expanded zones local UI state
-  expandedZones: Set<string>;
-  onToggleZone: (zoneId: string) => void;
-  // Add-valve form
+  // Add-valve form expansion state
   addingValve: boolean;
-  newValveEntityId: string;
-  newValveZoneId: string;
-  newValveSupplyId: string;
   onStartAddValve: () => void;
-  onCancelAddValve: () => void;
-  onUpdateNewValveEntity: (id: string) => void;
-  onUpdateNewValveZone: (id: string) => void;
-  onUpdateNewValveSupply: (id: string) => void;
-  onSaveNewValve: () => void;
 }
 
 export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator): TemplateResult {
@@ -63,7 +53,7 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
   const valveView: ValveAssignment[] = cb.editingValves ?? valvesToAssignments(valves);
   const isEditingValves = cb.editingValves !== null;
   const allValid = isEditingValves ? valveView.every((v) => v.zone_id && v.water_supply_id) : false;
-  // Flat list: unassigned first (warning border), then by zone order
+  // Unassigned first (warning border), then by zone order.
   const sortedValves = [
     ...valveView.filter((v) => !v.zone_id),
     ...valveView.filter((v) => v.zone_id),
@@ -75,74 +65,28 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
     <!-- Supplies chips -->
     <div class="form-label" style="margin-top:12px;">${t('config.tab_water_supplies')}</div>
     ${cb.editingSupply
-      ? renderNameForm(
-          cb.editingSupply.name,
-          (name) => cb.onUpdateSupplyForm({ ...cb.editingSupply!, name }),
-          () => cb.onSaveSupply(cb.editingSupply!),
-          cb.onCancelSupply,
-          t,
-        )
-      : html`
-          <div class="supply-chips">
-            ${supplies.map(
-              (s) => html`
-                <span class="supply-chip" @click=${() => cb.onEditSupply(s)}>
-                  <ha-icon icon="mdi:water-pump"></ha-icon>
-                  ${s.name}
-                  <span
-                    class="chip-close"
-                    @click=${(e: Event) => {
-                      e.stopPropagation();
-                      cb.onDeleteSupply(s.id);
-                    }}
-                  >
-                    <ha-icon icon="mdi:close"></ha-icon>
-                  </span>
-                </span>
-              `,
-            )}
-            <span class="supply-chip chip-add" @click=${cb.onNewSupply}>
-              + ${t('config.new_water_supply')}
-            </span>
-          </div>
-        `}
+      ? renderEditingSupply(cb, t)
+      : renderChipList(supplies, {
+          icon: 'mdi:water-pump',
+          addLabel: t('config.new_water_supply'),
+          onClick: cb.onEditSupply,
+          onDelete: cb.onDeleteSupply,
+          onNew: cb.onNewSupply,
+        })}
 
     <!-- Zones chips -->
     <div class="form-label" style="margin-top:16px;">${t('config.tab_zones')}</div>
     ${cb.editingZone
-      ? renderNameForm(
-          cb.editingZone.name,
-          (name) => cb.onUpdateZoneForm({ ...cb.editingZone!, name }),
-          () => cb.onSaveZone(cb.editingZone!),
-          cb.onCancelZone,
-          t,
-        )
-      : html`
-          <div class="supply-chips">
-            ${zones.map(
-              (z) => html`
-                <span class="supply-chip" @click=${() => cb.onEditZone(z)}>
-                  <ha-icon icon="mdi:shape-outline"></ha-icon>
-                  ${z.name}
-                  <span
-                    class="chip-close"
-                    @click=${(e: Event) => {
-                      e.stopPropagation();
-                      cb.onDeleteZone(z.id);
-                    }}
-                  >
-                    <ha-icon icon="mdi:close"></ha-icon>
-                  </span>
-                </span>
-              `,
-            )}
-            <span class="supply-chip chip-add" @click=${cb.onNewZone}>
-              + ${t('config.new_zone')}
-            </span>
-          </div>
-        `}
+      ? renderEditingZone(cb, t)
+      : renderChipList(zones, {
+          icon: 'mdi:shape-outline',
+          addLabel: t('config.new_zone'),
+          onClick: cb.onEditZone,
+          onDelete: cb.onDeleteZone,
+          onNew: cb.onNewZone,
+        })}
 
-    <!-- All valves (flat list, unassigned first with warning border) -->
+    <!-- Valves -->
     <div class="form-label" style="margin-top:16px;">
       ${t('config.editor_section_valves')} (${sortedValves.length})
     </div>
@@ -156,7 +100,7 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
           + ${t('config.add_valve')}
         </button>`}
 
-    <!-- Global valves save -->
+    <!-- Global save for staged valve dropdown changes -->
     ${isEditingValves
       ? html`<div class="form-actions" style="margin-top:16px;">
           <button class="btn btn-cancel" @click=${cb.onCancelValves}>${t('config.cancel')}</button>
@@ -168,73 +112,28 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
   `;
 }
 
-function renderAddValveForm(
-  hass: Hass,
-  existingValves: ReturnType<typeof getAvailableValves>,
-  zones: ZoneConfig[],
-  supplies: WaterSupply[],
-  cb: ZonesTabCallbacks,
-  t: Translator,
-): TemplateResult {
-  const existingIds = new Set(existingValves.map((v) => v.entity_id));
-  const candidates = Object.keys(hass.states)
-    .filter((id) => id.startsWith('switch.') && !existingIds.has(id))
-    .map((id) => ({
-      id,
-      name: (hass.states[id]?.attributes.friendly_name as string | undefined) ?? id,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+function renderEditingSupply(cb: ZonesTabCallbacks, t: Translator): TemplateResult {
+  const editing = cb.editingSupply;
+  if (!editing) return html``;
+  return renderNameForm(
+    editing.name,
+    (name) => cb.onUpdateSupplyForm({ ...editing, name }),
+    () => cb.onSaveSupply(editing),
+    cb.onCancelSupply,
+    t,
+  );
+}
 
-  return html`
-    <div class="inline-form">
-      ${renderFormRow(
-        t('config.select_entity'),
-        html`<select
-          class="form-input"
-          @change=${(e: Event) => cb.onUpdateNewValveEntity((e.target as HTMLSelectElement).value)}
-        >
-          <option value="" ?selected=${!cb.newValveEntityId}>${t('config.none')}</option>
-          ${candidates.map(
-            (c) =>
-              html`<option value=${c.id} ?selected=${c.id === cb.newValveEntityId}>
-                ${c.name}
-              </option>`,
-          )}
-        </select>`,
-      )}
-      ${renderFormRow(
-        t('config.tab_zones'),
-        html`<select
-          class="form-input"
-          @change=${(e: Event) => cb.onUpdateNewValveZone((e.target as HTMLSelectElement).value)}
-        >
-          <option value="" ?selected=${!cb.newValveZoneId}>${t('config.none')}</option>
-          ${zones.map(
-            (z) =>
-              html`<option value=${z.id} ?selected=${z.id === cb.newValveZoneId}>
-                ${z.name}
-              </option>`,
-          )}
-        </select>`,
-      )}
-      ${renderFormRow(
-        t('config.tab_water_supplies'),
-        html`<select
-          class="form-input"
-          @change=${(e: Event) => cb.onUpdateNewValveSupply((e.target as HTMLSelectElement).value)}
-        >
-          <option value="" ?selected=${!cb.newValveSupplyId}>${t('config.none')}</option>
-          ${supplies.map(
-            (s) =>
-              html`<option value=${s.id} ?selected=${s.id === cb.newValveSupplyId}>
-                ${s.name}
-              </option>`,
-          )}
-        </select>`,
-      )}
-      ${renderFormActions(cb.onCancelAddValve, cb.onSaveNewValve, t)}
-    </div>
-  `;
+function renderEditingZone(cb: ZonesTabCallbacks, t: Translator): TemplateResult {
+  const editing = cb.editingZone;
+  if (!editing) return html``;
+  return renderNameForm(
+    editing.name,
+    (name) => cb.onUpdateZoneForm({ ...editing, name }),
+    () => cb.onSaveZone(editing),
+    cb.onCancelZone,
+    t,
+  );
 }
 
 function renderValveRow(
@@ -245,78 +144,54 @@ function renderValveRow(
   isUnassigned: boolean,
   t: Translator,
 ): TemplateResult {
-  const zoneEmpty = !v.zone_id;
-  const supplyEmpty = !v.water_supply_id;
   const errorBorder = 'border-color: var(--error-color);';
-  const changeZone = (val: string) => {
+  const stageChange = (field: 'zone_id' | 'water_supply_id', val: string) => {
     if (!cb.editingValves) cb.onStartEditValves();
     const updated = (cb.editingValves ?? [v]).map((ev) =>
-      ev.entity_id === v.entity_id ? { ...ev, zone_id: val || null } : ev,
-    );
-    cb.onUpdateValves(updated);
-  };
-  const changeSupply = (val: string) => {
-    if (!cb.editingValves) cb.onStartEditValves();
-    const updated = (cb.editingValves ?? [v]).map((ev) =>
-      ev.entity_id === v.entity_id ? { ...ev, water_supply_id: val || null } : ev,
+      ev.entity_id === v.entity_id ? { ...ev, [field]: val || null } : ev,
     );
     cb.onUpdateValves(updated);
   };
 
   return html`
     <div class="valve-row ${isUnassigned ? 'valve-row-unassigned' : ''}">
-      <ha-icon
-        class="valve-icon"
-        icon=${isUnassigned ? 'mdi:alert-circle-outline' : 'mdi:valve'}
-      ></ha-icon>
-      <div class="valve-name">${v.name}</div>
-      <select
-        class="form-select valve-dropdown"
-        style=${zoneEmpty ? errorBorder : ''}
-        @change=${(e: Event) => changeZone((e.target as HTMLSelectElement).value)}
-      >
-        <option value="" ?selected=${!v.zone_id}>${t('config.none')}</option>
-        ${zones.map(
-          (z) => html`<option value=${z.id} ?selected=${z.id === v.zone_id}>${z.name}</option>`,
-        )}
-      </select>
-      <select
-        class="form-select valve-dropdown"
-        style=${supplyEmpty ? errorBorder : ''}
-        @change=${(e: Event) => changeSupply((e.target as HTMLSelectElement).value)}
-      >
-        <option value="" ?selected=${!v.water_supply_id}>${t('config.none')}</option>
-        ${supplies.map(
-          (s) =>
-            html`<option value=${s.id} ?selected=${s.id === v.water_supply_id}>${s.name}</option>`,
-        )}
-      </select>
-      ${renderIconButton('mdi:delete', () => cb.onDeleteValve(v.entity_id), {
-        className: 'action-btn delete',
-        title: t('config.delete'),
-      })}
-    </div>
-  `;
-}
-
-function renderNameForm(
-  name: string,
-  onNameChange: (name: string) => void,
-  onSave: () => void,
-  onCancel: () => void,
-  t: Translator,
-): TemplateResult {
-  return html`
-    <div class="inline-form">
-      ${renderFormRow(
-        t('config.name'),
-        html`<input
-          class="form-input"
-          .value=${name}
-          @input=${(e: InputEvent) => onNameChange((e.target as HTMLInputElement).value)}
-        />`,
-      )}
-      ${renderFormActions(onCancel, onSave, t)}
+      <div class="valve-row-head">
+        <ha-icon
+          class="valve-icon"
+          icon=${isUnassigned ? 'mdi:alert-circle-outline' : 'mdi:valve'}
+        ></ha-icon>
+        <div class="valve-name">${v.name}</div>
+        ${renderIconButton('mdi:delete', () => cb.onDeleteValve(v.entity_id), {
+          className: 'action-btn delete',
+          title: t('config.delete'),
+        })}
+      </div>
+      <div class="valve-row-selects">
+        <select
+          class="form-select valve-dropdown"
+          style=${!v.zone_id ? errorBorder : ''}
+          @change=${(e: Event) => stageChange('zone_id', (e.target as HTMLSelectElement).value)}
+        >
+          <option value="" ?selected=${!v.zone_id}>${t('config.none')}</option>
+          ${zones.map(
+            (z) => html`<option value=${z.id} ?selected=${z.id === v.zone_id}>${z.name}</option>`,
+          )}
+        </select>
+        <select
+          class="form-select valve-dropdown"
+          style=${!v.water_supply_id ? errorBorder : ''}
+          @change=${(e: Event) =>
+            stageChange('water_supply_id', (e.target as HTMLSelectElement).value)}
+        >
+          <option value="" ?selected=${!v.water_supply_id}>${t('config.none')}</option>
+          ${supplies.map(
+            (s) =>
+              html`<option value=${s.id} ?selected=${s.id === v.water_supply_id}>
+                ${s.name}
+              </option>`,
+          )}
+        </select>
+      </div>
     </div>
   `;
 }

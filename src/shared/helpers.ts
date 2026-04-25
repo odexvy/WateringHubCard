@@ -150,7 +150,7 @@ export function formatRemainingTime(seconds: number): string {
 
 export function formatSchedule(schedule: ProgramSchedule | undefined, t: Translator): string {
   if (!schedule) return '';
-  const times = [...schedule.times].sort();
+  const times = [...schedule.times].sort((a, b) => a.localeCompare(b));
   if (times.length === 0) return '';
   if (times.length === 1) return t('schedule.at_one', { time: times[0] });
   const last = times[times.length - 1];

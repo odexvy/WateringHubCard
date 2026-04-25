@@ -309,11 +309,24 @@ export const configStyles = css`
     transform: rotate(180deg);
   }
 
-  /* Valve row (inside zone card / unassigned section) */
+  /* Valve row (2-line responsive: head + selects) */
   .valve-row {
     display: flex;
-    gap: 8px;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--divider-color);
+    border-radius: 8px;
+    margin-bottom: 6px;
+  }
+  .valve-row-head {
+    display: flex;
     align-items: center;
+    gap: 8px;
+  }
+  .valve-row-selects {
+    display: flex;
+    gap: 8px;
   }
   .valve-icon {
     --mdc-icon-size: 16px;
@@ -330,14 +343,11 @@ export const configStyles = css`
     white-space: nowrap;
   }
   .valve-dropdown {
-    flex: 0 1 110px;
-    min-width: 90px;
+    flex: 1 1 0;
+    min-width: 0;
   }
   .valve-row-unassigned {
-    border: 1px solid var(--warning-color);
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin-bottom: 6px;
+    border-color: var(--warning-color);
   }
   .valve-row-unassigned .valve-icon {
     color: var(--warning-color);
