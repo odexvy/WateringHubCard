@@ -258,7 +258,24 @@ export const configStyles = css`
     background: var(--divider-color);
   }
 
-  /* Zone card (Zones tab) */
+  /* Zone row (flat list, Zones tab) */
+  .zone-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--divider-color);
+    border-radius: 8px;
+    margin-bottom: 6px;
+  }
+  .zone-row-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-text-color);
+  }
+
+  /* Zone card (legacy expandable, kept for compat) */
   .zone-card {
     border: 1px solid var(--divider-color);
     border-radius: 8px;

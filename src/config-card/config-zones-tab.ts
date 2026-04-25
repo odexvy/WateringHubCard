@@ -63,7 +63,11 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
   const valveView: ValveAssignment[] = cb.editingValves ?? valvesToAssignments(valves);
   const isEditingValves = cb.editingValves !== null;
   const allValid = isEditingValves ? valveView.every((v) => v.zone_id && v.water_supply_id) : false;
-  const unassignedValves = valveView.filter((v) => !v.zone_id);
+  // Flat list: unassigned first (warning border), then by zone order
+  const sortedValves = [
+    ...valveView.filter((v) => !v.zone_id),
+    ...valveView.filter((v) => v.zone_id),
+  ];
 
   return html`
     <div class="form-hint">${t('config.hint_zones_unified')}</div>
@@ -117,7 +121,7 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
             cb.onCancelZone,
             t,
           )
-        : renderZoneCard(zone, valveView, zones, supplies, cb, t),
+        : renderZoneRow(zone, valveView, cb, t),
     )}
     ${cb.editingZone?.isNew
       ? renderNameForm(
@@ -132,18 +136,14 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
       ? nothing
       : html`<button class="add-btn" @click=${cb.onNewZone}>+ ${t('config.new_zone')}</button>`}
 
-    <!-- Unassigned valves -->
-    ${unassignedValves.length > 0
-      ? html`
-          <div class="form-label" style="margin-top:16px; color:var(--warning-color);">
-            ${t('config.valves_unassigned')} (${unassignedValves.length})
-          </div>
-          ${unassignedValves.map((v) => renderValveRow(v, zones, supplies, cb, true, t))}
-        `
+    <!-- All valves (flat list, unassigned first with warning border) -->
+    <div class="form-label" style="margin-top:16px;">
+      ${t('config.editor_section_valves')} (${sortedValves.length})
+    </div>
+    ${sortedValves.length === 0 && !cb.addingValve
+      ? html`<div class="empty-state">${t('config.no_valves')}</div>`
       : nothing}
-
-    <!-- Add a new valve -->
-    <div class="form-label" style="margin-top:16px;">${t('config.editor_section_valves')}</div>
+    ${sortedValves.map((v) => renderValveRow(v, zones, supplies, cb, !v.zone_id, t))}
     ${cb.addingValve
       ? renderAddValveForm(hass, valves, zones, supplies, cb, t)
       : html`<button class="add-btn" @click=${cb.onStartAddValve}>
@@ -231,45 +231,25 @@ function renderAddValveForm(
   `;
 }
 
-function renderZoneCard(
+function renderZoneRow(
   zone: ZoneConfig,
   valveView: ValveAssignment[],
-  zones: ZoneConfig[],
-  supplies: WaterSupply[],
   cb: ZonesTabCallbacks,
   t: Translator,
 ): TemplateResult {
   const zoneValves = valveView.filter((v) => v.zone_id === zone.id);
-  const isExpanded = cb.expandedZones.has(zone.id);
-
   return html`
-    <div class="zone-card">
-      <div class="zone-card-header" @click=${() => cb.onToggleZone(zone.id)}>
-        <ha-icon class="chevron ${isExpanded ? 'open' : ''}" icon="mdi:chevron-down"></ha-icon>
-        <span class="zone-card-name">${zone.name}</span>
-        <span class="info-sm">(${zoneValves.length})</span>
-        <div class="list-item-actions" @click=${(e: Event) => e.stopPropagation()}>
-          ${renderIconButton('mdi:pencil', () => cb.onEditZone(zone), {
-            className: 'action-btn',
-            title: t('config.edit'),
-          })}
-          ${renderIconButton('mdi:delete', () => cb.onDeleteZone(zone.id), {
-            className: 'action-btn delete',
-            title: t('config.delete'),
-          })}
-        </div>
-      </div>
-      ${isExpanded
-        ? html`
-            <div class="zone-card-body">
-              ${zoneValves.length === 0
-                ? html`<div class="info-sm" style="padding:8px 0;">
-                    ${t('config.no_valves_in_zone')}
-                  </div>`
-                : zoneValves.map((v) => renderValveRow(v, zones, supplies, cb, false, t))}
-            </div>
-          `
-        : nothing}
+    <div class="zone-row">
+      <span class="zone-row-name">${zone.name}</span>
+      <span class="info-sm">(${zoneValves.length})</span>
+      ${renderIconButton('mdi:pencil', () => cb.onEditZone(zone), {
+        className: 'action-btn',
+        title: t('config.edit'),
+      })}
+      ${renderIconButton('mdi:delete', () => cb.onDeleteZone(zone.id), {
+        className: 'action-btn delete',
+        title: t('config.delete'),
+      })}
     </div>
   `;
 }
