@@ -6,33 +6,16 @@ import type {
   ZoneConfig,
   ProgramFormState,
   ProgramValveForm,
-  ProgramZoneForm,
   ProgramSchedule,
 } from '../shared/types';
 import { discoverPrograms, getFriendlyName, formatSchedule } from '../shared/helpers';
-import { getZones, getAvailableValves, getValvesForZone } from './config-helpers';
+import { getZones, getAvailableValves } from './config-helpers';
 import {
   renderListItem,
   renderFormRow,
   renderFormActions,
   renderAddButton,
 } from '../shared/shared-templates';
-
-// Update schedule.times and prune any valve.times entries that reference
-// a time no longer in schedule.times. Returns a new form state.
-function applyScheduleTimes(form: ProgramFormState, newTimes: string[]): ProgramFormState {
-  const allowed = new Set(newTimes);
-  return {
-    ...form,
-    schedule: { times: newTimes },
-    zones: form.zones.map((z) => ({
-      ...z,
-      valves: z.valves.map((v) =>
-        v.times ? { ...v, times: v.times.filter((t) => allowed.has(t)) } : v,
-      ),
-    })),
-  };
-}
 
 export function renderProgramsTab(
   hass: Hass,
@@ -109,6 +92,7 @@ function renderProgramForm(
   onFormUpdate: (form: ProgramFormState) => void,
   t: Translator,
 ): TemplateResult {
+  const slots = [...form.schedule.times];
   const totalDuration = form.zones.reduce(
     (sum, z) => sum + z.valves.reduce((s, v) => s + (v.duration || 0), 0),
     0,
@@ -127,137 +111,18 @@ function renderProgramForm(
         />`,
       )}
 
-      <!-- Schedule — multiple times -->
-      ${renderFormRow(
-        t('config.trigger_times'),
-        html`<div style="display:flex; flex-direction:column; gap:6px;">
-          ${(form.schedule.times ?? []).map(
-            (time, idx) => html`
-              <div style="display:flex; gap:8px; align-items:center;">
-                <input
-                  class="form-input"
-                  style="flex:1;"
-                  type="time"
-                  .value=${time}
-                  @input=${(e: InputEvent) => {
-                    const newTimes = (form.schedule.times ?? []).map((t, i) =>
-                      i === idx ? (e.target as HTMLInputElement).value : t,
-                    );
-                    onFormUpdate(applyScheduleTimes(form, newTimes));
-                  }}
-                />
-                ${(form.schedule.times ?? []).length > 1
-                  ? html`<button
-                      class="action-btn delete"
-                      @click=${() => {
-                        const newTimes = (form.schedule.times ?? []).filter((_, i) => i !== idx);
-                        onFormUpdate(applyScheduleTimes(form, newTimes));
-                      }}
-                    >
-                      <ha-icon icon="mdi:close"></ha-icon>
-                    </button>`
-                  : nothing}
-              </div>
-            `,
-          )}
-          <button
-            class="add-btn"
-            style="margin-top:4px;"
-            @click=${() => {
-              const newTimes = [...(form.schedule.times ?? []), '12:00'];
-              onFormUpdate(applyScheduleTimes(form, newTimes));
-            }}
-          >
-            + ${t('config.add_time')}
-          </button>
-        </div>`,
-      )}
+      <!-- Schedule times (chips + time picker) -->
+      ${renderScheduleTimesChips(form, onFormUpdate, t)}
 
-      <!-- Zones + valves with durations -->
-      <div class="form-row">
-        <label class="form-label">${t('config.select_zones')}</label>
-        ${[
-          ...form.zones.map((fz) => zones.find((z) => z.id === fz.zone_id)),
-          ...zones.filter((z) => !form.zones.some((fz) => fz.zone_id === z.id)),
-        ]
-          .filter((z): z is ZoneConfig => !!z)
-          .map((zone) => {
-            const formZoneIdx = form.zones.findIndex((fz) => fz.zone_id === zone.id);
-            const formZone = formZoneIdx >= 0 ? form.zones[formZoneIdx] : null;
-            const isSelected = !!formZone;
-            const moveZone = (dir: -1 | 1) => {
-              const arr = [...form.zones];
-              const newIdx = formZoneIdx + dir;
-              [arr[formZoneIdx], arr[newIdx]] = [arr[newIdx], arr[formZoneIdx]];
-              onFormUpdate({ ...form, zones: arr });
-            };
-            const zoneReorderBtns =
-              isSelected && form.zones.length > 1
-                ? html`
-                    <div class="reorder-btns">
-                      <button
-                        class="reorder-btn"
-                        ?disabled=${formZoneIdx === 0}
-                        @click=${() => moveZone(-1)}
-                      >
-                        <ha-icon icon="mdi:chevron-up"></ha-icon>
-                      </button>
-                      <button
-                        class="reorder-btn"
-                        ?disabled=${formZoneIdx === form.zones.length - 1}
-                        @click=${() => moveZone(1)}
-                      >
-                        <ha-icon icon="mdi:chevron-down"></ha-icon>
-                      </button>
-                    </div>
-                  `
-                : nothing;
-            return html`
-              <div class="form-zone-section">
-                <div class="zone-header-row">
-                  <label class="checkbox-item">
-                    <input
-                      type="checkbox"
-                      .checked=${isSelected}
-                      @change=${() => {
-                        const newZones = isSelected
-                          ? form.zones.filter((fz) => fz.zone_id !== zone.id)
-                          : [
-                              ...form.zones,
-                              {
-                                zone_id: zone.id,
-                                valves: getValvesForZone(zone.id, valves).map((v) => ({
-                                  valve_id: v.id,
-                                  duration: 10,
-                                })),
-                              },
-                            ];
-                        onFormUpdate({ ...form, zones: newZones });
-                      }}
-                    />
-                    <span class="form-zone-name">${zone.name}</span>
-                  </label>
-                  ${zoneReorderBtns}
-                </div>
-                ${isSelected && formZone
-                  ? formZone.valves.map((fv, valveIdx) =>
-                      renderValveConfig(
-                        fv,
-                        valveIdx,
-                        formZone,
-                        zone,
-                        form,
-                        valves,
-                        onFormUpdate,
-                        t,
-                      ),
-                    )
-                  : nothing}
-              </div>
-            `;
-          })}
-      </div>
-
+      <!-- Per-slot valve sections -->
+      ${slots.length === 0
+        ? html`<div class="form-hint" style="color:var(--warning-color);">
+            ${t('config.no_schedule_times')}
+          </div>`
+        : html`<div class="form-label" style="margin-top:12px;">${t('config.valves_per_slot')}</div>
+            ${[...slots]
+              .sort()
+              .map((slot) => renderSlotSection(slot, form, zones, valves, onFormUpdate, t))}`}
       ${totalDuration > 0
         ? html`<div class="total-duration">
             ${t('config.total_duration', { duration: totalDuration })}
@@ -282,42 +147,187 @@ function renderProgramForm(
   `;
 }
 
-function renderValveConfig(
-  fv: ProgramValveForm,
-  valveIdx: number,
-  formZone: ProgramZoneForm,
-  zone: ZoneConfig,
+function renderScheduleTimesChips(
   form: ProgramFormState,
+  onFormUpdate: (form: ProgramFormState) => void,
+  t: Translator,
+): TemplateResult {
+  const times = form.schedule.times ?? [];
+  return renderFormRow(
+    t('config.trigger_times'),
+    html`<div class="schedule-chips">
+      ${times.map(
+        (time, idx) => html`
+          <div class="schedule-chip-wrap">
+            <input
+              class="schedule-chip-input"
+              type="time"
+              .value=${time}
+              @input=${(e: InputEvent) => {
+                const newTimes = times.map((t, i) =>
+                  i === idx ? (e.target as HTMLInputElement).value : t,
+                );
+                onFormUpdate(applyScheduleTimes(form, newTimes));
+              }}
+            />
+            ${times.length > 1
+              ? html`<button
+                  class="chip-close"
+                  @click=${() =>
+                    onFormUpdate(
+                      applyScheduleTimes(
+                        form,
+                        times.filter((_, i) => i !== idx),
+                      ),
+                    )}
+                >
+                  <ha-icon icon="mdi:close"></ha-icon>
+                </button>`
+              : nothing}
+          </div>
+        `,
+      )}
+      <button
+        class="supply-chip chip-add"
+        @click=${() => onFormUpdate(applyScheduleTimes(form, [...times, '12:00']))}
+      >
+        + ${t('config.add_time')}
+      </button>
+    </div>`,
+  );
+}
+
+function renderSlotSection(
+  slot: string,
+  form: ProgramFormState,
+  zones: ZoneConfig[],
   valves: AvailableValve[],
   onFormUpdate: (form: ProgramFormState) => void,
   t: Translator,
 ): TemplateResult {
-  const valveName = valves.find((v) => v.id === fv.valve_id)?.name ?? fv.valve_id;
+  const zonesWithValves = zones.filter((z) => valves.some((v) => v.zone_id === z.id));
+  const activeCount = countActiveValvesAtSlot(form, slot);
+
+  return html`
+    <div class="slot-section">
+      <div class="slot-header">
+        <ha-icon icon="mdi:clock-outline"></ha-icon>
+        <span class="slot-time">${slot}</span>
+        <span class="info-sm">(${activeCount})</span>
+      </div>
+      <div class="slot-body">
+        ${zonesWithValves.length === 0
+          ? html`<div class="info-sm" style="padding:4px 0;">
+              ${t('config.hint_programs_prereq')}
+            </div>`
+          : zonesWithValves.map(
+              (zone) => html`
+                <div class="slot-zone-label">${zone.name}</div>
+                ${orderZoneValves(zone.id, valves, form).map((v) =>
+                  renderSlotValveRow(v, zone.id, slot, form, onFormUpdate, t),
+                )}
+              `,
+            )}
+      </div>
+    </div>
+  `;
+}
+
+// Order: valves in form.zones (active, in program order) first, then inactive valves.
+function orderZoneValves(
+  zoneId: string,
+  valves: AvailableValve[],
+  form: ProgramFormState,
+): AvailableValve[] {
+  const zoneValves = valves.filter((v) => v.zone_id === zoneId);
+  const formZone = form.zones.find((z) => z.zone_id === zoneId);
+  if (!formZone) return zoneValves;
+  const formOrder = formZone.valves
+    .map((fv) => zoneValves.find((v) => v.id === fv.valve_id))
+    .filter((v): v is AvailableValve => !!v);
+  const activeIds = new Set(formOrder.map((v) => v.id));
+  const inactive = zoneValves.filter((v) => !activeIds.has(v.id));
+  return [...formOrder, ...inactive];
+}
+
+function renderSlotValveRow(
+  valve: AvailableValve,
+  zoneId: string,
+  slot: string,
+  form: ProgramFormState,
+  onFormUpdate: (form: ProgramFormState) => void,
+  t: Translator,
+): TemplateResult {
+  const formZone = form.zones.find((z) => z.zone_id === zoneId);
+  const formValve = formZone?.valves.find((v) => v.valve_id === valve.id);
+  const isActiveAtSlot = !!(
+    formValve &&
+    (formValve.times === undefined || formValve.times.includes(slot))
+  );
+  const valveIdx = formZone?.valves.findIndex((v) => v.valve_id === valve.id) ?? -1;
+  const valveCount = formZone?.valves.length ?? 0;
+  const isFirst = valveIdx <= 0;
+  const isLast = valveIdx < 0 || valveIdx === valveCount - 1;
+
+  const toggle = () => onFormUpdate(toggleValveAtSlot(form, zoneId, valve.id, slot));
+  const updateDuration = (d: number) => onFormUpdate(setValveDuration(form, zoneId, valve.id, d));
+  const move = (dir: -1 | 1) => onFormUpdate(moveValveInZone(form, zoneId, valve.id, dir));
+
+  const reorderBtns =
+    isActiveAtSlot && formValve && valveCount > 1
+      ? html`
+          <div class="reorder-btns">
+            <button class="reorder-btn" ?disabled=${isFirst} @click=${() => move(-1)}>
+              <ha-icon icon="mdi:chevron-up"></ha-icon>
+            </button>
+            <button class="reorder-btn" ?disabled=${isLast} @click=${() => move(1)}>
+              <ha-icon icon="mdi:chevron-down"></ha-icon>
+            </button>
+          </div>
+        `
+      : nothing;
+
+  return html`
+    <div class="slot-valve-row ${isActiveAtSlot ? '' : 'inactive'}">
+      <label class="slot-valve-main">
+        <input type="checkbox" .checked=${isActiveAtSlot} @change=${toggle} />
+        ${reorderBtns}
+        <span class="slot-valve-name">${valve.name}</span>
+        ${isActiveAtSlot && formValve
+          ? html`<input
+                class="slot-duration-input"
+                type="number"
+                min="1"
+                .value=${String(formValve.duration)}
+                @input=${(e: InputEvent) =>
+                  updateDuration(Number.parseInt((e.target as HTMLInputElement).value) || 1)}
+              /><span class="info-sm">min</span>`
+          : html`<span class="info-sm slot-disabled-hint">
+              ${t('config.slot_disabled_here')}
+            </span>`}
+      </label>
+      ${isActiveAtSlot && formValve
+        ? renderValveFrequencyInline(formValve, zoneId, form, onFormUpdate, t)
+        : nothing}
+    </div>
+  `;
+}
+
+function renderValveFrequencyInline(
+  fv: ProgramValveForm,
+  zoneId: string,
+  form: ProgramFormState,
+  onFormUpdate: (form: ProgramFormState) => void,
+  t: Translator,
+): TemplateResult {
   const freq = fv.frequency;
   const freqType = freq?.type ?? '';
   const today = new Date().toISOString().slice(0, 10);
-  const isFirst = valveIdx === 0;
-  const isLast = valveIdx === formZone.valves.length - 1;
 
-  const updateValve = (patch: Partial<ProgramValveForm>) => {
-    const newValves = formZone.valves.map((v) =>
-      v.valve_id === fv.valve_id ? { ...v, ...patch } : v,
-    );
-    const newZones = form.zones.map((fz) =>
-      fz.zone_id === zone.id ? { ...fz, valves: newValves } : fz,
-    );
-    onFormUpdate({ ...form, zones: newZones });
-  };
+  const setFreq = (patch: ProgramValveForm['frequency']) =>
+    onFormUpdate(updateValve(form, zoneId, fv.valve_id, { frequency: patch }));
 
-  const moveValve = (dir: -1 | 1) => {
-    const arr = [...formZone.valves];
-    const newIdx = valveIdx + dir;
-    [arr[valveIdx], arr[newIdx]] = [arr[newIdx], arr[valveIdx]];
-    const newZones = form.zones.map((fz) => (fz.zone_id === zone.id ? { ...fz, valves: arr } : fz));
-    onFormUpdate({ ...form, zones: newZones });
-  };
-
-  const freqEveryNInput =
+  const freqEveryN =
     freqType === 'every_n_days' && freq
       ? html`
           <input
@@ -326,18 +336,16 @@ function renderValveConfig(
             min="2"
             .value=${String(freq.n ?? 2)}
             @input=${(e: InputEvent) =>
-              updateValve({
-                frequency: {
-                  ...freq,
-                  n: Number.parseInt((e.target as HTMLInputElement).value) || 2,
-                },
+              setFreq({
+                ...freq,
+                n: Number.parseInt((e.target as HTMLInputElement).value) || 2,
               })}
           />
-          <span>j</span>
+          <span class="info-sm">j</span>
         `
       : nothing;
 
-  const freqWeekdaysInput =
+  const freqWeekdays =
     freqType === 'weekdays' && freq
       ? html`
           <div class="valve-freq-days">
@@ -351,7 +359,7 @@ function renderValveConfig(
                     @change=${() => {
                       const days = freq.days ?? [];
                       const newDays = checked ? days.filter((d) => d !== day) : [...days, day];
-                      updateValve({ frequency: { ...freq, days: newDays } });
+                      setFreq({ ...freq, days: newDays });
                     }}
                   />
                   ${t(`days.${day}`)}
@@ -362,96 +370,159 @@ function renderValveConfig(
         `
       : nothing;
 
-  const scheduleTimes = form.schedule.times ?? [];
-  const useCustomTimes = fv.times !== undefined;
-  const customTimesBlock =
-    scheduleTimes.length > 1
-      ? html`
-          <div class="valve-custom-times-row">
-            <label class="checkbox-item">
-              <input
-                type="checkbox"
-                .checked=${useCustomTimes}
-                @change=${() =>
-                  updateValve({ times: useCustomTimes ? undefined : [...scheduleTimes] })}
-              />
-              ${t('config.valve_custom_times')}
-            </label>
-            ${useCustomTimes
-              ? html`
-                  <div class="valve-custom-times-slots">
-                    ${[...scheduleTimes].sort().map((slot) => {
-                      const slotChecked = (fv.times ?? []).includes(slot);
-                      return html`
-                        <label class="valve-custom-time-slot">
-                          <input
-                            type="checkbox"
-                            .checked=${slotChecked}
-                            @change=${() => {
-                              const current = fv.times ?? [];
-                              const next = slotChecked
-                                ? current.filter((t) => t !== slot)
-                                : [...current, slot];
-                              updateValve({ times: next });
-                            }}
-                          />
-                          ${slot}
-                        </label>
-                      `;
-                    })}
-                  </div>
-                `
-              : nothing}
-          </div>
-        `
-      : nothing;
-
   return html`
-    <div class="valve-config-block">
-      <div class="valve-duration-row">
-        <div class="reorder-btns">
-          <button class="reorder-btn" ?disabled=${isFirst} @click=${() => moveValve(-1)}>
-            <ha-icon icon="mdi:chevron-up"></ha-icon>
-          </button>
-          <button class="reorder-btn" ?disabled=${isLast} @click=${() => moveValve(1)}>
-            <ha-icon icon="mdi:chevron-down"></ha-icon>
-          </button>
-        </div>
-        <label>${valveName}</label>
-        <input
-          class="valve-duration-input"
-          type="number"
-          min="1"
-          .value=${String(fv.duration)}
-          @input=${(e: InputEvent) =>
-            updateValve({ duration: Number.parseInt((e.target as HTMLInputElement).value) || 1 })}
-        />
-        <span>min</span>
-      </div>
-      <div class="valve-frequency-row">
-        <select
-          class="valve-freq-select"
-          .value=${freqType}
-          @change=${(e: Event) => {
-            const val = (e.target as HTMLSelectElement).value;
-            if (!val) {
-              updateValve({ frequency: undefined });
-            } else if (val === 'every_n_days') {
-              updateValve({ frequency: { type: 'every_n_days', n: 2, start_date: today } });
-            } else {
-              updateValve({ frequency: { type: 'weekdays', days: [] } });
-            }
-          }}
-        >
-          <option value="">${t('config.follows_program')}</option>
-          <option value="every_n_days">
-            ${t('config.frequency_every_n', { n: freq?.n ?? 2 })}
-          </option>
-          <option value="weekdays">${t('config.frequency_weekdays')}</option>
-        </select>
-        ${freqEveryNInput} ${freqWeekdaysInput}
-      </div>
-      ${customTimesBlock}
+    <div class="slot-valve-freq">
+      <select
+        class="valve-freq-select"
+        @change=${(e: Event) => {
+          const val = (e.target as HTMLSelectElement).value;
+          if (!val) setFreq(undefined);
+          else if (val === 'every_n_days')
+            setFreq({ type: 'every_n_days', n: 2, start_date: today });
+          else setFreq({ type: 'weekdays', days: [] });
+        }}
+      >
+        <option value="" ?selected=${freqType === ''}>${t('config.follows_program')}</option>
+        <option value="every_n_days" ?selected=${freqType === 'every_n_days'}>
+          ${t('config.frequency_every_n', { n: freq?.n ?? 2 })}
+        </option>
+        <option value="weekdays" ?selected=${freqType === 'weekdays'}>
+          ${t('config.frequency_weekdays')}
+        </option>
+      </select>
+      ${freqEveryN}${freqWeekdays}
     </div>
   `;
+}
+
+// ── State transitions ─────────────────────────────────────
+
+function countActiveValvesAtSlot(form: ProgramFormState, slot: string): number {
+  return form.zones.reduce(
+    (acc, z) =>
+      acc + z.valves.filter((v) => v.times === undefined || v.times.includes(slot)).length,
+    0,
+  );
+}
+
+function applyScheduleTimes(form: ProgramFormState, newTimes: string[]): ProgramFormState {
+  const allowed = new Set(newTimes);
+  const zones = form.zones
+    .map((z) => ({
+      ...z,
+      valves: z.valves
+        .map((v) => {
+          if (v.times === undefined) return v;
+          const filtered = v.times.filter((t) => allowed.has(t));
+          return { ...v, times: filtered };
+        })
+        .filter((v) => v.times === undefined || v.times.length > 0),
+    }))
+    .filter((z) => z.valves.length > 0);
+  return { ...form, schedule: { times: newTimes }, zones };
+}
+
+function toggleValveAtSlot(
+  form: ProgramFormState,
+  zoneId: string,
+  valveId: string,
+  slot: string,
+  defaultDuration = 10,
+): ProgramFormState {
+  const scheduleTimes = form.schedule.times;
+  const formZone = form.zones.find((z) => z.zone_id === zoneId);
+  const formValve = formZone?.valves.find((v) => v.valve_id === valveId);
+  const isActiveAtSlot = !!(
+    formValve &&
+    (formValve.times === undefined || formValve.times.includes(slot))
+  );
+
+  if (isActiveAtSlot && formValve) {
+    const currentTimes = formValve.times ?? [...scheduleTimes];
+    const newTimes = currentTimes.filter((t) => t !== slot);
+    if (newTimes.length === 0) {
+      return removeValve(form, zoneId, valveId);
+    }
+    return updateValve(form, zoneId, valveId, { times: newTimes });
+  }
+  // Activate
+  if (!formValve) {
+    return addValve(form, zoneId, {
+      valve_id: valveId,
+      duration: defaultDuration,
+      times: [slot],
+    });
+  }
+  const currentTimes = formValve.times ?? [];
+  const newTimes = [...currentTimes, slot];
+  if (newTimes.length >= scheduleTimes.length) {
+    return updateValve(form, zoneId, valveId, { times: undefined });
+  }
+  return updateValve(form, zoneId, valveId, { times: newTimes });
+}
+
+function setValveDuration(
+  form: ProgramFormState,
+  zoneId: string,
+  valveId: string,
+  duration: number,
+): ProgramFormState {
+  return updateValve(form, zoneId, valveId, { duration });
+}
+
+function updateValve(
+  form: ProgramFormState,
+  zoneId: string,
+  valveId: string,
+  patch: Partial<ProgramValveForm>,
+): ProgramFormState {
+  return {
+    ...form,
+    zones: form.zones.map((z) =>
+      z.zone_id === zoneId
+        ? { ...z, valves: z.valves.map((v) => (v.valve_id === valveId ? { ...v, ...patch } : v)) }
+        : z,
+    ),
+  };
+}
+
+function addValve(
+  form: ProgramFormState,
+  zoneId: string,
+  valve: ProgramValveForm,
+): ProgramFormState {
+  const hasZone = form.zones.some((z) => z.zone_id === zoneId);
+  const zones = hasZone
+    ? form.zones.map((z) => (z.zone_id === zoneId ? { ...z, valves: [...z.valves, valve] } : z))
+    : [...form.zones, { zone_id: zoneId, valves: [valve] }];
+  return { ...form, zones };
+}
+
+function removeValve(form: ProgramFormState, zoneId: string, valveId: string): ProgramFormState {
+  const zones = form.zones
+    .map((z) =>
+      z.zone_id === zoneId ? { ...z, valves: z.valves.filter((v) => v.valve_id !== valveId) } : z,
+    )
+    .filter((z) => z.valves.length > 0);
+  return { ...form, zones };
+}
+
+function moveValveInZone(
+  form: ProgramFormState,
+  zoneId: string,
+  valveId: string,
+  dir: -1 | 1,
+): ProgramFormState {
+  return {
+    ...form,
+    zones: form.zones.map((z) => {
+      if (z.zone_id !== zoneId) return z;
+      const idx = z.valves.findIndex((v) => v.valve_id === valveId);
+      const newIdx = idx + dir;
+      if (idx < 0 || newIdx < 0 || newIdx >= z.valves.length) return z;
+      const arr = [...z.valves];
+      [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+      return { ...z, valves: arr };
+    }),
+  };
 }

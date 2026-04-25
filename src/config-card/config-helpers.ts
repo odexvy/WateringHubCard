@@ -1,5 +1,21 @@
 import type { Hass, AvailableValve, ZoneConfig, WaterSupply } from '../shared/types';
 
+export interface ValveAssignment {
+  entity_id: string;
+  name: string;
+  zone_id: string | null;
+  water_supply_id: string | null;
+}
+
+export function valvesToAssignments(valves: AvailableValve[]): ValveAssignment[] {
+  return valves.map((v) => ({
+    entity_id: v.entity_id,
+    name: v.name,
+    zone_id: v.zone_id,
+    water_supply_id: v.water_supply_id,
+  }));
+}
+
 export function getAvailableValves(hass: Hass): AvailableValve[] {
   const entity = hass.states['sensor.wateringhub_status'];
   return (entity?.attributes.available_valves as AvailableValve[]) ?? [];

@@ -9,24 +9,26 @@ import type {
   WaterSupply,
   ProgramSchedule,
   ValveFrequency,
+  ZoneFormState,
+  ProgramFormState,
+  WaterSupplyFormState,
 } from '../shared/types';
 import { getTranslator } from '../shared/i18n/index';
 import { sharedStyles } from '../shared/shared-styles';
 import { configStyles } from './config-styles';
-import { generateId, getAvailableValves } from './config-helpers';
+import {
+  generateId,
+  getAvailableValves,
+  valvesToAssignments,
+  type ValveAssignment,
+} from './config-helpers';
 import {
   renderTabs,
-  renderValvesTab,
   renderZonesTab,
   renderProgramsTab,
-  renderWaterSuppliesTab,
-  type ZoneFormState,
-  type ProgramFormState,
-  type WaterSupplyFormState,
+  type ZonesTabCallbacks,
 } from './config-templates';
 import { renderConfirmDialog } from '../shared/shared-templates';
-import type { ValveAssignment } from './config-valves-tab';
-import { valvesToAssignments } from './config-valves-tab';
 import './config-editor';
 
 @customElement('wateringhub-config-card')
@@ -36,7 +38,7 @@ export class WateringHubConfigCard extends LitElement {
   }
   @state() private _config!: CardConfig;
   @state() private _hass!: Hass;
-  @state() private _activeTab = 'water_supplies';
+  @state() private _activeTab = 'programs';
   @state() private _editingZone: ZoneFormState | null = null;
   @state() private _toast = '';
   @state() private _confirmMessage = '';
@@ -44,7 +46,8 @@ export class WateringHubConfigCard extends LitElement {
   @state() private _confirmAction: (() => void) | null = null;
   @state() private _editingProgram: ProgramFormState | null = null;
   @state() private _editingWaterSupply: WaterSupplyFormState | null = null;
-  @state() private _editingValves: import('./config-valves-tab').ValveAssignment[] | null = null;
+  @state() private _editingValves: ValveAssignment[] | null = null;
+  @state() private _expandedZones: Set<string> = new Set();
 
   private _t: Translator = (key: string) => key;
 
@@ -96,6 +99,13 @@ export class WateringHubConfigCard extends LitElement {
     this._editingZone = null;
     this._editingProgram = null;
     this._editingWaterSupply = null;
+  }
+
+  private _toggleZone(zoneId: string): void {
+    const next = new Set(this._expandedZones);
+    if (next.has(zoneId)) next.delete(zoneId);
+    else next.add(zoneId);
+    this._expandedZones = next;
   }
 
   // ── Zone CRUD ──────────────────────────────────────────
@@ -335,6 +345,33 @@ export class WateringHubConfigCard extends LitElement {
     );
   }
 
+  private _zonesTabCallbacks(): ZonesTabCallbacks {
+    return {
+      editingSupply: this._editingWaterSupply,
+      onNewSupply: () => this._newWaterSupply(),
+      onEditSupply: (s) => this._editWaterSupply(s),
+      onSaveSupply: (f) => this._saveWaterSupply(f),
+      onCancelSupply: () => this._cancelWaterSupply(),
+      onUpdateSupplyForm: (f) => this._updateWaterSupplyForm(f),
+      onDeleteSupply: (id) => this._deleteWaterSupply(id),
+      editingZone: this._editingZone,
+      onNewZone: () => this._newZone(),
+      onEditZone: (z) => this._editZone(z),
+      onSaveZone: (f) => this._saveZone(f),
+      onCancelZone: () => this._cancelZone(),
+      onUpdateZoneForm: (f) => this._updateZoneForm(f),
+      onDeleteZone: (id) => this._deleteZone(id),
+      editingValves: this._editingValves,
+      onStartEditValves: () => this._startEditValves(),
+      onUpdateValves: (v) => this._updateValvesForm(v),
+      onSaveValves: () => this._saveValves(),
+      onCancelValves: () => this._cancelEditValves(),
+      onDeleteValve: (id) => this._deleteValveFromTab(id),
+      expandedZones: this._expandedZones,
+      onToggleZone: (id) => this._toggleZone(id),
+    };
+  }
+
   // ── Render ─────────────────────────────────────────────
 
   render() {
@@ -346,44 +383,6 @@ export class WateringHubConfigCard extends LitElement {
       <ha-card>
         <div class="header"><span class="title">${this._t('config.title')}</span></div>
         ${renderTabs(this._activeTab, (tab) => this._setTab(tab), this._t)}
-        ${this._activeTab === 'valves'
-          ? renderValvesTab(
-              this._hass,
-              this._editingValves,
-              () => this._startEditValves(),
-              (v) => this._updateValvesForm(v),
-              () => this._saveValves(),
-              () => this._cancelEditValves(),
-              (id) => this._deleteValveFromTab(id),
-              this._t,
-            )
-          : ''}
-        ${this._activeTab === 'zones'
-          ? renderZonesTab(
-              this._hass,
-              this._editingZone,
-              (z) => this._editZone(z),
-              (id) => this._deleteZone(id),
-              () => this._newZone(),
-              (f) => this._saveZone(f),
-              () => this._cancelZone(),
-              (f) => this._updateZoneForm(f),
-              this._t,
-            )
-          : ''}
-        ${this._activeTab === 'water_supplies'
-          ? renderWaterSuppliesTab(
-              this._hass,
-              this._editingWaterSupply,
-              (s) => this._editWaterSupply(s),
-              (id) => this._deleteWaterSupply(id),
-              () => this._newWaterSupply(),
-              (f) => this._saveWaterSupply(f),
-              () => this._cancelWaterSupply(),
-              (f) => this._updateWaterSupplyForm(f),
-              this._t,
-            )
-          : ''}
         ${this._activeTab === 'programs'
           ? renderProgramsTab(
               this._hass,
@@ -396,6 +395,9 @@ export class WateringHubConfigCard extends LitElement {
               (f) => this._updateProgramForm(f),
               this._t,
             )
+          : ''}
+        ${this._activeTab === 'zones'
+          ? renderZonesTab(this._hass, this._zonesTabCallbacks(), this._t)
           : ''}
         ${this._toast ? html`<div class="toast">${this._toast}</div>` : nothing}
         ${renderConfirmDialog(

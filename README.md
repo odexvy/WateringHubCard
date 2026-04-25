@@ -1,6 +1,6 @@
 # WateringHub Card
 
-**Version:** 0.0.51
+**Version:** 0.0.52
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![GitHub Release](https://img.shields.io/github/v/release/odexvy/WateringHubCard)](https://github.com/odexvy/WateringHubCard/releases)

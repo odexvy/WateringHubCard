@@ -96,5 +96,11 @@
   "config.add_time": "Add a time",
   "config.valve_custom_times": "Custom times",
   "config.valve_custom_times_hint": "Run only at selected times",
-  "config.valve_times_required": "Select at least one time, or uncheck custom times"
+  "config.valve_times_required": "Select at least one time, or uncheck custom times",
+  "config.valves_per_slot": "Valves per trigger time",
+  "config.slot_disabled_here": "disabled here",
+  "config.no_schedule_times": "Add at least one trigger time",
+  "config.valves_unassigned": "Unassigned valves",
+  "config.no_valves_in_zone": "No valve in this zone",
+  "config.hint_zones_unified": "Manage water supplies, zones, and valves."
 }

@@ -96,5 +96,11 @@
   "config.add_time": "Ajouter un horaire",
   "config.valve_custom_times": "Horaires spécifiques",
   "config.valve_custom_times_hint": "Ne tourne qu'aux horaires sélectionnés",
-  "config.valve_times_required": "Sélectionnez au moins un horaire, ou décochez les horaires spécifiques"
+  "config.valve_times_required": "Sélectionnez au moins un horaire, ou décochez les horaires spécifiques",
+  "config.valves_per_slot": "Vannes par horaire",
+  "config.slot_disabled_here": "désactivée ici",
+  "config.no_schedule_times": "Ajoutez au moins un horaire",
+  "config.valves_unassigned": "Vannes non assignées",
+  "config.no_valves_in_zone": "Aucune vanne dans cette zone",
+  "config.hint_zones_unified": "Gérez vos arrivées d'eau, zones et vannes."
 }
