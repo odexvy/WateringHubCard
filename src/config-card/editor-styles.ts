@@ -303,4 +303,21 @@ export const editorStyles = css`
     color: var(--primary-color);
     border-color: var(--primary-color);
   }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    background: var(--primary-text-color);
+    color: var(--card-background-color);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  }
 `;

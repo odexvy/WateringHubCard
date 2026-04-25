@@ -105,5 +105,6 @@
   "config.editor_section_supplies": "Water supplies",
   "config.editor_section_zones": "Zones",
   "config.editor_section_unassigned": "Unassigned valves",
-  "config.editor_section_add_valve": "Add a valve"
+  "config.editor_section_add_valve": "Add a valve",
+  "config.add_valve_pick_entity": "Pick a switch entity first"
 }

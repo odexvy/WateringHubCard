@@ -48,8 +48,8 @@ export class WateringHubConfigEditor extends LitElement {
   // Inline edits
   @state() private _editingSupply: WaterSupplyFormState | null = null;
   @state() private _editingZone: ZoneFormState | null = null;
-  @state() private _editingValves: ValveAssignment[] | null = null;
   @state() private _expandedZones: Set<string> = new Set();
+  @state() private _toast = '';
   @state() private _sections: SectionState = {
     supplies: true,
     zones: true,
@@ -85,6 +85,13 @@ export class WateringHubConfigEditor extends LitElement {
     if (next.has(zoneId)) next.delete(zoneId);
     else next.add(zoneId);
     this._expandedZones = next;
+  }
+
+  private _showToast(msg: string): void {
+    this._toast = msg;
+    setTimeout(() => {
+      this._toast = '';
+    }, 3000);
   }
 
   private _requestConfirm(message: string, label: string, action: () => void): void {
@@ -184,32 +191,18 @@ export class WateringHubConfigEditor extends LitElement {
     );
   }
 
-  // ── Valve assignment ────────────────────────────────────
+  // ── Valve assignment (immediate save) ───────────────────
 
-  private _startEditValves(): void {
-    if (this._editingValves) return;
-    this._editingValves = valvesToAssignments(getAvailableValves(this._hass));
-  }
-
-  private _updateValves(valves: ValveAssignment[]): void {
-    this._editingValves = valves;
-  }
-
-  private async _saveValves(): Promise<void> {
-    if (!this._editingValves) return;
-    await this._hass.callService('wateringhub', 'set_valves', {
-      valves: this._editingValves.map((v) => ({
-        entity_id: v.entity_id,
-        name: v.name,
-        water_supply_id: v.water_supply_id,
-        zone_id: v.zone_id,
-      })),
-    });
-    this._editingValves = null;
-  }
-
-  private _cancelEditValves(): void {
-    this._editingValves = null;
+  private async _changeValveAssignment(
+    entityId: string,
+    field: 'zone_id' | 'water_supply_id',
+    value: string | null,
+  ): Promise<void> {
+    const valves = valvesToAssignments(getAvailableValves(this._hass)).map((v) =>
+      v.entity_id === entityId ? { ...v, [field]: value } : v,
+    );
+    await this._hass.callService('wateringhub', 'set_valves', { valves });
+    this._showToast(this._t('config.saved'));
   }
 
   private _deleteValve(entityId: string): void {
@@ -217,7 +210,7 @@ export class WateringHubConfigEditor extends LitElement {
       this._t('config.confirm_delete_valve'),
       this._t('config.delete'),
       async () => {
-        const valves = (this._editingValves ?? valvesToAssignments(getAvailableValves(this._hass)))
+        const valves = valvesToAssignments(getAvailableValves(this._hass))
           .filter((v) => v.entity_id !== entityId)
           .map((v) => ({
             entity_id: v.entity_id,
@@ -226,7 +219,7 @@ export class WateringHubConfigEditor extends LitElement {
             zone_id: v.zone_id,
           }));
         await this._hass.callService('wateringhub', 'set_valves', { valves });
-        this._editingValves = null;
+        this._showToast(this._t('config.deleted'));
       },
     );
   }
@@ -244,7 +237,10 @@ export class WateringHubConfigEditor extends LitElement {
   }
 
   private async _confirmAddValve(): Promise<void> {
-    if (!this._newEntityId || !this._newZoneId || !this._newWaterSupplyId) return;
+    if (!this._newEntityId) {
+      this._showToast(this._t('config.add_valve_pick_entity'));
+      return;
+    }
     const name = this._getFriendlyName(this._newEntityId);
     const valves = [
       ...getAvailableValves(this._hass).map((v) => ({
@@ -256,11 +252,12 @@ export class WateringHubConfigEditor extends LitElement {
       {
         entity_id: this._newEntityId,
         name,
-        water_supply_id: this._newWaterSupplyId,
-        zone_id: this._newZoneId,
+        water_supply_id: this._newWaterSupplyId || null,
+        zone_id: this._newZoneId || null,
       },
     ];
     await this._hass.callService('wateringhub', 'set_valves', { valves });
+    this._showToast(this._t('config.saved'));
     this._resetAddValve();
   }
 
@@ -278,11 +275,7 @@ export class WateringHubConfigEditor extends LitElement {
     const supplies = getWaterSupplies(this._hass);
     const zones = getZones(this._hass);
     const valves = getAvailableValves(this._hass);
-    const valveView: ValveAssignment[] = this._editingValves ?? valvesToAssignments(valves);
-    const isEditingValves = this._editingValves !== null;
-    const allValid = isEditingValves
-      ? valveView.every((v) => v.zone_id && v.water_supply_id)
-      : false;
+    const valveView: ValveAssignment[] = valvesToAssignments(valves);
     const unassigned = valveView.filter((v) => !v.zone_id);
 
     return html`
@@ -314,22 +307,7 @@ export class WateringHubConfigEditor extends LitElement {
           null,
           this._renderAddValveBody(zones, supplies),
         )}
-        ${isEditingValves
-          ? html`
-              <div class="form-actions editor-global-actions">
-                <button class="btn btn-cancel" @click=${() => this._cancelEditValves()}>
-                  ${this._t('config.cancel')}
-                </button>
-                <button
-                  class="btn btn-primary"
-                  ?disabled=${!allValid}
-                  @click=${() => this._saveValves()}
-                >
-                  ${this._t('config.save')}
-                </button>
-              </div>
-            `
-          : nothing}
+        ${this._toast ? html`<div class="toast">${this._toast}</div>` : nothing}
         ${renderConfirmDialog(
           !!this._confirmAction,
           this._confirmMessage,
@@ -497,20 +475,10 @@ export class WateringHubConfigEditor extends LitElement {
     const zoneEmpty = !v.zone_id;
     const supplyEmpty = !v.water_supply_id;
     const errorBorder = 'border-color: var(--error-color);';
-    const changeZone = (val: string) => {
-      this._startEditValves();
-      const updated = (this._editingValves ?? [v]).map((ev) =>
-        ev.entity_id === v.entity_id ? { ...ev, zone_id: val || null } : ev,
-      );
-      this._updateValves(updated);
-    };
-    const changeSupply = (val: string) => {
-      this._startEditValves();
-      const updated = (this._editingValves ?? [v]).map((ev) =>
-        ev.entity_id === v.entity_id ? { ...ev, water_supply_id: val || null } : ev,
-      );
-      this._updateValves(updated);
-    };
+    const changeZone = (val: string) =>
+      this._changeValveAssignment(v.entity_id, 'zone_id', val || null);
+    const changeSupply = (val: string) =>
+      this._changeValveAssignment(v.entity_id, 'water_supply_id', val || null);
 
     return html`
       <div class="valve-row-stacked ${isUnassigned ? 'valve-row-unassigned' : ''}">
