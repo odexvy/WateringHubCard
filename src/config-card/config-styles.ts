@@ -174,16 +174,19 @@ export const configStyles = css`
   .schedule-chips {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 6px;
   }
   .schedule-chip-wrap {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 6px 4px 10px;
+    gap: 2px;
+    padding: 4px 4px 4px 10px;
     border-radius: 16px;
     background: var(--primary-color);
     color: white;
+    flex-shrink: 0;
+    line-height: 1;
   }
   .schedule-chip-input {
     background: transparent;
@@ -192,12 +195,17 @@ export const configStyles = css`
     font-size: 13px;
     font-weight: 500;
     padding: 0;
+    margin: 0;
     outline: none;
-    width: 58px;
+    box-sizing: content-box;
+    width: 90px;
+    color-scheme: dark;
   }
   .schedule-chip-input::-webkit-calendar-picker-indicator {
     filter: invert(1);
     cursor: pointer;
+    padding: 0;
+    margin-left: 2px;
   }
   .chip-close {
     background: none;
@@ -208,9 +216,14 @@ export const configStyles = css`
     display: inline-flex;
     align-items: center;
     border-radius: 50%;
+    flex-shrink: 0;
   }
   .chip-close ha-icon {
     --mdc-icon-size: 14px;
+  }
+  .schedule-chips .supply-chip.chip-add {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   /* Supply chips */

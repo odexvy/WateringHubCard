@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WateringHub Card — Mockup v0.0.52</title>
+  <title>WateringHub Card — Mockup v0.0.53</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css">
   <style>
     :root {
@@ -310,17 +310,13 @@
   </div>
 
 
-  <h2 class="section">Config v0.0.52 — Onglet Programmes</h2>
+  <h2 class="section">Config v0.0.53 — Carte Programmes (sans onglets)</h2>
 
   <!-- C1. Programmes list -->
   <div>
     <div class="label">C1. Liste des programmes</div>
     <div class="ha-card">
       <div class="header"><span class="title">WateringHub Config</span></div>
-      <div class="tabs" style="justify-content:center;">
-        <div class="tab active">Programmes</div>
-        <div class="tab">Zones</div>
-      </div>
       <div class="form-hint">Creez des programmes d'arrosage avec un horaire et des zones.</div>
       <div class="list-item">
         <div class="list-item-header">
@@ -343,10 +339,6 @@
     <div class="label">C2. Editeur programme (Variante A — sections par creneau)</div>
     <div class="ha-card">
       <div class="header"><span class="title">WateringHub Config</span></div>
-      <div class="tabs" style="justify-content:center;">
-        <div class="tab active">Programmes</div>
-        <div class="tab">Zones</div>
-      </div>
       <div class="inline-form">
         <div class="form-row"><label class="form-label">Nom</label><input class="form-input" value="Arrosage quotidien"></div>
         <div class="form-row">
@@ -454,78 +446,135 @@
     </div>
   </div>
 
-  <h2 class="section">Config v0.0.52 — Onglet Zones unifie</h2>
+  <h2 class="section">Config v0.0.53 — Editeur visuel (~440px)</h2>
 
-  <!-- C3. Zones tab — unified -->
+  <!-- C3. Visual editor — sectioned layout -->
   <div>
-    <div class="label">C3. Arrivees + Zones + Vannes dans un seul onglet</div>
-    <div class="ha-card">
-      <div class="header"><span class="title">WateringHub Config</span></div>
-      <div class="tabs" style="justify-content:center;">
-        <div class="tab">Programmes</div>
-        <div class="tab active">Zones</div>
-      </div>
-      <div class="form-hint">Gerez vos arrivees d'eau, zones et vannes.</div>
+    <div class="label">C3. Setup via editeur HA — sections accordion + lignes empilees</div>
+    <div class="ha-card" style="max-width:440px;">
+      <div style="display:flex; flex-direction:column; gap:8px;">
 
-      <div style="font-size:12px; color:var(--secondary-text-color); margin-top:12px; margin-bottom:4px;">Arrivees d'eau</div>
-      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
-        <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:16px; background:var(--secondary-background-color); color:var(--primary-text-color); font-size:12px; cursor:pointer;"><span class="ha-icon" style="--mdc-icon-size:14px"><i class="mdi mdi-water-pump"></i></span> Arrivee jardin <span class="ha-icon" style="--mdc-icon-size:14px; color:var(--secondary-text-color); cursor:pointer;"><i class="mdi mdi-close"></i></span></span>
-        <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:16px; background:var(--secondary-background-color); color:var(--primary-text-color); font-size:12px; cursor:pointer;"><span class="ha-icon" style="--mdc-icon-size:14px"><i class="mdi mdi-water-pump"></i></span> Arrivee potager <span class="ha-icon" style="--mdc-icon-size:14px; color:var(--secondary-text-color); cursor:pointer;"><i class="mdi mdi-close"></i></span></span>
-        <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:16px; background:transparent; border:1px dashed var(--divider-color); color:var(--secondary-text-color); font-size:12px; cursor:pointer;">+ Nouvelle arrivee</span>
-      </div>
-
-      <div style="font-size:12px; color:var(--secondary-text-color); margin-top:16px; margin-bottom:4px;">Zones</div>
-
-      <!-- Zone expanded -->
-      <div style="border:1px solid var(--divider-color); border-radius:8px; padding:10px 14px; margin-bottom:8px;">
-        <div style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-          <span class="ha-icon chevron open" style="--mdc-icon-size:18px"><i class="mdi mdi-chevron-down"></i></span>
-          <span style="flex:1; font-size:15px; font-weight:500; color:var(--primary-text-color);">Jardin avant</span>
-          <span class="info-sm">(2)</span>
-          <button class="action-btn"><span class="ha-icon" style="--mdc-icon-size:16px"><i class="mdi mdi-pencil"></i></span></button>
-          <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:16px"><i class="mdi mdi-delete"></i></span></button>
-        </div>
-        <div style="padding:8px 0 0; display:flex; flex-direction:column; gap:6px;">
-          <div style="display:flex; gap:8px; align-items:center;">
-            <span class="ha-icon" style="--mdc-icon-size:16px; color:var(--primary-color)"><i class="mdi mdi-valve"></i></span>
-            <span style="flex:1; font-size:13px;">Oscillant cedre</span>
-            <select class="form-select" style="flex:0 1 110px;"><option selected>Jardin avant</option><option>Potager</option></select>
-            <select class="form-select" style="flex:0 1 110px;"><option selected>Arrivee jardin</option><option>Arrivee potager</option></select>
-            <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:16px"><i class="mdi mdi-delete"></i></span></button>
+        <!-- Section: Supplies -->
+        <div style="border:1px solid var(--divider-color); border-radius:8px; overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; cursor:pointer; background:var(--secondary-background-color);">
+            <span class="ha-icon chevron open" style="--mdc-icon-size:18px"><i class="mdi mdi-chevron-down"></i></span>
+            <span style="flex:1; font-size:14px; font-weight:500; color:var(--primary-text-color);">Arrivees d'eau</span>
+            <span style="font-size:12px; color:var(--secondary-text-color); padding:2px 8px; border-radius:10px; background:var(--card-background-color);">2</span>
           </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <span class="ha-icon" style="--mdc-icon-size:16px; color:var(--primary-color)"><i class="mdi mdi-valve"></i></span>
-            <span style="flex:1; font-size:13px;">Goutteur haie</span>
-            <select class="form-select" style="flex:0 1 110px;"><option selected>Jardin avant</option><option>Potager</option></select>
-            <select class="form-select" style="flex:0 1 110px;"><option selected>Arrivee jardin</option><option>Arrivee potager</option></select>
-            <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:16px"><i class="mdi mdi-delete"></i></span></button>
+          <div style="padding:12px;">
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:16px; background:var(--secondary-background-color); color:var(--primary-text-color); font-size:12px; cursor:pointer;"><span class="ha-icon" style="--mdc-icon-size:14px"><i class="mdi mdi-water-pump"></i></span> Arrivee jardin <span class="ha-icon" style="--mdc-icon-size:14px; color:var(--secondary-text-color); cursor:pointer;"><i class="mdi mdi-close"></i></span></span>
+              <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:16px; background:var(--secondary-background-color); color:var(--primary-text-color); font-size:12px; cursor:pointer;"><span class="ha-icon" style="--mdc-icon-size:14px"><i class="mdi mdi-water-pump"></i></span> Arrivee potager <span class="ha-icon" style="--mdc-icon-size:14px; color:var(--secondary-text-color); cursor:pointer;"><i class="mdi mdi-close"></i></span></span>
+              <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:16px; background:transparent; border:1px dashed var(--divider-color); color:var(--secondary-text-color); font-size:12px; cursor:pointer;">+ Nouvelle arrivee</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Zone collapsed -->
-      <div style="border:1px solid var(--divider-color); border-radius:8px; padding:10px 14px; margin-bottom:8px;">
-        <div style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-          <span class="ha-icon chevron" style="--mdc-icon-size:18px"><i class="mdi mdi-chevron-down"></i></span>
-          <span style="flex:1; font-size:15px; font-weight:500; color:var(--primary-text-color);">Potager</span>
-          <span class="info-sm">(1)</span>
-          <button class="action-btn"><span class="ha-icon" style="--mdc-icon-size:16px"><i class="mdi mdi-pencil"></i></span></button>
-          <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:16px"><i class="mdi mdi-delete"></i></span></button>
+        <!-- Section: Zones -->
+        <div style="border:1px solid var(--divider-color); border-radius:8px; overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; cursor:pointer; background:var(--secondary-background-color);">
+            <span class="ha-icon chevron open" style="--mdc-icon-size:18px"><i class="mdi mdi-chevron-down"></i></span>
+            <span style="flex:1; font-size:14px; font-weight:500; color:var(--primary-text-color);">Zones</span>
+            <span style="font-size:12px; color:var(--secondary-text-color); padding:2px 8px; border-radius:10px; background:var(--card-background-color);">2</span>
+          </div>
+          <div style="padding:12px;">
+            <!-- Zone expanded -->
+            <div style="border:1px solid var(--divider-color); border-radius:8px; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; cursor:pointer;">
+                <span class="ha-icon chevron open" style="--mdc-icon-size:18px"><i class="mdi mdi-chevron-down"></i></span>
+                <span style="flex:1; font-size:14px; font-weight:500; color:var(--primary-text-color);">Jardin avant</span>
+                <span class="info-sm">(2)</span>
+                <button class="action-btn"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-pencil"></i></span></button>
+                <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button>
+              </div>
+              <div style="padding:0 10px 10px; display:flex; flex-direction:column; gap:8px;">
+                <!-- Stacked valve row -->
+                <div style="display:flex; flex-direction:column; gap:6px; padding:8px; border:1px solid var(--divider-color); border-radius:6px;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="ha-icon" style="--mdc-icon-size:16px; color:var(--primary-color)"><i class="mdi mdi-valve"></i></span>
+                    <span style="flex:1; font-size:13px; color:var(--primary-text-color);">Oscillant cedre</span>
+                    <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <label style="font-size:12px; color:var(--secondary-text-color); min-width:56px;">Zones</label>
+                    <select class="form-select" style="flex:1;"><option selected>Jardin avant</option><option>Potager</option></select>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <label style="font-size:12px; color:var(--secondary-text-color); min-width:56px;">Arrivees</label>
+                    <select class="form-select" style="flex:1;"><option selected>Arrivee jardin</option><option>Arrivee potager</option></select>
+                  </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px; padding:8px; border:1px solid var(--divider-color); border-radius:6px;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="ha-icon" style="--mdc-icon-size:16px; color:var(--primary-color)"><i class="mdi mdi-valve"></i></span>
+                    <span style="flex:1; font-size:13px; color:var(--primary-text-color);">Goutteur haie</span>
+                    <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <label style="font-size:12px; color:var(--secondary-text-color); min-width:56px;">Zones</label>
+                    <select class="form-select" style="flex:1;"><option selected>Jardin avant</option><option>Potager</option></select>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <label style="font-size:12px; color:var(--secondary-text-color); min-width:56px;">Arrivees</label>
+                    <select class="form-select" style="flex:1;"><option selected>Arrivee jardin</option><option>Arrivee potager</option></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Zone collapsed -->
+            <div style="border:1px solid var(--divider-color); border-radius:8px; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; cursor:pointer;">
+                <span class="ha-icon chevron" style="--mdc-icon-size:18px"><i class="mdi mdi-chevron-down"></i></span>
+                <span style="flex:1; font-size:14px; font-weight:500; color:var(--primary-text-color);">Potager</span>
+                <span class="info-sm">(1)</span>
+                <button class="action-btn"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-pencil"></i></span></button>
+                <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button>
+              </div>
+            </div>
+            <button class="add-btn">+ Nouvelle zone</button>
+          </div>
+        </div>
+
+        <!-- Section: Unassigned (warn) -->
+        <div style="border:1px solid var(--warning-color); border-radius:8px; overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; cursor:pointer; background:var(--secondary-background-color);">
+            <span class="ha-icon chevron open" style="--mdc-icon-size:18px"><i class="mdi mdi-chevron-down"></i></span>
+            <span style="flex:1; font-size:14px; font-weight:500; color:var(--primary-text-color);">Vannes non assignees</span>
+            <span style="font-size:12px; color:var(--warning-color); padding:2px 8px; border-radius:10px; background:var(--card-background-color);">1</span>
+          </div>
+          <div style="padding:12px;">
+            <div style="display:flex; flex-direction:column; gap:6px; padding:8px; border:1px solid var(--warning-color); border-radius:6px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="ha-icon" style="--mdc-icon-size:16px; color:var(--warning-color)"><i class="mdi mdi-alert-circle-outline"></i></span>
+                <span style="flex:1; font-size:13px; color:var(--primary-text-color);">Goutteur serre</span>
+                <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:18px"><i class="mdi mdi-delete"></i></span></button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="font-size:12px; color:var(--secondary-text-color); min-width:56px;">Zones</label>
+                <select class="form-select" style="flex:1; border-color:var(--error-color);"><option value="" selected>Aucun</option><option>Jardin avant</option><option>Potager</option></select>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="font-size:12px; color:var(--secondary-text-color); min-width:56px;">Arrivees</label>
+                <select class="form-select" style="flex:1; border-color:var(--error-color);"><option value="" selected>Aucun</option><option>Arrivee jardin</option><option>Arrivee potager</option></select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Add valve (collapsed) -->
+        <div style="border:1px solid var(--divider-color); border-radius:8px; overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; cursor:pointer; background:var(--secondary-background-color);">
+            <span class="ha-icon chevron" style="--mdc-icon-size:18px"><i class="mdi mdi-chevron-down"></i></span>
+            <span style="flex:1; font-size:14px; font-weight:500; color:var(--primary-text-color);">Ajouter une vanne</span>
+          </div>
+        </div>
+
+        <!-- Global actions (when valves dirty) -->
+        <div class="form-actions" style="margin-top:4px; padding:8px 0; border-top:1px solid var(--divider-color);">
+          <button class="btn btn-cancel">Annuler</button>
+          <button class="btn btn-primary" disabled>Sauvegarder</button>
         </div>
       </div>
-
-      <button class="add-btn">+ Nouvelle zone</button>
-
-      <div style="font-size:12px; margin-top:16px; margin-bottom:4px; color:var(--warning-color);">Vannes non assignees (1)</div>
-      <div style="display:flex; gap:8px; align-items:center; border:1px solid var(--warning-color); border-radius:8px; padding:8px 10px;">
-        <span class="ha-icon" style="--mdc-icon-size:16px; color:var(--warning-color)"><i class="mdi mdi-alert-circle-outline"></i></span>
-        <span style="flex:1; font-size:13px;">Goutteur serre</span>
-        <select class="form-select" style="flex:0 1 110px; border-color:var(--error-color);"><option value="" selected>Aucun</option><option>Jardin avant</option><option>Potager</option></select>
-        <select class="form-select" style="flex:0 1 110px; border-color:var(--error-color);"><option value="" selected>Aucun</option><option>Arrivee jardin</option><option>Arrivee potager</option></select>
-        <button class="action-btn delete"><span class="ha-icon" style="--mdc-icon-size:16px"><i class="mdi mdi-delete"></i></span></button>
-      </div>
-
-      <div class="form-actions" style="margin-top:16px;"><button class="btn btn-cancel">Annuler</button><button class="btn btn-primary" disabled>Sauvegarder</button></div>
     </div>
   </div>
 

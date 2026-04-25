@@ -102,5 +102,8 @@
   "config.no_schedule_times": "Ajoutez au moins un horaire",
   "config.valves_unassigned": "Vannes non assignées",
   "config.no_valves_in_zone": "Aucune vanne dans cette zone",
-  "config.hint_zones_unified": "Gérez vos arrivées d'eau, zones et vannes."
+  "config.editor_section_supplies": "Arrivées d'eau",
+  "config.editor_section_zones": "Zones",
+  "config.editor_section_unassigned": "Vannes non assignées",
+  "config.editor_section_add_valve": "Ajouter une vanne"
 }
