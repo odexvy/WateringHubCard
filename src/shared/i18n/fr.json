@@ -33,6 +33,7 @@
   "config.tab_valves": "Vannes",
   "config.tab_zones": "Zones",
   "config.tab_programs": "Programmes",
+  "config.tab_config": "Config",
   "config.no_valves": "Aucune vanne configurée",
   "config.no_zones": "Aucune zone créée",
   "config.no_programs": "Aucun programme créé",

@@ -107,23 +107,9 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
           </div>
         `}
 
-    <!-- Zones list -->
+    <!-- Zones chips -->
     <div class="form-label" style="margin-top:16px;">${t('config.tab_zones')}</div>
-    ${zones.length === 0 && !cb.editingZone?.isNew
-      ? html`<div class="empty-state">${t('config.no_zones')}</div>`
-      : nothing}
-    ${zones.map((zone) =>
-      cb.editingZone?.id === zone.id
-        ? renderNameForm(
-            cb.editingZone.name,
-            (name) => cb.onUpdateZoneForm({ ...cb.editingZone!, name }),
-            () => cb.onSaveZone(cb.editingZone!),
-            cb.onCancelZone,
-            t,
-          )
-        : renderZoneRow(zone, valveView, cb, t),
-    )}
-    ${cb.editingZone?.isNew
+    ${cb.editingZone
       ? renderNameForm(
           cb.editingZone.name,
           (name) => cb.onUpdateZoneForm({ ...cb.editingZone!, name }),
@@ -131,10 +117,30 @@ export function renderZonesTab(hass: Hass, cb: ZonesTabCallbacks, t: Translator)
           cb.onCancelZone,
           t,
         )
-      : nothing}
-    ${cb.editingZone
-      ? nothing
-      : html`<button class="add-btn" @click=${cb.onNewZone}>+ ${t('config.new_zone')}</button>`}
+      : html`
+          <div class="supply-chips">
+            ${zones.map(
+              (z) => html`
+                <span class="supply-chip" @click=${() => cb.onEditZone(z)}>
+                  <ha-icon icon="mdi:shape-outline"></ha-icon>
+                  ${z.name}
+                  <span
+                    class="chip-close"
+                    @click=${(e: Event) => {
+                      e.stopPropagation();
+                      cb.onDeleteZone(z.id);
+                    }}
+                  >
+                    <ha-icon icon="mdi:close"></ha-icon>
+                  </span>
+                </span>
+              `,
+            )}
+            <span class="supply-chip chip-add" @click=${cb.onNewZone}>
+              + ${t('config.new_zone')}
+            </span>
+          </div>
+        `}
 
     <!-- All valves (flat list, unassigned first with warning border) -->
     <div class="form-label" style="margin-top:16px;">
@@ -227,29 +233,6 @@ function renderAddValveForm(
         </select>`,
       )}
       ${renderFormActions(cb.onCancelAddValve, cb.onSaveNewValve, t)}
-    </div>
-  `;
-}
-
-function renderZoneRow(
-  zone: ZoneConfig,
-  valveView: ValveAssignment[],
-  cb: ZonesTabCallbacks,
-  t: Translator,
-): TemplateResult {
-  const zoneValves = valveView.filter((v) => v.zone_id === zone.id);
-  return html`
-    <div class="zone-row">
-      <span class="zone-row-name">${zone.name}</span>
-      <span class="info-sm">(${zoneValves.length})</span>
-      ${renderIconButton('mdi:pencil', () => cb.onEditZone(zone), {
-        className: 'action-btn',
-        title: t('config.edit'),
-      })}
-      ${renderIconButton('mdi:delete', () => cb.onDeleteZone(zone.id), {
-        className: 'action-btn delete',
-        title: t('config.delete'),
-      })}
     </div>
   `;
 }

@@ -12,7 +12,7 @@ export function renderTabs(
 ): TemplateResult {
   const tabs = [
     { id: 'programs', label: t('config.tab_programs') },
-    { id: 'zones', label: t('config.tab_zones') },
+    { id: 'zones', label: t('config.tab_config') },
   ];
   return html`
     <div class="tabs">
