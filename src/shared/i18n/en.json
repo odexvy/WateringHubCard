@@ -102,8 +102,7 @@
   "config.no_schedule_times": "Add at least one trigger time",
   "config.valves_unassigned": "Unassigned valves",
   "config.no_valves_in_zone": "No valve in this zone",
-  "config.editor_section_supplies": "Water supplies",
-  "config.editor_section_zones": "Zones",
-  "config.editor_section_valves": "Valves",
-  "config.add_valve_pick_entity": "Pick a switch entity first"
+  "config.hint_zones_unified": "Manage water supplies, zones, and valves.",
+  "config.valves_unassigned_warn": "Reassign valves first",
+  "config.editor_managed_in_card": "Configure water supplies, zones, valves, and programs from the card itself (Programmes / Zones tabs)."
 }
