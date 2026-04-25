@@ -99,7 +99,23 @@ export const editorStyles = css`
     --mdc-icon-size: 14px;
   }
 
-  /* Zone card */
+  /* Zone row (flat list) */
+  .zone-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--divider-color);
+    border-radius: 8px;
+    margin-bottom: 6px;
+  }
+  .zone-row-name {
+    flex: 1;
+    font-size: 14px;
+    color: var(--primary-text-color);
+  }
+
+  /* Zone card (legacy — kept for compatibility) */
   .zone-card {
     border: 1px solid var(--divider-color);
     border-radius: 8px;

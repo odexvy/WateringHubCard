@@ -104,7 +104,6 @@
   "config.no_valves_in_zone": "Aucune vanne dans cette zone",
   "config.editor_section_supplies": "Arrivées d'eau",
   "config.editor_section_zones": "Zones",
-  "config.editor_section_unassigned": "Vannes non assignées",
-  "config.editor_section_add_valve": "Ajouter une vanne",
+  "config.editor_section_valves": "Vannes",
   "config.add_valve_pick_entity": "Sélectionnez d'abord une entité switch"
 }

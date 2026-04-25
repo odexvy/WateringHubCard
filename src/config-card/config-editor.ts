@@ -33,8 +33,7 @@ import {
 interface SectionState {
   supplies: boolean;
   zones: boolean;
-  unassigned: boolean;
-  addValve: boolean;
+  valves: boolean;
 }
 
 @customElement('wateringhub-config-editor')
@@ -48,13 +47,12 @@ export class WateringHubConfigEditor extends LitElement {
   // Inline edits
   @state() private _editingSupply: WaterSupplyFormState | null = null;
   @state() private _editingZone: ZoneFormState | null = null;
-  @state() private _expandedZones: Set<string> = new Set();
+  @state() private _addingValve = false;
   @state() private _toast = '';
   @state() private _sections: SectionState = {
     supplies: true,
     zones: true,
-    unassigned: true,
-    addValve: false,
+    valves: true,
   };
   // Confirm
   @state() private _confirmMessage = '';
@@ -78,13 +76,6 @@ export class WateringHubConfigEditor extends LitElement {
 
   private _toggleSection(key: keyof SectionState): void {
     this._sections = { ...this._sections, [key]: !this._sections[key] };
-  }
-
-  private _toggleZone(zoneId: string): void {
-    const next = new Set(this._expandedZones);
-    if (next.has(zoneId)) next.delete(zoneId);
-    else next.add(zoneId);
-    this._expandedZones = next;
   }
 
   private _showToast(msg: string): void {
@@ -265,7 +256,7 @@ export class WateringHubConfigEditor extends LitElement {
     this._newEntityId = '';
     this._newZoneId = '';
     this._newWaterSupplyId = '';
-    this._sections = { ...this._sections, addValve: false };
+    this._addingValve = false;
   }
 
   // ── Render ─────────────────────────────────────────────
@@ -276,7 +267,11 @@ export class WateringHubConfigEditor extends LitElement {
     const zones = getZones(this._hass);
     const valves = getAvailableValves(this._hass);
     const valveView: ValveAssignment[] = valvesToAssignments(valves);
-    const unassigned = valveView.filter((v) => !v.zone_id);
+    // Unassigned first, then by zone order
+    const sortedValves = [
+      ...valveView.filter((v) => !v.zone_id),
+      ...valveView.filter((v) => v.zone_id),
+    ];
 
     return html`
       <div class="editor-root">
@@ -290,22 +285,13 @@ export class WateringHubConfigEditor extends LitElement {
           'zones',
           this._t('config.editor_section_zones'),
           zones.length,
-          this._renderZonesBody(zones, valveView, supplies),
+          this._renderZonesBody(zones),
         )}
-        ${unassigned.length > 0
-          ? this._renderSection(
-              'unassigned',
-              this._t('config.editor_section_unassigned'),
-              unassigned.length,
-              this._renderUnassignedBody(unassigned, zones, supplies),
-              true,
-            )
-          : nothing}
         ${this._renderSection(
-          'addValve',
-          this._t('config.editor_section_add_valve'),
-          null,
-          this._renderAddValveBody(zones, supplies),
+          'valves',
+          this._t('config.editor_section_valves'),
+          valveView.length,
+          this._renderValvesBody(sortedValves, zones, supplies),
         )}
         ${this._toast ? html`<div class="toast">${this._toast}</div>` : nothing}
         ${renderConfirmDialog(
@@ -379,13 +365,9 @@ export class WateringHubConfigEditor extends LitElement {
     `;
   }
 
-  // ── Zones body ─────────────────────────────────────────
+  // ── Zones body (flat list) ─────────────────────────────
 
-  private _renderZonesBody(
-    zones: ZoneConfig[],
-    valveView: ValveAssignment[],
-    supplies: WaterSupply[],
-  ): TemplateResult {
+  private _renderZonesBody(zones: ZoneConfig[]): TemplateResult {
     return html`
       ${zones.length === 0 && !this._editingZone?.isNew
         ? html`<div class="empty-state">${this._t('config.no_zones')}</div>`
@@ -398,7 +380,7 @@ export class WateringHubConfigEditor extends LitElement {
               () => this._saveZone(this._editingZone!),
               () => this._cancelZone(),
             )
-          : this._renderZoneCard(zone, valveView, zones, supplies),
+          : this._renderZoneItem(zone),
       )}
       ${this._editingZone?.isNew
         ? this._renderNameForm(
@@ -414,54 +396,40 @@ export class WateringHubConfigEditor extends LitElement {
     `;
   }
 
-  private _renderZoneCard(
-    zone: ZoneConfig,
-    valveView: ValveAssignment[],
-    zones: ZoneConfig[],
-    supplies: WaterSupply[],
-  ): TemplateResult {
-    const zoneValves = valveView.filter((v) => v.zone_id === zone.id);
-    const expanded = this._expandedZones.has(zone.id);
+  private _renderZoneItem(zone: ZoneConfig): TemplateResult {
     return html`
-      <div class="zone-card">
-        <div class="zone-card-header" @click=${() => this._toggleZone(zone.id)}>
-          <ha-icon class="chevron ${expanded ? 'open' : ''}" icon="mdi:chevron-down"></ha-icon>
-          <span class="zone-card-name">${zone.name}</span>
-          <span class="info-sm">(${zoneValves.length})</span>
-          <div class="list-item-actions" @click=${(e: Event) => e.stopPropagation()}>
-            ${renderIconButton('mdi:pencil', () => this._editZone(zone), {
-              className: 'action-btn',
-              title: this._t('config.edit'),
-            })}
-            ${renderIconButton('mdi:delete', () => this._deleteZone(zone.id), {
-              className: 'action-btn delete',
-              title: this._t('config.delete'),
-            })}
-          </div>
-        </div>
-        ${expanded
-          ? html`
-              <div class="zone-card-body">
-                ${zoneValves.length === 0
-                  ? html`<div class="info-sm" style="padding:6px 0;">
-                      ${this._t('config.no_valves_in_zone')}
-                    </div>`
-                  : zoneValves.map((v) => this._renderValveRow(v, zones, supplies, false))}
-              </div>
-            `
-          : nothing}
+      <div class="zone-row">
+        <span class="zone-row-name">${zone.name}</span>
+        ${renderIconButton('mdi:pencil', () => this._editZone(zone), {
+          className: 'action-btn',
+          title: this._t('config.edit'),
+        })}
+        ${renderIconButton('mdi:delete', () => this._deleteZone(zone.id), {
+          className: 'action-btn delete',
+          title: this._t('config.delete'),
+        })}
       </div>
     `;
   }
 
-  // ── Unassigned body ────────────────────────────────────
+  // ── Valves body (unified list + add button) ────────────
 
-  private _renderUnassignedBody(
-    unassigned: ValveAssignment[],
+  private _renderValvesBody(
+    valveView: ValveAssignment[],
     zones: ZoneConfig[],
     supplies: WaterSupply[],
   ): TemplateResult {
-    return html` ${unassigned.map((v) => this._renderValveRow(v, zones, supplies, true))} `;
+    return html`
+      ${valveView.length === 0 && !this._addingValve
+        ? html`<div class="empty-state">${this._t('config.no_valves')}</div>`
+        : nothing}
+      ${valveView.map((v) => this._renderValveRow(v, zones, supplies, !v.zone_id))}
+      ${this._addingValve
+        ? this._renderAddValveForm(zones, supplies)
+        : renderAddButton(`+ ${this._t('config.add_valve')}`, () => {
+            this._addingValve = true;
+          })}
+    `;
   }
 
   // ── Valve row (stacked layout) ────────────────────────
@@ -526,12 +494,9 @@ export class WateringHubConfigEditor extends LitElement {
     `;
   }
 
-  // ── Add valve body ──────────────────────────────────────
+  // ── Add valve inline form ───────────────────────────────
 
-  private _renderAddValveBody(zones: ZoneConfig[], supplies: WaterSupply[]): TemplateResult {
-    if (zones.length === 0 || supplies.length === 0) {
-      return html`<div class="empty-state">${this._t('config.hint_valves_prereq')}</div>`;
-    }
+  private _renderAddValveForm(zones: ZoneConfig[], supplies: WaterSupply[]): TemplateResult {
     return html`
       <div class="add-form">
         <ha-entity-picker
